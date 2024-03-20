@@ -25,7 +25,7 @@ export const videosRepository = {
         return REPOSITORY_RESPONSE.SUCCESSFULLY
     },
     deleteVideoById(id: number): REPOSITORY_RESPONSE.SUCCESSFULLY | REPOSITORY_RESPONSE.NOT_FOUND {
-        const foundVideoIndex = videos.findIndex(video => video.id === id)
+        const foundVideoIndex: number = videos.findIndex(video => video.id === id)
         if (foundVideoIndex === -1) {
             return REPOSITORY_RESPONSE.NOT_FOUND
         }

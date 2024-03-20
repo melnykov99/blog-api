@@ -6,7 +6,7 @@ import {draftVideoErrorMessage} from "../libs/common/errorMessages/videoErrorMes
 import {AvailableResolutions, Video, VideoFieldsForErrorMessages} from "../libs/types/videosTypes";
 import {ErrorsMessages} from "../libs/types/commonTypes";
 
-export const videosRouter = express.Router();
+const videosRouter = express.Router();
 
 videosRouter.get('/', (req: Request, res: Response) => {
     const videos: Video[] = videosService.getAllVideos()
@@ -111,3 +111,5 @@ videosRouter.delete('/:id', (req: Request, res: Response) => {
     }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
+
+export default videosRouter
