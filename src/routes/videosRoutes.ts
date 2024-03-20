@@ -26,10 +26,10 @@ videosRouter.get('/:id', (req: Request, res: Response) => {
 videosRouter.post('/', (req: Request, res: Response) => {
     const {title, author, availableResolutions} = req.body
     const errorFields: VideoFieldsForErrorMessages[] = []
-    if (!title || typeof title !== 'string' || title.length > 40) {
+    if (!title || typeof title !== 'string' || title.length > 40 || title.trim().length === 0) {
         errorFields.push('title')
     }
-    if (!author || typeof author !== 'string' || title.length > 20) {
+    if (!author || typeof author !== 'string' || title.length > 20 || author.trim().length === 0) {
         errorFields.push('author')
     }
     if (availableResolutions !== undefined) {
@@ -57,10 +57,10 @@ videosRouter.put('/:id', (req: Request, res: Response) => {
     const {title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate} = req.body
     const errorFields: VideoFieldsForErrorMessages[] = []
     const isoDateRegex: RegExp = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/
-    if (!title || typeof title !== 'string' || title.length > 40) {
+    if (!title || typeof title !== 'string' || title.length > 40 || title.trim().length === 0) {
         errorFields.push('title')
     }
-    if (!author || typeof author !== 'string' || title.length > 20) {
+    if (!author || typeof author !== 'string' || title.length > 20 || author.trim().length === 0) {
         errorFields.push('author')
     }
     if (availableResolutions !== undefined) {
