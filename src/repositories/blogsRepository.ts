@@ -7,8 +7,8 @@ const blogsRepository = {
     getBlogs(): Blog[] {
         return blogs
     },
-    createBlog(blog: Blog): REPOSITORY_RESPONSE.SUCCESSFULLY {
-        blogs.push(blog)
+    createBlog(newBlog: Blog): REPOSITORY_RESPONSE.SUCCESSFULLY {
+        blogs.push(newBlog)
         return REPOSITORY_RESPONSE.SUCCESSFULLY
     },
     getBlogById(id: string): Blog | REPOSITORY_RESPONSE.NOT_FOUND {
