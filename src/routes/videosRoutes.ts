@@ -2,7 +2,7 @@ import express, {Request, Response} from "express";
 import {videosService} from "../services/videosService";
 import {REPOSITORY_RESPONSE} from "../libs/common/repositoryResponse";
 import {HTTP_STATUSES} from "../libs/common/httpStatuses";
-import {draftVideoErrorMessage} from "../libs/common/errorMessages/videoErrorMessages";
+import draftVideoErrorMessage from "../libs/common/errorMessages/videoErrorMessages";
 import {AvailableResolutions, Video, VideoFieldsForErrorMessages} from "../libs/types/videosTypes";
 import {ErrorsMessages} from "../libs/types/commonTypes";
 

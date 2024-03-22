@@ -4,6 +4,8 @@ import postsService from "../services/postsService";
 import {Post} from "../libs/types/postsTypes";
 import {REPOSITORY_RESPONSE} from "../libs/common/repositoryResponse";
 import authMiddleware from "../libs/middlewares/authMiddleware";
+import postsValidationChain from "../libs/validations/postsValidation";
+import ValidationErrorCheck from "../libs/validations/validationErrorCheck";
 
 const postsRouter = express.Router()
 
@@ -11,7 +13,7 @@ postsRouter.get('/', (req: Request, res: Response) => {
     const foundPosts: Post[] = postsService.getPosts()
     res.status(HTTP_STATUSES.OK).send(foundPosts)
 })
-postsRouter.post('/', authMiddleware, (req: Request, res: Response) => {
+postsRouter.post('/', authMiddleware, postsValidationChain, ValidationErrorCheck, (req: Request, res: Response) => {
     const createdPost: Post = postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId, req.body.blogName)
     res.status(HTTP_STATUSES.CREATED).send(createdPost)
 })
@@ -26,7 +28,7 @@ postsRouter.get('/:id', (req: Request, res: Response) => {
     res.status(HTTP_STATUSES.OK).send()
 })
 
-postsRouter.put('/:id', authMiddleware, (req: Request, res: Response) => {
+postsRouter.put('/:id', authMiddleware, postsValidationChain, ValidationErrorCheck, (req: Request, res: Response) => {
     const postId: string = req.params.id.toString()
     const updatingResult: REPOSITORY_RESPONSE.NOT_FOUND | REPOSITORY_RESPONSE.SUCCESSFULLY = postsService.updatePost(postId, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId, req.body.blogName)
     if (updatingResult === REPOSITORY_RESPONSE.NOT_FOUND) {
@@ -36,7 +38,7 @@ postsRouter.put('/:id', authMiddleware, (req: Request, res: Response) => {
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
 
-postsRouter.delete('/:id', authMiddleware, (req: Request, res: Response) => {
+postsRouter.delete('/:id', authMiddleware, postsValidationChain, ValidationErrorCheck, (req: Request, res: Response) => {
     const postId: string = req.params.id.toString()
     const deletionResult: REPOSITORY_RESPONSE.NOT_FOUND | REPOSITORY_RESPONSE.SUCCESSFULLY = postsService.deletePost(postId)
     if (deletionResult === REPOSITORY_RESPONSE.NOT_FOUND) {

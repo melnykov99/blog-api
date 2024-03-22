@@ -6,4 +6,5 @@ type Post = {
     blogId: string,
     blogName: string
 }
-export {Post};
+type PostFieldsForErrorMessages = 'title' | 'shortDescription' | 'content' | 'blogId';
+export {Post, PostFieldsForErrorMessages};

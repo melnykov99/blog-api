@@ -10,7 +10,7 @@ const fieldsMessages = {
     publicationDate: 'publicationDate must be string in ISO 8601 format'
 }
 
-export function draftVideoErrorMessage(fields: VideoFieldsForErrorMessages[]): ErrorsMessages {
+function draftVideoErrorMessage(fields: VideoFieldsForErrorMessages[]): ErrorsMessages {
     const errorsMessages: CommonError[] = []
     fields.forEach(field => {
         if (fieldsMessages[field]) {
@@ -19,3 +19,4 @@ export function draftVideoErrorMessage(fields: VideoFieldsForErrorMessages[]): E
     })
     return {errorsMessages}
 }
+export default draftVideoErrorMessage;

@@ -4,5 +4,5 @@ type Blog = {
     description: string,
     websiteUrl: string
 }
-
-export {Blog};
+type BlogFieldsForErrorMessages = 'name' | 'description' | 'websiteUrl';
+export {Blog, BlogFieldsForErrorMessages};
