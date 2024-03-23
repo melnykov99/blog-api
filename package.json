@@ -5,15 +5,21 @@
   "scripts": {
     "dev": "yarn nodemon dist/index.js",
     "watch": "tsc -w",
-    "start": "concurrently \"yarn dev\" \"yarn watch\""
+    "start": "concurrently \"yarn dev\" \"yarn watch\"",
+    "test": "jest"
   },
   "repository": "git@github.com:melnykov99/blog-api.git",
   "author": "Melnykov Dmitry Hobby <melnykov.ds99@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/supertest": "^6.0.2",
     "body-parser": "^1.20.2",
     "express": "^4.18.3",
-    "express-validator": "^7.0.1"
+    "express-validator": "^7.0.1",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4",
+    "ts-jest": "^29.1.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

@@ -35,7 +35,7 @@ blogsRouter.put('/:id', authMiddleware, blogsValidationChain, validationErrorChe
     }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
-blogsRouter.delete('/:id', authMiddleware, blogsValidationChain, validationErrorCheck, (req: Request, res: Response) => {
+blogsRouter.delete('/:id', authMiddleware, (req: Request, res: Response) => {
     const blogId: string = req.params.id.toString()
     const deletionResult: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY = blogsService.deleteBlog(blogId)
     if (deletionResult === REPOSITORY_RESPONSES.NOT_FOUND) {
