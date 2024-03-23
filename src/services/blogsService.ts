@@ -1,6 +1,6 @@
 import blogsRepository from "../repositories/blogsRepository";
 import {Blog} from "../libs/types/blogsTypes";
-import {REPOSITORY_RESPONSE} from "../libs/common/repositoryResponse";
+import {REPOSITORY_RESPONSES} from "../libs/common/repositoryResponse";
 
 const blogsService = {
     getBlogs(): Blog[] {
@@ -16,13 +16,13 @@ const blogsService = {
         blogsRepository.createBlog(newBlog)
         return newBlog
     },
-    getBlogById(id: string): Blog | REPOSITORY_RESPONSE.NOT_FOUND {
+    getBlogById(id: string): Blog | REPOSITORY_RESPONSES.NOT_FOUND {
         return blogsRepository.getBlogById(id)
     },
-    updateBlog(id: string, name: string, description: string, websiteUrl: string): REPOSITORY_RESPONSE.NOT_FOUND | REPOSITORY_RESPONSE.SUCCESSFULLY {
-        const foundBlog: Blog | REPOSITORY_RESPONSE.NOT_FOUND = blogsRepository.getBlogById(id)
-        if (foundBlog === REPOSITORY_RESPONSE.NOT_FOUND) {
-            return REPOSITORY_RESPONSE.NOT_FOUND
+    updateBlog(id: string, name: string, description: string, websiteUrl: string): REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY {
+        const foundBlog: Blog | REPOSITORY_RESPONSES.NOT_FOUND = blogsRepository.getBlogById(id)
+        if (foundBlog === REPOSITORY_RESPONSES.NOT_FOUND) {
+            return REPOSITORY_RESPONSES.NOT_FOUND
         }
         const updatedBlog: Blog = {
             ...foundBlog,
@@ -32,7 +32,7 @@ const blogsService = {
         }
         return blogsRepository.updateBlog(updatedBlog)
     },
-    deleteBlog(id: string): REPOSITORY_RESPONSE.NOT_FOUND | REPOSITORY_RESPONSE.SUCCESSFULLY {
+    deleteBlog(id: string): REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY {
         return blogsRepository.deleteBlog(id)
     }
 }

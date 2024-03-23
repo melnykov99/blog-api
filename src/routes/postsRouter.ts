@@ -2,7 +2,7 @@ import express, {Request, Response} from "express";
 import {HTTP_STATUSES} from "../libs/common/httpStatuses";
 import postsService from "../services/postsService";
 import {Post} from "../libs/types/postsTypes";
-import {REPOSITORY_RESPONSE} from "../libs/common/repositoryResponse";
+import {REPOSITORY_RESPONSES} from "../libs/common/repositoryResponse";
 import authMiddleware from "../libs/middlewares/authMiddleware";
 import postsValidationChain from "../libs/validations/postsValidation";
 import ValidationErrorCheck from "../libs/validations/validationErrorCheck";
@@ -20,8 +20,8 @@ postsRouter.post('/', authMiddleware, postsValidationChain, ValidationErrorCheck
 
 postsRouter.get('/:id', (req: Request, res: Response) => {
     const postId: string = req.params.id.toString()
-    const foundPost: Post | REPOSITORY_RESPONSE.NOT_FOUND = postsService.getPostById(postId)
-    if (foundPost === REPOSITORY_RESPONSE.NOT_FOUND) {
+    const foundPost: Post | REPOSITORY_RESPONSES.NOT_FOUND = postsService.getPostById(postId)
+    if (foundPost === REPOSITORY_RESPONSES.NOT_FOUND) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND)
         return
     }
@@ -30,8 +30,8 @@ postsRouter.get('/:id', (req: Request, res: Response) => {
 
 postsRouter.put('/:id', authMiddleware, postsValidationChain, ValidationErrorCheck, (req: Request, res: Response) => {
     const postId: string = req.params.id.toString()
-    const updatingResult: REPOSITORY_RESPONSE.NOT_FOUND | REPOSITORY_RESPONSE.SUCCESSFULLY = postsService.updatePost(postId, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId, req.body.blogName)
-    if (updatingResult === REPOSITORY_RESPONSE.NOT_FOUND) {
+    const updatingResult: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY = postsService.updatePost(postId, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId, req.body.blogName)
+    if (updatingResult === REPOSITORY_RESPONSES.NOT_FOUND) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND)
         return
     }
@@ -40,8 +40,8 @@ postsRouter.put('/:id', authMiddleware, postsValidationChain, ValidationErrorChe
 
 postsRouter.delete('/:id', authMiddleware, postsValidationChain, ValidationErrorCheck, (req: Request, res: Response) => {
     const postId: string = req.params.id.toString()
-    const deletionResult: REPOSITORY_RESPONSE.NOT_FOUND | REPOSITORY_RESPONSE.SUCCESSFULLY = postsService.deletePost(postId)
-    if (deletionResult === REPOSITORY_RESPONSE.NOT_FOUND) {
+    const deletionResult: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY = postsService.deletePost(postId)
+    if (deletionResult === REPOSITORY_RESPONSES.NOT_FOUND) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND)
         return
     }

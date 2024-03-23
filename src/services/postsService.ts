@@ -1,6 +1,6 @@
 import postsRepository from "../repositories/postsRepository";
 import {Post} from "../libs/types/postsTypes";
-import {REPOSITORY_RESPONSE} from "../libs/common/repositoryResponse";
+import {REPOSITORY_RESPONSES} from "../libs/common/repositoryResponse";
 
 const postsService = {
     getPosts(): Post[] {
@@ -18,13 +18,13 @@ const postsService = {
         postsRepository.createPost(newPost)
         return newPost
     },
-    getPostById(id: string): Post | REPOSITORY_RESPONSE.NOT_FOUND {
+    getPostById(id: string): Post | REPOSITORY_RESPONSES.NOT_FOUND {
         return postsRepository.getPostById(id)
     },
-    updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string, blogName: string): REPOSITORY_RESPONSE.NOT_FOUND | REPOSITORY_RESPONSE.SUCCESSFULLY {
-        const foundPost: Post | REPOSITORY_RESPONSE.NOT_FOUND = postsRepository.getPostById(id)
-        if (foundPost === REPOSITORY_RESPONSE.NOT_FOUND) {
-            return REPOSITORY_RESPONSE.NOT_FOUND
+    updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string, blogName: string): REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY {
+        const foundPost: Post | REPOSITORY_RESPONSES.NOT_FOUND = postsRepository.getPostById(id)
+        if (foundPost === REPOSITORY_RESPONSES.NOT_FOUND) {
+            return REPOSITORY_RESPONSES.NOT_FOUND
         }
         const updatedPost: Post = {
             ...foundPost,
@@ -36,7 +36,7 @@ const postsService = {
         }
         return postsRepository.updatePost(updatedPost)
     },
-    deletePost(id: string): REPOSITORY_RESPONSE.NOT_FOUND | REPOSITORY_RESPONSE.SUCCESSFULLY {
+    deletePost(id: string): REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY {
         return postsRepository.deletePost(id)
     }
 }
