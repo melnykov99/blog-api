@@ -25,7 +25,7 @@ postsRouter.get('/:id', (req: Request, res: Response) => {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND)
         return
     }
-    res.status(HTTP_STATUSES.OK).send()
+    res.status(HTTP_STATUSES.OK).send(foundPost)
 })
 
 postsRouter.put('/:id', authMiddleware, postsValidationChain, ValidationErrorCheck, (req: Request, res: Response) => {
@@ -38,7 +38,7 @@ postsRouter.put('/:id', authMiddleware, postsValidationChain, ValidationErrorChe
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
 
-postsRouter.delete('/:id', authMiddleware, postsValidationChain, ValidationErrorCheck, (req: Request, res: Response) => {
+postsRouter.delete('/:id', authMiddleware, (req: Request, res: Response) => {
     const postId: string = req.params.id.toString()
     const deletionResult: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY = postsService.deletePost(postId)
     if (deletionResult === REPOSITORY_RESPONSES.NOT_FOUND) {

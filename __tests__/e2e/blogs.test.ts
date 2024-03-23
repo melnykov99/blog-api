@@ -32,7 +32,7 @@ describe('GET /blogs', () => {
 
         await request(app)
             .post(blogsPath)
-            .set('Authorization', authHeader) // Добавляем заголовок авторизации
+            .set('Authorization', authHeader)
             .send(blog2)
             .expect(201);
 
@@ -289,7 +289,7 @@ describe('POST /blogs', () => {
             errorsMessages: [{ field: 'websiteUrl', message: 'websiteUrl must be string with url format and maximum length 100 characters' }]
         });
     });
-    //Проверка создания блога
+    //Проверка создания блога с валидными данными
     it('should create a new blog and return 201 status', async () => {
         const newBlog = {
             name: 'Test Blog',
@@ -413,7 +413,7 @@ describe('PUT /blogs/:id', () => {
         const newBlog = {
             name: 'Test Blog',
             description: 'This is a test blog',
-            websiteUrl: 'http://testblog.com'
+            websiteUrl: 'https://testblog.com'
         };
         const createResponse = await request(app)
             .post(blogsPath)
@@ -458,7 +458,7 @@ describe('DELETE /blogs/:id', () => {
         const newBlog = {
             name: 'Test Blog',
             description: 'This is a test blog',
-            websiteUrl: 'http://testblog.com'
+            websiteUrl: 'https://testblog.com'
         };
         const createResponse = await request(app)
             .post(blogsPath)
