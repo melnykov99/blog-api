@@ -1,10 +1,9 @@
 import request from 'supertest'
-import {app} from '../../src';
+import app from '../../src/setting';
 
 const blogsPath = '/blogs';
 const authHeader = 'Basic ' + Buffer.from('admin:qwerty').toString('base64');
 describe('blogs tests', () => {
-
     describe('GET /blogs', () => {
 
         it('should return 200 and empty array', async () => {
