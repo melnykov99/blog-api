@@ -5,7 +5,7 @@ import blogsRouter from "./routes/blogsRouter";
 import postsRouter from "./routes/postsRouter";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 app.use(bodyParser.json());
 app.get('/', (req, res) => {res.send('main page')});

@@ -6,7 +6,7 @@
     "dev": "yarn nodemon dist/index.js",
     "watch": "tsc -w",
     "start": "concurrently \"yarn dev\" \"yarn watch\"",
-    "test": "jest"
+    "test": "jest -i"
   },
   "repository": "git@github.com:melnykov99/blog-api.git",
   "author": "Melnykov Dmitry Hobby <melnykov.ds99@gmail.com>",
@@ -15,6 +15,7 @@
     "@types/jest": "^29.5.12",
     "@types/supertest": "^6.0.2",
     "body-parser": "^1.20.2",
+    "dotenv": "^16.4.5",
     "express": "^4.18.3",
     "express-validator": "^7.0.1",
     "jest": "^29.7.0",
