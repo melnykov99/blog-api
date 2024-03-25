@@ -4,7 +4,8 @@ type Post = {
     shortDescription: string,
     content: string,
     blogId: string,
-    blogName: string
+    blogName: string,
+    createdAt: string,
 }
 type PostFieldsForErrorMessages = 'title' | 'shortDescription' | 'content' | 'blogId';
 export {Post, PostFieldsForErrorMessages};

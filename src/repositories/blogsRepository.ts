@@ -10,7 +10,6 @@ const blogsRepository = {
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
-
     },
     async createBlog(newBlog: Blog): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {

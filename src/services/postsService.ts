@@ -1,43 +1,49 @@
 import postsRepository from "../repositories/postsRepository";
 import {Post} from "../libs/types/postsTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/repositoryResponse";
+import {randomUUID} from "crypto";
 
 const postsService = {
-    getPosts(): Post[] {
-        return postsRepository.getPosts()
+    async getPosts(): Promise<Post[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        return await postsRepository.getPosts()
     },
-    createPost(title: string, shortDescription: string, content: string, blogId: string, blogName: string): Post {
+    async createPost(title: string, shortDescription: string, content: string, blogId: string, blogName: string): Promise<Post | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const newPost: Post = {
-            id: Math.floor((Math.random() * 10000000) + 1).toString(),
+            id: randomUUID(),
             title,
             shortDescription,
             content,
             blogId,
-            blogName
+            blogName,
+            createdAt: new Date().toISOString(),
         }
-        postsRepository.createPost(newPost)
+        const createdResult: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await postsRepository.createPost(newPost)
+        if (createdResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
         return newPost
     },
-    getPostById(id: string): Post | REPOSITORY_RESPONSES.NOT_FOUND {
-        return postsRepository.getPostById(id)
+    async getPostById(id: string): Promise<Post | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        return await postsRepository.getPostById(id)
     },
-    updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string, blogName: string): REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY {
-        const foundPost: Post | REPOSITORY_RESPONSES.NOT_FOUND = postsRepository.getPostById(id)
-        if (foundPost === REPOSITORY_RESPONSES.NOT_FOUND) {
-            return REPOSITORY_RESPONSES.NOT_FOUND
+    async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string, blogName: string): Promise<REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        const foundPost: REPOSITORY_RESPONSES.UNSUCCESSFULLY | Post | REPOSITORY_RESPONSES.NOT_FOUND = await postsRepository.getPostById(id)
+        if (foundPost === REPOSITORY_RESPONSES.NOT_FOUND || foundPost === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return foundPost
         }
         const updatedPost: Post = {
-            ...foundPost,
+            id: foundPost.id,
             title,
             shortDescription,
             content,
             blogId,
-            blogName
+            blogName,
+            createdAt: foundPost.createdAt
         }
-        return postsRepository.updatePost(updatedPost)
+        return await postsRepository.updatePost(updatedPost)
     },
-    deletePost(id: string): REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY {
-        return postsRepository.deletePost(id)
+    async deletePost(id: string): Promise<REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        return await postsRepository.deletePost(id)
     }
 }
 export default postsService;
