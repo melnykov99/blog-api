@@ -5,7 +5,7 @@ import {HTTP_STATUSES} from "../libs/common/httpStatuses";
 const deleteDataRouter = express.Router()
 
 deleteDataRouter.delete('/', (req, res) => {
-    testingService.deleteAllVideos()
+    testingService.deleteAllData()
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
 
