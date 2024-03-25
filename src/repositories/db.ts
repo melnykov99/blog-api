@@ -1,4 +1,5 @@
 import {MongoClient} from "mongodb";
+import 'dotenv/config';
 
 const mongoUri = process.env.MONGOURI!;
 
