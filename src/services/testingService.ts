@@ -1,7 +1,8 @@
 import {testingRepository} from "../repositories/testingRepository";
+import {REPOSITORY_RESPONSES} from "../libs/common/repositoryResponse";
 
 export const testingService = {
-    deleteAllData() {
-        return testingRepository.deleteAllData()
+    async deleteAllData(): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        return await testingRepository.deleteAllData()
     }
 }

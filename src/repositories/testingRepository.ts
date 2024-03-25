@@ -1,9 +1,17 @@
-import {blogs} from "./blogsRepository"
-import {posts} from "./postsRepository";
+import {blogsCollection, postsCollection} from "./dbConfig";
+import {REPOSITORY_RESPONSES} from "../libs/common/repositoryResponse";
 
 export const testingRepository = {
-    deleteAllData() {
-        blogs.splice(0, blogs.length)
-        posts.splice(0, posts.length)
+    async deleteAllData(): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        try {
+            await blogsCollection.deleteMany({})
+            await postsCollection.deleteMany({})
+            return REPOSITORY_RESPONSES.SUCCESSFULLY
+        }
+        catch (error){
+            console.log(error)
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
+
     }
 }

@@ -2,8 +2,19 @@ import request from 'supertest'
 import app from '../../src/setting';
 
 const blogsPath = '/blogs';
+const testingPath = '/testing/all-data';
 const authHeader = 'Basic ' + Buffer.from('admin:qwerty').toString('base64');
 describe('blogs tests', () => {
+    beforeAll(async () => {
+        await request(app)
+            .delete(testingPath)
+            .expect(204)
+    })
+    afterAll(async () => {
+        await request(app)
+            .delete(testingPath)
+            .expect(204)
+    })
     describe('GET /blogs', () => {
 
         it('should return 200 and empty array', async () => {
@@ -182,11 +193,14 @@ describe('blogs tests', () => {
             const response = await request(app)
                 .post(blogsPath)
                 .set('Authorization', authHeader)
-                .send({ name: 'Test blog', websiteUrl: 'http://test.com' })
+                .send({name: 'Test blog', websiteUrl: 'http://test.com'})
                 .expect(400);
 
             expect(response.body).toEqual({
-                errorsMessages: [{ field: 'description', message: 'description must be string with maximum length 500 characters' }]
+                errorsMessages: [{
+                    field: 'description',
+                    message: 'description must be string with maximum length 500 characters'
+                }]
             });
         });
         it('should return 400 status if description field is empty', async () => {
@@ -194,11 +208,14 @@ describe('blogs tests', () => {
             const response = await request(app)
                 .post(blogsPath)
                 .set('Authorization', authHeader)
-                .send({ name: 'Test blog', description: '', websiteUrl: 'http://test.com' })
+                .send({name: 'Test blog', description: '', websiteUrl: 'http://test.com'})
                 .expect(400);
 
             expect(response.body).toEqual({
-                errorsMessages: [{ field: 'description', message: 'description must be string with maximum length 500 characters' }]
+                errorsMessages: [{
+                    field: 'description',
+                    message: 'description must be string with maximum length 500 characters'
+                }]
             });
         });
         it('should return 400 status if description field exceeds maximum length', async () => {
@@ -209,11 +226,14 @@ describe('blogs tests', () => {
             const response = await request(app)
                 .post(blogsPath)
                 .set('Authorization', authHeader)
-                .send({ name: 'Test blog', description: longDescription, websiteUrl: 'http://test.com' })
+                .send({name: 'Test blog', description: longDescription, websiteUrl: 'http://test.com'})
                 .expect(400);
 
             expect(response.body).toEqual({
-                errorsMessages: [{ field: 'description', message: 'description must be string with maximum length 500 characters' }]
+                errorsMessages: [{
+                    field: 'description',
+                    message: 'description must be string with maximum length 500 characters'
+                }]
             });
         });
         it('should return 400 status if description field is not a string', async () => {
@@ -221,11 +241,14 @@ describe('blogs tests', () => {
             const response = await request(app)
                 .post(blogsPath)
                 .set('Authorization', authHeader)
-                .send({ name: 'Test blog', description: 123, websiteUrl: 'http://test.com' })
+                .send({name: 'Test blog', description: 123, websiteUrl: 'http://test.com'})
                 .expect(400);
 
             expect(response.body).toEqual({
-                errorsMessages: [{ field: 'description', message: 'description must be string with maximum length 500 characters' }]
+                errorsMessages: [{
+                    field: 'description',
+                    message: 'description must be string with maximum length 500 characters'
+                }]
             });
         });
         it('should return 400 status if websiteUrl field is missing', async () => {
@@ -233,11 +256,14 @@ describe('blogs tests', () => {
             const response = await request(app)
                 .post(blogsPath)
                 .set('Authorization', authHeader)
-                .send({ name: 'Test blog', description: 'test description' })
+                .send({name: 'Test blog', description: 'test description'})
                 .expect(400);
 
             expect(response.body).toEqual({
-                errorsMessages: [{ field: 'websiteUrl', message: 'websiteUrl must be string with url format and maximum length 100 characters' }]
+                errorsMessages: [{
+                    field: 'websiteUrl',
+                    message: 'websiteUrl must be string with url format and maximum length 100 characters'
+                }]
             });
         });
         it('should return 400 status if websiteUrl field is empty', async () => {
@@ -245,11 +271,14 @@ describe('blogs tests', () => {
             const response = await request(app)
                 .post(blogsPath)
                 .set('Authorization', authHeader)
-                .send({ name: 'Test blog', description: 'Test description', websiteUrl: '' })
+                .send({name: 'Test blog', description: 'Test description', websiteUrl: ''})
                 .expect(400);
 
             expect(response.body).toEqual({
-                errorsMessages: [{ field: 'websiteUrl', message: 'websiteUrl must be string with url format and maximum length 100 characters' }]
+                errorsMessages: [{
+                    field: 'websiteUrl',
+                    message: 'websiteUrl must be string with url format and maximum length 100 characters'
+                }]
             });
         });
         it('should return 400 status if websiteUrl field exceeds maximum length', async () => {
@@ -260,11 +289,14 @@ describe('blogs tests', () => {
             const response = await request(app)
                 .post(blogsPath)
                 .set('Authorization', authHeader)
-                .send({ name: 'Test blog', description: 'Test description', websiteUrl: longWebsiteUrl })
+                .send({name: 'Test blog', description: 'Test description', websiteUrl: longWebsiteUrl})
                 .expect(400);
 
             expect(response.body).toEqual({
-                errorsMessages: [{ field: 'websiteUrl', message: 'websiteUrl must be string with url format and maximum length 100 characters' }]
+                errorsMessages: [{
+                    field: 'websiteUrl',
+                    message: 'websiteUrl must be string with url format and maximum length 100 characters'
+                }]
             });
         });
         it('should return 400 status if websiteUrl field has invalid format', async () => {
@@ -272,11 +304,14 @@ describe('blogs tests', () => {
             const response = await request(app)
                 .post(blogsPath)
                 .set('Authorization', authHeader)
-                .send({ name: 'Test blog', description: 'Test description', websiteUrl: 'invalid-url' })
+                .send({name: 'Test blog', description: 'Test description', websiteUrl: 'invalid-url'})
                 .expect(400);
 
             expect(response.body).toEqual({
-                errorsMessages: [{ field: 'websiteUrl', message: 'websiteUrl must be string with url format and maximum length 100 characters' }]
+                errorsMessages: [{
+                    field: 'websiteUrl',
+                    message: 'websiteUrl must be string with url format and maximum length 100 characters'
+                }]
             });
         });
         it('should return 400 status if websiteUrl field is not a string', async () => {
@@ -284,11 +319,14 @@ describe('blogs tests', () => {
             const response = await request(app)
                 .post(blogsPath)
                 .set('Authorization', authHeader)
-                .send({ name: 'Test blog', description: 'Test description', websiteUrl: 123 })
+                .send({name: 'Test blog', description: 'Test description', websiteUrl: 123})
                 .expect(400);
 
             expect(response.body).toEqual({
-                errorsMessages: [{ field: 'websiteUrl', message: 'websiteUrl must be string with url format and maximum length 100 characters' }]
+                errorsMessages: [{
+                    field: 'websiteUrl',
+                    message: 'websiteUrl must be string with url format and maximum length 100 characters'
+                }]
             });
         });
         //Проверка создания блога с валидными данными
@@ -312,7 +350,7 @@ describe('blogs tests', () => {
                 description: newBlog.description,
                 websiteUrl: newBlog.websiteUrl
             }));
-            const { id } = createdBlog;
+            const {id} = createdBlog;
             // Отправляем GET запрос для получения созданного блога по его id
             const getResponse = await request(app)
                 .get(`${blogsPath}/${id}`)
@@ -338,7 +376,7 @@ describe('blogs tests', () => {
                 .expect(201);
 
             // Получаем id созданного блога
-            const { id } = createResponse.body;
+            const {id} = createResponse.body;
             // Отправляем GET запрос для получения созданного блога по его id
             const getResponse = await request(app)
                 .get(`${blogsPath}/${id}`)
@@ -369,7 +407,7 @@ describe('blogs tests', () => {
                 .set('Authorization', authHeader)
                 .send(newBlog)
                 .expect(201);
-            const { id } = createResponse.body;
+            const {id} = createResponse.body;
             // Новые данные для обновления блога
             const updatedBlogData = {
                 name: 'Updated Blog',
@@ -423,7 +461,7 @@ describe('blogs tests', () => {
                 .send(newBlog)
                 .expect(201);
 
-            const { id } = createResponse.body;
+            const {id} = createResponse.body;
             const invalidBlogData = {
                 name: '', // Пустое имя
                 description: 123, // Описание не строка
@@ -468,7 +506,7 @@ describe('blogs tests', () => {
                 .send(newBlog)
                 .expect(201);
             // Получаем id созданного блога
-            const { id } = createResponse.body;
+            const {id} = createResponse.body;
             // Отправляем DELETE запрос для удаления созданного блога по его id
             await request(app)
                 .delete(`${blogsPath}/${id}`)

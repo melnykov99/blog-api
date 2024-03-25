@@ -3,9 +3,20 @@ import app from '../../src/setting';
 
 const blogsPath = '/blogs'
 const postsPath = '/posts'
+const testingPath = '/testing/all-data';
 const authHeader = 'Basic ' + Buffer.from('admin:qwerty').toString('base64');
 
 describe('posts tests', () => {
+    beforeAll(async () => {
+        await request(app)
+            .delete(testingPath)
+            .expect(204)
+    })
+    afterAll(async () => {
+        await request(app)
+            .delete(testingPath)
+            .expect(204)
+    })
     describe('GET /posts', () => {
         it('should return 200 and empty array', async () => {
             // При запуске приложения массив пуст

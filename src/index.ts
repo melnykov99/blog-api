@@ -1,5 +1,5 @@
 import app from "./setting";
-import {runDb} from "./repositories/db";
+import {runDb} from "./repositories/dbConfig";
 import 'dotenv/config';
 
 const port = process.env.PORT!;
