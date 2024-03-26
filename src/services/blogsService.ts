@@ -2,6 +2,8 @@ import blogsRepository from "../repositories/blogsRepository";
 import {Blog} from "../libs/types/blogsTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/repositoryResponse";
 import {randomUUID} from "crypto";
+import {Post} from "../libs/types/postsTypes";
+import postsRepository from "../repositories/postsRepository";
 
 const blogsService = {
     async getBlogs(): Promise<Blog[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
@@ -42,6 +44,29 @@ const blogsService = {
     },
     async deleteBlog(id: string): Promise<REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         return await blogsRepository.deleteBlog(id)
+    },
+    async getPostsByBlogId(blogId: string): Promise<Post[] | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        return await postsRepository.getPostsByBlogId(blogId)
+    },
+    async createPostByBlogId(blogId: string, title: string, shortDescription: string, content: string) {
+        const foundBlog: Blog | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await this.getBlogById(blogId)
+        if (foundBlog === REPOSITORY_RESPONSES.NOT_FOUND || foundBlog === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return foundBlog
+        }
+        const newPost = {
+            id: randomUUID(),
+            title,
+            shortDescription,
+            content,
+            blogId,
+            blogName: foundBlog.name,
+            createdAt: new Date().toISOString(),
+        }
+        const createdResult: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await postsRepository.createPost(newPost)
+        if (createdResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
+        return newPost
     }
 }
 export default blogsService;

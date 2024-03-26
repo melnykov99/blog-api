@@ -11,9 +11,15 @@ const postsValidationChain: ValidationChain[] = [
         if (!foundBlog) {
             throw new Error();
         }
-        // в postsService нужен будет blogName. Чтобы не искать блог второй раз меняем req.body здесь
+        // в postsService нужен будет blogName. Чтобы не искать блог второй раз дополняем req.body здесь
         req.body.blogName = foundBlog.name;
         return true;
     })
 ]
+const postsForBlogValidationChain: ValidationChain[] = [
+    body('title').isString().bail().trim().notEmpty().bail().isLength({min: 1, max: 30}),
+    body('shortDescription').isString().bail().trim().notEmpty().bail().isLength({min: 1, max: 100}),
+    body('content').isString().bail().trim().notEmpty().bail().isLength({min: 1, max: 1000}),
+]
 export default postsValidationChain;
+export {postsForBlogValidationChain};

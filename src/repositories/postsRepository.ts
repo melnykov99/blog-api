@@ -59,6 +59,17 @@ const postsRepository = {
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
+    },
+    async getPostsByBlogId(blogId: string): Promise<Post[] | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        try {
+            const foundPosts: Post[] = await postsCollection.find({blogId: blogId}).toArray()
+            if (foundPosts.length === 0) {
+                return REPOSITORY_RESPONSES.NOT_FOUND
+            }
+            return foundPosts
+        } catch (error) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
     }
 }
 export default postsRepository;
