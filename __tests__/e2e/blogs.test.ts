@@ -348,7 +348,9 @@ describe('blogs tests', () => {
                 id: expect.any(String),
                 name: newBlog.name,
                 description: newBlog.description,
-                websiteUrl: newBlog.websiteUrl
+                websiteUrl: newBlog.websiteUrl,
+                createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
+                isMembership: expect.any(Boolean)
             }));
             const {id} = createdBlog;
             // Отправляем GET запрос для получения созданного блога по его id

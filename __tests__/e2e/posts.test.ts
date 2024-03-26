@@ -529,7 +529,8 @@ describe('posts tests', () => {
                 title: newPost.title,
                 shortDescription: newPost.shortDescription,
                 content: newPost.content,
-                blogId: newPost.blogId
+                blogId: newPost.blogId,
+                createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
             }));
             const {id} = createdPost;
             // Отправляем GET запрос для получения созданного поста по его id
@@ -741,8 +742,3 @@ describe('posts tests', () => {
         });
     });
 });
-
-
-
-
-
