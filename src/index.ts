@@ -2,7 +2,7 @@ import app from "./setting";
 import {runDb} from "./repositories/dbConfig";
 import 'dotenv/config';
 
-const port = process.env.PORT!;
+const port: string | undefined | number = process.env.PORT || 3000;
 
 const startApp = async () => {
     await runDb()
