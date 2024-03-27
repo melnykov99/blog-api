@@ -5,12 +5,23 @@ type CommonError = {
 type ErrorsMessages = {
     errorsMessages: CommonError[]
 }
-type SortingPagination = {
+type SortingPaginationQuery = {
     searchNameTerm: string | undefined,
     sortBy: string | undefined,
     sortDirection: string | undefined,
     pageNumber: string | undefined,
     pageSize: string | undefined,
 }
-
-export {CommonError, ErrorsMessages, SortingPagination};
+type SortingPaginationProcessed = {
+    dbProperties: DbProperties,
+    pagination: Pagination,
+}
+type Pagination = {
+    pageSize: number,
+    pageNumber: number,
+}
+type DbProperties = {
+    skip: number,
+    limit: number,
+}
+export {CommonError, ErrorsMessages, SortingPaginationQuery, Pagination, DbProperties, SortingPaginationProcessed};

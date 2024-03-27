@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from "express";
-import {HTTP_STATUSES} from "../common/httpStatuses";
+import {HTTP_STATUSES} from "../common/constants/httpStatuses";
 
 function authMiddleware(req: Request, res: Response, next: NextFunction) {
     const hardcoreToken = 'YWRtaW46cXdlcnR5';

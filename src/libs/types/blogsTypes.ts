@@ -1,3 +1,10 @@
+type BlogsOutput = {
+    pagesCount: number,
+    page: number,
+    pageSize: number,
+    totalCount: number,
+    items: Blog[]
+}
 type Blog = {
     id: string,
     name: string,
@@ -11,5 +18,9 @@ type BlogInput = {
     description: string,
     websiteUrl: string,
 }
+type BlogsDbOutput = {
+    totalCount: number,
+    foundBlogs: Blog[]
+}
 type BlogFieldsForErrorMessages = 'name' | 'description' | 'websiteUrl';
-export {Blog, BlogInput, BlogFieldsForErrorMessages};
+export {BlogsOutput, Blog, BlogInput, BlogFieldsForErrorMessages, BlogsDbOutput};

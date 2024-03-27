@@ -1,14 +1,26 @@
 import blogsRepository from "../repositories/blogsRepository";
-import {Blog, BlogInput} from "../libs/types/blogsTypes";
-import {REPOSITORY_RESPONSES} from "../libs/common/repositoryResponse";
+import {Blog, BlogInput, BlogsDbOutput, BlogsOutput} from "../libs/types/blogsTypes";
+import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {randomUUID} from "crypto";
-import {Post, PostInput, PostInputWithoutBlog} from "../libs/types/postsTypes";
+import {PostInputWithoutBlog, PostsDbOutput, PostsOutput} from "../libs/types/postsTypes";
 import postsRepository from "../repositories/postsRepository";
-import {SortingPagination} from "../libs/types/commonTypes";
+import {SortingPaginationProcessed, SortingPaginationQuery} from "../libs/types/commonTypes";
+import handlerSortingPagination from "../libs/common/utils/handlerSortingPagination";
 
 const blogsService = {
-    async getBlogs(query: SortingPagination): Promise<Blog[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
-        return await blogsRepository.getBlogs()
+    async getBlogs(query: SortingPaginationQuery): Promise<BlogsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        const sortingPaginationProcessed: SortingPaginationProcessed = handlerSortingPagination(query)
+        const blogsDbOutput: REPOSITORY_RESPONSES.UNSUCCESSFULLY | BlogsDbOutput = await blogsRepository.getBlogs(sortingPaginationProcessed.dbProperties)
+        if (blogsDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return blogsDbOutput
+        }
+        return {
+            pagesCount: Math.ceil(blogsDbOutput.totalCount / sortingPaginationProcessed.pagination.pageSize),
+            page: sortingPaginationProcessed.pagination.pageNumber,
+            pageSize: sortingPaginationProcessed.pagination.pageSize,
+            totalCount: blogsDbOutput.totalCount,
+            items: blogsDbOutput.foundBlogs
+        }
     },
     async createBlog(bodyBlog: BlogInput): Promise<Blog | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const newBlog: Blog = {
@@ -46,8 +58,23 @@ const blogsService = {
     async deleteBlog(id: string): Promise<REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         return await blogsRepository.deleteBlog(id)
     },
-    async getPostsByBlogId(blogId: string): Promise<Post[] | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
-        return await postsRepository.getPostsByBlogId(blogId)
+    async getPostsByBlogId(blogId: string, query: SortingPaginationQuery): Promise<PostsOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        const foundBlog: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | Blog = await blogsRepository.getBlogById(blogId)
+        if (foundBlog === REPOSITORY_RESPONSES.NOT_FOUND || foundBlog === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return foundBlog
+        }
+        const sortingPaginationProcessed: SortingPaginationProcessed = handlerSortingPagination(query)
+        const postsDbOutput: PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsRepository.getPostsByBlogId(blogId, sortingPaginationProcessed.dbProperties)
+        if (postsDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return postsDbOutput
+        }
+        return {
+            pagesCount: Math.ceil(postsDbOutput.totalCount / sortingPaginationProcessed.pagination.pageSize),
+            page: sortingPaginationProcessed.pagination.pageNumber,
+            pageSize: sortingPaginationProcessed.pagination.pageSize,
+            totalCount: postsDbOutput.totalCount,
+            items: postsDbOutput.foundPosts
+        }
     },
     async createPostByBlogId(blogId: string, postBody: PostInputWithoutBlog) {
         const foundBlog: Blog | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await this.getBlogById(blogId)

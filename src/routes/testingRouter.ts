@@ -1,7 +1,7 @@
 import express from "express";
 import {testingService} from "../services/testingService";
-import {HTTP_STATUSES} from "../libs/common/httpStatuses";
-import {REPOSITORY_RESPONSES} from "../libs/common/repositoryResponse";
+import {HTTP_STATUSES} from "../libs/common/constants/httpStatuses";
+import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 
 const deleteDataRouter = express.Router()
 

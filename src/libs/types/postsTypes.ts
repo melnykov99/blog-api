@@ -1,3 +1,10 @@
+type PostsOutput = {
+    pagesCount: number,
+    page: number,
+    pageSize: number,
+    totalCount: number,
+    items: Post[]
+}
 type Post = {
     id: string
     title: string,
@@ -19,5 +26,9 @@ type PostInputWithoutBlog = {
     shortDescription: string,
     content: string,
 }
+type PostsDbOutput = {
+    totalCount: number,
+    foundPosts: Post[]
+}
 type PostFieldsForErrorMessages = 'title' | 'shortDescription' | 'content' | 'blogId';
-export {Post, PostInput, PostInputWithoutBlog, PostFieldsForErrorMessages};
+export {PostsOutput, Post, PostInput, PostInputWithoutBlog, PostsDbOutput, PostFieldsForErrorMessages};

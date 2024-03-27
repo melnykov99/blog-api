@@ -1,12 +1,16 @@
-import {Post} from "../libs/types/postsTypes";
-import {REPOSITORY_RESPONSES} from "../libs/common/repositoryResponse";
+import {Post, PostsDbOutput, PostsOutput} from "../libs/types/postsTypes";
+import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {postsCollection} from "./dbConfig";
 import {UpdateResult} from "mongodb";
+import {DbProperties} from "../libs/types/commonTypes";
 
 const postsRepository = {
-    async getPosts(): Promise<Post[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async getPosts(dbProp: DbProperties): Promise<PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            return await postsCollection.find({}, {projection: {_id: false}}).toArray();
+            const filter = {}
+            const totalCount: number = await postsCollection.countDocuments(filter)
+            const foundPosts: Post[] = await postsCollection.find(filter, {projection: {_id: false}}).skip(dbProp.skip).limit(dbProp.limit).toArray();
+            return {totalCount, foundPosts}
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
@@ -60,13 +64,12 @@ const postsRepository = {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
     },
-    async getPostsByBlogId(blogId: string): Promise<Post[] | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async getPostsByBlogId(blogId: string, dbProp: DbProperties): Promise<PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            const foundPosts: Post[] = await postsCollection.find({blogId: blogId}).toArray()
-            if (foundPosts.length === 0) {
-                return REPOSITORY_RESPONSES.NOT_FOUND
-            }
-            return foundPosts
+            const filter = {blogId: blogId}
+            const totalCount: number = await postsCollection.countDocuments(filter)
+            const foundPosts: Post[] = await postsCollection.find(filter).skip(dbProp.skip).limit(dbProp.limit).toArray()
+            return {totalCount, foundPosts}
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }

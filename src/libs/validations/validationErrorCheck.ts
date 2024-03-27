@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {Result, ValidationError, validationResult} from "express-validator";
-import {HTTP_STATUSES} from "../common/httpStatuses";
+import {HTTP_STATUSES} from "../common/constants/httpStatuses";
 import draftBlogErrorMessage from "../common/errorMessages/blogsErrorMessages";
 import {BlogFieldsForErrorMessages} from "../types/blogsTypes";
 import {PostFieldsForErrorMessages} from "../types/postsTypes";

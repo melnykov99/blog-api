@@ -1,8 +1,8 @@
 import express, {Request, Response} from "express";
-import {HTTP_STATUSES} from "../libs/common/httpStatuses";
+import {HTTP_STATUSES} from "../libs/common/constants/httpStatuses";
 import postsService from "../services/postsService";
-import {Post, PostInput} from "../libs/types/postsTypes";
-import {REPOSITORY_RESPONSES} from "../libs/common/repositoryResponse";
+import {Post, PostInput, PostsOutput} from "../libs/types/postsTypes";
+import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import authMiddleware from "../libs/middlewares/authMiddleware";
 import postsValidationChain from "../libs/validations/postsValidation";
 import ValidationErrorCheck from "../libs/validations/validationErrorCheck";
@@ -12,12 +12,12 @@ import {
     RequestWithParamsAndBody,
     RequestWithQuery
 } from "../libs/types/requestsResponsesTypes";
-import {SortingPagination} from "../libs/types/commonTypes";
+import {SortingPaginationQuery} from "../libs/types/commonTypes";
 
 const postsRouter = express.Router()
 
-postsRouter.get('/', async (req: RequestWithQuery<SortingPagination>, res: Response) => {
-    const foundPosts: REPOSITORY_RESPONSES.UNSUCCESSFULLY | Post[] = await postsService.getPosts(req.query)
+postsRouter.get('/', async (req: RequestWithQuery<SortingPaginationQuery>, res: Response) => {
+    const foundPosts: PostsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsService.getPosts(req.query)
     if (foundPosts === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return

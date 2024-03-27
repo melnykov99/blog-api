@@ -1,24 +1,24 @@
 import express, {Response} from "express";
-import {HTTP_STATUSES} from "../libs/common/httpStatuses";
+import {HTTP_STATUSES} from "../libs/common/constants/httpStatuses";
 import blogsService from "../services/blogsService";
-import {Blog, BlogInput} from "../libs/types/blogsTypes";
-import {REPOSITORY_RESPONSES} from "../libs/common/repositoryResponse";
+import {Blog, BlogInput, BlogsOutput} from "../libs/types/blogsTypes";
+import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import authMiddleware from "../libs/middlewares/authMiddleware";
 import blogsValidationChain from "../libs/validations/blogsValidation";
 import validationErrorCheck from "../libs/validations/validationErrorCheck";
-import {Post, PostInput, PostInputWithoutBlog} from "../libs/types/postsTypes";
+import {Post, PostInput, PostInputWithoutBlog, PostsOutput} from "../libs/types/postsTypes";
 import {postsForBlogValidationChain} from "../libs/validations/postsValidation";
-import {SortingPagination} from "../libs/types/commonTypes";
+import {SortingPaginationQuery} from "../libs/types/commonTypes";
 import {
     RequestWithBody,
     RequestWithParams,
-    RequestWithParamsAndBody,
+    RequestWithParamsAndBody, RequestWithParamsAndQuery,
     RequestWithQuery
 } from "../libs/types/requestsResponsesTypes";
 
 const blogsRouter = express.Router()
-blogsRouter.get('/', async (req: RequestWithQuery<SortingPagination>, res: Response) => {
-    const foundBlogs: Blog[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getBlogs(req.query);
+blogsRouter.get('/', async (req: RequestWithQuery<SortingPaginationQuery>, res: Response) => {
+    const foundBlogs: BlogsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getBlogs(req.query);
     if (foundBlogs === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return
@@ -72,9 +72,9 @@ blogsRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{id: st
     }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
-blogsRouter.get('/:id/posts', async (req: RequestWithParams<{id: string}>, res: Response) => {
+blogsRouter.get('/:id/posts', async (req: RequestWithParamsAndQuery<{id: string}, SortingPaginationQuery>, res: Response) => {
     const blogId: string = req.params.id;
-    const posts: Post[] | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getPostsByBlogId(blogId)
+    const posts: PostsOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getPostsByBlogId(blogId, req.query)
     if (posts === REPOSITORY_RESPONSES.NOT_FOUND) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND)
         return

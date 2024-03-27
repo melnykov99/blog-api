@@ -1,12 +1,24 @@
 import postsRepository from "../repositories/postsRepository";
-import {Post, PostInput} from "../libs/types/postsTypes";
-import {REPOSITORY_RESPONSES} from "../libs/common/repositoryResponse";
+import {Post, PostInput, PostsDbOutput, PostsOutput} from "../libs/types/postsTypes";
+import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {randomUUID} from "crypto";
-import {SortingPagination} from "../libs/types/commonTypes";
+import {SortingPaginationProcessed, SortingPaginationQuery} from "../libs/types/commonTypes";
+import handlerSortingPagination from "../libs/common/utils/handlerSortingPagination";
 
 const postsService = {
-    async getPosts(query: SortingPagination): Promise<Post[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
-        return await postsRepository.getPosts()
+    async getPosts(query: SortingPaginationQuery): Promise<PostsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        const sortingPaginationProcessed: SortingPaginationProcessed = handlerSortingPagination(query)
+        const postsDbOutput: PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsRepository.getPosts(sortingPaginationProcessed.dbProperties)
+        if (postsDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return postsDbOutput
+        }
+        return {
+            pagesCount: Math.ceil(postsDbOutput.totalCount / sortingPaginationProcessed.pagination.pageSize),
+            page: sortingPaginationProcessed.pagination.pageNumber,
+            pageSize: sortingPaginationProcessed.pagination.pageSize,
+            totalCount: postsDbOutput.totalCount,
+            items: postsDbOutput.foundPosts
+        }
     },
     async createPost(postBody: PostInput): Promise<Post | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const newPost: Post = {
