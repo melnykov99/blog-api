@@ -30,5 +30,7 @@ type PostsDbOutput = {
     totalCount: number,
     foundPosts: Post[]
 }
+type PostsDbFilterByBlogId = {blogId: string}
+type PostsDbFilter = Record<string, never>
 type PostFieldsForErrorMessages = 'title' | 'shortDescription' | 'content' | 'blogId';
-export {PostsOutput, Post, PostInput, PostInputWithoutBlog, PostsDbOutput, PostFieldsForErrorMessages};
+export {PostsOutput, Post, PostInput, PostInputWithoutBlog, PostsDbOutput, PostFieldsForErrorMessages, PostsDbFilter, PostsDbFilterByBlogId};

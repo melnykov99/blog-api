@@ -8,7 +8,7 @@ import handlerSortingPagination from "../libs/common/utils/handlerSortingPaginat
 const postsService = {
     async getPosts(query: SortingPaginationQuery): Promise<PostsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const sortingPaginationProcessed: SortingPaginationProcessed = handlerSortingPagination(query)
-        const postsDbOutput: PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsRepository.getPosts(sortingPaginationProcessed.dbProperties)
+        const postsDbOutput: PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsRepository.getPosts(sortingPaginationProcessed)
         if (postsDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return postsDbOutput
         }

@@ -1,15 +1,20 @@
-import {Post, PostsDbOutput, PostsOutput} from "../libs/types/postsTypes";
+import {Post, PostsDbFilter, PostsDbFilterByBlogId, PostsDbOutput} from "../libs/types/postsTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {postsCollection} from "./dbConfig";
 import {UpdateResult} from "mongodb";
-import {DbProperties} from "../libs/types/commonTypes";
+import {SortingPaginationProcessed} from "../libs/types/commonTypes";
 
 const postsRepository = {
-    async getPosts(dbProp: DbProperties): Promise<PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async getPosts(sortingPaginationProcessed: SortingPaginationProcessed): Promise<PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            const filter = {}
+            const filter: PostsDbFilter = {}
             const totalCount: number = await postsCollection.countDocuments(filter)
-            const foundPosts: Post[] = await postsCollection.find(filter, {projection: {_id: false}}).skip(dbProp.skip).limit(dbProp.limit).toArray();
+            const foundPosts: Post[] = await postsCollection
+                .find(filter, {projection: {_id: false}})
+                .sort({[sortingPaginationProcessed.sorting.sortBy]: sortingPaginationProcessed.sorting.sortDirection})
+                .skip(sortingPaginationProcessed.dbProperties.skip)
+                .limit(sortingPaginationProcessed.dbProperties.limit)
+                .toArray();
             return {totalCount, foundPosts}
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
@@ -64,11 +69,16 @@ const postsRepository = {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
     },
-    async getPostsByBlogId(blogId: string, dbProp: DbProperties): Promise<PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async getPostsByBlogId(blogId: string, sortingPaginationProcessed: SortingPaginationProcessed): Promise<PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            const filter = {blogId: blogId}
+            const filter: PostsDbFilterByBlogId = {blogId: blogId}
             const totalCount: number = await postsCollection.countDocuments(filter)
-            const foundPosts: Post[] = await postsCollection.find(filter).skip(dbProp.skip).limit(dbProp.limit).toArray()
+            const foundPosts: Post[] = await postsCollection
+                .find(filter)
+                .sort({[sortingPaginationProcessed.sorting.sortBy]: sortingPaginationProcessed.sorting.sortDirection})
+                .skip(sortingPaginationProcessed.dbProperties.skip)
+                .limit(sortingPaginationProcessed.dbProperties.limit)
+                .toArray()
             return {totalCount, foundPosts}
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY

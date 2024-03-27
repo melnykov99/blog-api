@@ -64,7 +64,7 @@ const blogsService = {
             return foundBlog
         }
         const sortingPaginationProcessed: SortingPaginationProcessed = handlerSortingPagination(query)
-        const postsDbOutput: PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsRepository.getPostsByBlogId(blogId, sortingPaginationProcessed.dbProperties)
+        const postsDbOutput: PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsRepository.getPostsByBlogId(blogId, sortingPaginationProcessed)
         if (postsDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return postsDbOutput
         }
