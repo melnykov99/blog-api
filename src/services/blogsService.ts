@@ -10,7 +10,7 @@ import handlerSortingPagination from "../libs/common/utils/handlerSortingPaginat
 const blogsService = {
     async getBlogs(query: SortingPaginationQuery): Promise<BlogsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const sortingPaginationProcessed: SortingPaginationProcessed = handlerSortingPagination(query)
-        const blogsDbOutput: REPOSITORY_RESPONSES.UNSUCCESSFULLY | BlogsDbOutput = await blogsRepository.getBlogs(sortingPaginationProcessed.dbProperties)
+        const blogsDbOutput: REPOSITORY_RESPONSES.UNSUCCESSFULLY | BlogsDbOutput = await blogsRepository.getBlogs(sortingPaginationProcessed)
         if (blogsDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return blogsDbOutput
         }

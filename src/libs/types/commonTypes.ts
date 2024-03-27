@@ -1,3 +1,6 @@
+import {Blog} from "./blogsTypes";
+import {Post} from "./postsTypes";
+
 type CommonError = {
     message: string,
     field: string
@@ -15,13 +18,20 @@ type SortingPaginationQuery = {
 type SortingPaginationProcessed = {
     dbProperties: DbProperties,
     pagination: Pagination,
+    sorting: Sorting,
+    searchNameTerm: SearchNameTerm,
 }
 type Pagination = {
     pageSize: number,
     pageNumber: number,
 }
+type Sorting = {
+    sortBy: keyof Blog | keyof Post,
+    sortDirection: 1 | -1,
+}
+type SearchNameTerm = string | null
 type DbProperties = {
     skip: number,
     limit: number,
 }
-export {CommonError, ErrorsMessages, SortingPaginationQuery, Pagination, DbProperties, SortingPaginationProcessed};
+export {CommonError, ErrorsMessages, SortingPaginationQuery, Pagination, DbProperties, SortingPaginationProcessed, Sorting, SearchNameTerm};

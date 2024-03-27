@@ -1,15 +1,20 @@
-import {Blog, BlogsDbOutput, BlogsOutput} from "../libs/types/blogsTypes";
+import {Blog, BlogDbFilter, BlogsDbOutput} from "../libs/types/blogsTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {blogsCollection} from "./dbConfig";
 import {UpdateResult} from "mongodb";
-import {DbProperties} from "../libs/types/commonTypes";
+import {SortingPaginationProcessed} from "../libs/types/commonTypes";
 
 const blogsRepository = {
-    async getBlogs(dbProp: DbProperties): Promise<BlogsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async getBlogs(sortingPaginationProcessed: SortingPaginationProcessed): Promise<BlogsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            const filter = {}
+            const filter: BlogDbFilter = (!sortingPaginationProcessed.searchNameTerm) ? {} : { 'name': { $regex: sortingPaginationProcessed.searchNameTerm, $options: 'i' } };
             const totalCount: number = await blogsCollection.countDocuments(filter)
-            const foundBlogs: Blog[] = await blogsCollection.find(filter, {projection: {_id: false}}).skip(dbProp.skip).limit(dbProp.limit).toArray()
+            const foundBlogs: Blog[] = await blogsCollection
+                .find(filter, {projection: {_id: false}})
+                .sort({[sortingPaginationProcessed.sorting.sortBy]: sortingPaginationProcessed.sorting.sortDirection})
+                .skip(sortingPaginationProcessed.dbProperties.skip)
+                .limit(sortingPaginationProcessed.dbProperties.limit)
+                .toArray()
             return {totalCount, foundBlogs}
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
