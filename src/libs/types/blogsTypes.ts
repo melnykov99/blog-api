@@ -6,5 +6,10 @@ type Blog = {
     createdAt: string,
     isMembership: boolean,
 }
+type BlogInput = {
+    name: string,
+    description: string,
+    websiteUrl: string,
+}
 type BlogFieldsForErrorMessages = 'name' | 'description' | 'websiteUrl';
-export {Blog, BlogFieldsForErrorMessages};
+export {Blog, BlogInput, BlogFieldsForErrorMessages};

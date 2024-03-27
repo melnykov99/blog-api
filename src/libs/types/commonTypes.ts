@@ -5,5 +5,12 @@ type CommonError = {
 type ErrorsMessages = {
     errorsMessages: CommonError[]
 }
+type SortingPagination = {
+    searchNameTerm: string | undefined,
+    sortBy: string | undefined,
+    sortDirection: string | undefined,
+    pageNumber: string | undefined,
+    pageSize: string | undefined,
+}
 
-export {CommonError, ErrorsMessages};
+export {CommonError, ErrorsMessages, SortingPagination};
