@@ -1,29 +1,30 @@
 import request from 'supertest'
 import app from '../../src/setting';
-/*
 
 const blogsPath = '/blogs'
 const postsPath = '/posts'
 const testingPath = '/testing/all-data';
 const authHeader = 'Basic ' + Buffer.from('admin:qwerty').toString('base64');
-
+async function deleteAllData() {
+    await request(app)
+        .delete(testingPath)
+        .expect(204)
+}
 describe('posts tests', () => {
-    beforeAll(async () => {
-        await request(app)
-            .delete(testingPath)
-            .expect(204)
-    })
-    afterAll(async () => {
-        await request(app)
-            .delete(testingPath)
-            .expect(204)
-    })
     describe('GET /posts', () => {
+        beforeEach(deleteAllData)
+        afterEach(deleteAllData)
         it('should return 200 and empty array', async () => {
             // При запуске приложения массив пуст
             await request(app)
                 .get(postsPath)
-                .expect(200, [])
+                .expect(200, {
+                    pagesCount: 0,
+                    page: 1,
+                    pageSize: 10,
+                    totalCount: 0,
+                    items: []
+                })
         });
         it('should return 200 and all available blogs', async () => {
             // Создаем блог чтобы создать пост
@@ -743,5 +744,3 @@ describe('posts tests', () => {
         });
     });
 });
-
- */

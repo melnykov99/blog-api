@@ -1,6 +1,5 @@
 import request from 'supertest'
 import app from '../../src/setting';
-/*
 
 const blogsPath = '/blogs';
 const testingPath = '/testing/all-data';
@@ -543,4 +542,3 @@ describe('blogs tests', () => {
         });
     });
 });
-*/
