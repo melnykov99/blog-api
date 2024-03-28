@@ -4,12 +4,8 @@ import 'dotenv/config';
 
 const port: string | undefined | number = process.env.PORT || 3000;
 
-const startApp = async () => {
-    await runDb()
+runDb().then(() => {
     app.listen(port, () => {
         console.log(`app listening on port ${port}`)
     })
-}
-startApp()
-
-export default startApp;
+})
