@@ -12,15 +12,16 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
     let convertedErrorFields; //type <BlogFieldsForErrorMessages | PostFieldsForErrorMessages>
     if (!result.isEmpty()) {
         const errorFields: string[] = Object.keys(result.mapped())
-        switch (req.baseUrl){
-            case '/blogs':
-                convertedErrorFields = errorFields.map(field => field as BlogFieldsForErrorMessages);
-                errorsMessages = draftBlogErrorMessage(convertedErrorFields);
-                break;
-            case '/posts':
-                convertedErrorFields = errorFields.map(field => field as PostFieldsForErrorMessages);
-                errorsMessages = draftPostErrorMessage(convertedErrorFields)
-                break;
+        // При создании блога попадаем в этот if
+        if (req.baseUrl === '/blogs' && req.path === '/') {
+            convertedErrorFields = errorFields.map(field => field as BlogFieldsForErrorMessages);
+            errorsMessages = draftBlogErrorMessage(convertedErrorFields);
+        }
+        // Сюда попадем при создании post по blogId. Тогда req.path === /:blogId/posts
+        // Или при обычном создании post
+        if (req.baseUrl === '/blogs' && req.path !== '/' || req.baseUrl === '/posts') {
+            convertedErrorFields = errorFields.map(field => field as PostFieldsForErrorMessages);
+            errorsMessages = draftPostErrorMessage(convertedErrorFields)
         }
         res.status(HTTP_STATUSES.BAD_REQUEST).send(errorsMessages)
         return
