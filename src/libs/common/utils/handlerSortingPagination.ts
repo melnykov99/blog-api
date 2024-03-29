@@ -1,5 +1,5 @@
 import {
-    Pagination,
+    Pagination, SearchEmailTerm, SearchLoginTerm,
     SearchNameTerm,
     Sorting,
     SortingPaginationProcessed,
@@ -36,6 +36,8 @@ function handlerSortingPagination(query: SortingPaginationQuery): SortingPaginat
         sortBy: query.sortBy === undefined ? 'createdAt' : (!isValidSortByValue(query.sortBy)) ? 'createdAt' : query.sortBy
     }
     const searchNameTerm: SearchNameTerm = query.searchNameTerm === undefined ? null : query.searchNameTerm;
+    const searchLoginTerm: SearchLoginTerm = query.searchLoginTerm === undefined ? null : query.searchLoginTerm;
+    const searchEmailTerm: SearchEmailTerm = query.searchEmailTerm === undefined ? null : query.searchEmailTerm;
     const skip: number = (pagination.pageNumber - 1) * pagination.pageSize
     const limit: number = pagination.pageSize
     return {dbProperties: {skip, limit}, pagination, sorting, searchNameTerm}
