@@ -1,20 +1,34 @@
 import request from 'supertest'
 import app from '../../src/setting';
+import {Blog} from "../../src/libs/types/blogsTypes";
 
 const blogsPath = '/blogs';
 const testingPath = '/testing/all-data';
 const authHeader = 'Basic ' + Buffer.from('admin:qwerty').toString('base64');
+
+// Удаление всех данных для тестов
 async function deleteAllData() {
     await request(app)
         .delete(testingPath)
         .expect(204)
+}
+// Создание блогов. Принимает значение, сколько нужно создать сущностей
+async function createValidBlogs(count: number): Promise<Blog[]> {
+    const blogs: Blog[] = [];
+    for (let i = 1; i < count + 1; i++) {
+        const createdBlog = await request(app)
+            .post(blogsPath)
+            .set('Authorization', authHeader)
+            .send({name: `Blog ${i}`, description: `Description Blog ${i}`, websiteUrl: `https://www.blog${i}.com/`})
+        blogs.push(createdBlog.body)
+    }
+    return blogs
 }
 describe('blogs tests', () => {
     describe('GET /blogs', () => {
         beforeEach(deleteAllData)
         afterEach(deleteAllData)
         it('should return 200 and empty array', async () => {
-            console.log(app)
             // При запуске приложения массив пуст
             await request(app)
                 .get(blogsPath)
@@ -27,46 +41,23 @@ describe('blogs tests', () => {
                 })
         });
         it('should return 200 and all available blogs', async () => {
-            // Предварительно создаем несколько блогов в системе
-            const blog1 = {
-                name: 'Blog 1',
-                description: 'Description for Blog 1',
-                websiteUrl: 'http://blog1.com'
-            };
-            const blog2 = {
-                name: 'Blog 2',
-                description: 'Description for Blog 2',
-                websiteUrl: 'http://blog2.com'
-            };
-
             // Создаем блоги
+            const createdBlogs = await createValidBlogs(2)
+            // Получаем блоги и проверяем, что массив items содержит созданные блоги
             await request(app)
-                .post(blogsPath)
-                .set('Authorization', authHeader) // Добавляем заголовок авторизации
-                .send(blog1)
-                .expect(201);
-
-            await request(app)
-                .post(blogsPath)
-                .set('Authorization', authHeader)
-                .send(blog2)
-                .expect(201);
-
-            // Получаем все блоги
-            const response = await request(app)
                 .get(blogsPath)
-                .expect(200);
-
-            // Проверяем, что полученный массив содержит созданные блоги
-            expect(response.body).toEqual(
-                expect.arrayContaining([
-                    expect.objectContaining(blog1),
-                    expect.objectContaining(blog2)
-                ])
-            );
+                .expect(200, {
+                    pagesCount: 1,
+                    page: 1,
+                    pageSize: 10,
+                    totalCount: 2,
+                    items: [createdBlogs[1], createdBlogs[0]]
+                })
         });
     })
     describe('POST /blogs', () => {
+        beforeEach(deleteAllData)
+        afterEach(deleteAllData)
         // Проверка ошибок авторизации
         it('should return 401 status if authorization header is missing', async () => {
             const newBlog = {
@@ -367,28 +358,20 @@ describe('blogs tests', () => {
         });
     });
     describe('GET /blogs/:id', () => {
+        beforeEach(deleteAllData)
+        afterEach(deleteAllData)
         it('should return the blog with status 200 if found', async () => {
             // Создаем новый блог для теста
-            const newBlog = {
-                name: 'Test Blog',
-                description: 'This is a test blog',
-                websiteUrl: 'http://testblog.com'
-            };
-            const createResponse = await request(app)
-                .post(blogsPath)
-                .set('Authorization', authHeader)
-                .send(newBlog)
-                .expect(201);
-
+            const newBlog: Blog[] = await createValidBlogs(1)
             // Получаем id созданного блога
-            const {id} = createResponse.body;
+            const {id} = newBlog[0];
             // Отправляем GET запрос для получения созданного блога по его id
             const getResponse = await request(app)
                 .get(`${blogsPath}/${id}`)
                 .set('Authorization', authHeader)
                 .expect(200);
             // Проверяем, что в ответе содержится созданный блог
-            expect(getResponse.body).toEqual(expect.objectContaining(newBlog));
+            expect(getResponse.body).toEqual(expect.objectContaining(newBlog[0]));
         });
         it('should return status 404 if blog is not found', async () => {
             // Генерируем случайный id, который не существует в системе
@@ -400,19 +383,13 @@ describe('blogs tests', () => {
         });
     });
     describe('PUT /blogs/:id', () => {
+        beforeEach(deleteAllData)
+        afterEach(deleteAllData)
         it('should update the blog with status 204 if found and valid data', async () => {
             // Создаем новый блог для теста
-            const newBlog = {
-                name: 'Test Blog',
-                description: 'This is a test blog',
-                websiteUrl: 'http://testblog.com'
-            };
-            const createResponse = await request(app)
-                .post(blogsPath)
-                .set('Authorization', authHeader)
-                .send(newBlog)
-                .expect(201);
-            const {id} = createResponse.body;
+            const newBlog: Blog[] = await createValidBlogs(1)
+            // Получаем id созданного блога
+            const {id} = newBlog[0];
             // Новые данные для обновления блога
             const updatedBlogData = {
                 name: 'Updated Blog',
@@ -498,20 +475,13 @@ describe('blogs tests', () => {
         });
     });
     describe('DELETE /blogs/:id', () => {
+        beforeEach(deleteAllData)
+        afterEach(deleteAllData)
         it('should delete the blog with status 204 if found', async () => {
             // Создаем новый блог для теста
-            const newBlog = {
-                name: 'Test Blog',
-                description: 'This is a test blog',
-                websiteUrl: 'https://testblog.com'
-            };
-            const createResponse = await request(app)
-                .post(blogsPath)
-                .set('Authorization', authHeader)
-                .send(newBlog)
-                .expect(201);
+            const newBlog: Blog[] = await createValidBlogs(1)
             // Получаем id созданного блога
-            const {id} = createResponse.body;
+            const {id} = newBlog[0];
             // Отправляем DELETE запрос для удаления созданного блога по его id
             await request(app)
                 .delete(`${blogsPath}/${id}`)

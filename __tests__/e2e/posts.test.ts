@@ -1,14 +1,42 @@
 import request from 'supertest'
 import app from '../../src/setting';
+import {Post} from "../../src/libs/types/postsTypes";
 
 const blogsPath = '/blogs'
 const postsPath = '/posts'
 const testingPath = '/testing/all-data';
 const authHeader = 'Basic ' + Buffer.from('admin:qwerty').toString('base64');
+
+// Удаление всех данных для тестов
 async function deleteAllData() {
     await request(app)
         .delete(testingPath)
         .expect(204)
+}
+// Создание блогов. Принимает значение, сколько нужно создать сущностей
+async function returnValidBlogId(): Promise<string> {
+    const response =  await request(app)
+        .post(blogsPath)
+        .set('Authorization', authHeader)
+        .send({
+            name: 'Test Blog',
+            description: 'This is a test blog',
+            websiteUrl: 'https://testblog.com'
+        })
+        .expect(201);
+    return response.body.id
+}
+// Создание постов. Принимает значение, сколько нужно создать сущностей
+async function createValidPosts(count: number, blogId: string): Promise<Post[]> {
+    const posts: Post[] = [];
+    for (let i = 1; i < count + 1; i++) {
+        const createdBlog = await request(app)
+            .post(postsPath)
+            .set('Authorization', authHeader)
+            .send({title: `Post ${i}`, shortDescription: `shortDescription Post ${i}`, content: `content Post ${i}`, blogId: blogId})
+        posts.push(createdBlog.body)
+    }
+    return posts
 }
 describe('posts tests', () => {
     describe('GET /posts', () => {
@@ -28,60 +56,25 @@ describe('posts tests', () => {
         });
         it('should return 200 and all available blogs', async () => {
             // Создаем блог чтобы создать пост
-            let validBlogId: string;
-            // Создаем блог перед тестами и сохраняем его id
-            const newBlogResponse = await request(app)
-                .post(blogsPath)
-                .set('Authorization', authHeader)
-                .send({
-                    name: 'Test Blog',
-                    description: 'This is a test blog',
-                    websiteUrl: 'https://testblog.com'
-                })
-                .expect(201);
-            validBlogId = newBlogResponse.body.id;
-
-            const post1 = {
-                title: 'Test title',
-                shortDescription: 'shortDescription test',
-                content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                blogId: validBlogId
-            };
-            const post2 = {
-                title: 'Test title',
-                shortDescription: 'shortDescription test',
-                content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                blogId: validBlogId
-            };
-
+            const blogId: string = await returnValidBlogId()
             // Создаем посты
+            const createdPosts: Post[] = await createValidPosts(2, blogId)
+            // Получаем посты и проверяем, что массив items содержит созданные посты
             await request(app)
-                .post(postsPath)
-                .set('Authorization', authHeader)
-                .send(post1)
-                .expect(201);
-
-            await request(app)
-                .post(postsPath)
-                .set('Authorization', authHeader)
-                .send(post2)
-                .expect(201);
-
-            // Получаем все посты
-            const response = await request(app)
                 .get(postsPath)
-                .expect(200);
+                .expect(200, {
+                    pagesCount: 1,
+                    page: 1,
+                    pageSize: 10,
+                    totalCount: 2,
+                    items: [createdPosts[1], createdPosts[0]]
+                })
 
-            // Проверяем, что полученный массив содержит созданные посты
-            expect(response.body).toEqual(
-                expect.arrayContaining([
-                    expect.objectContaining(post1),
-                    expect.objectContaining(post1)
-                ])
-            );
         })
     })
     describe('POST /posts', () => {
+        beforeEach(deleteAllData)
+        afterEach(deleteAllData)
         // Проверка ошибок авторизации
         it('should return status 401 if not authorized', async () => {
             // Отправляем POST запрос без авторизационного заголовка
@@ -139,22 +132,10 @@ describe('posts tests', () => {
                 ]
             });
         });
-        let validBlogId: string;
-        beforeAll(async () => {
-            // Создаем блог перед тестами и сохраняем его id
-            const newBlogResponse = await request(app)
-                .post(blogsPath)
-                .set('Authorization', authHeader)
-                .send({
-                    name: 'Test Blog',
-                    description: 'This is a test blog',
-                    websiteUrl: 'https://testblog.com'
-                })
-                .expect(201);
+        // Создаем блог, чтобы с его id создавать посты
 
-            validBlogId = newBlogResponse.body.id;
-        });
         it('should return 400 status if title field is missing', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Отправляем запрос на создание поста без поля title
             const response = await request(app)
                 .post(postsPath)
@@ -176,6 +157,7 @@ describe('posts tests', () => {
             });
         });
         it('should return 400 status if title field is empty', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Отправляем запрос на создание поста с пустым полем title
             const response = await request(app)
                 .post(postsPath)
@@ -198,6 +180,7 @@ describe('posts tests', () => {
             });
         });
         it('should return 400 status if title field exceeds maximum length', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Создаем строку с более чем 30 символами
             const longString = 'a'.repeat(31);
             // Отправляем запрос на создание поста
@@ -222,6 +205,7 @@ describe('posts tests', () => {
             });
         });
         it('should return 400 status if title field is not a string', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Отправляем запрос на создание поста, где title не строка
             const response = await request(app)
                 .post(postsPath)
@@ -244,6 +228,7 @@ describe('posts tests', () => {
             });
         });
         it('should return 400 status if shortDescription field is missing', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Отправляем запрос на создание поста без поля shortDescription
             const response = await request(app)
                 .post(postsPath)
@@ -265,6 +250,7 @@ describe('posts tests', () => {
             });
         });
         it('should return 400 status if shortDescription field is empty', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Отправляем запрос на создание поста с пустым полем shortDescription
             const response = await request(app)
                 .post(postsPath)
@@ -287,6 +273,7 @@ describe('posts tests', () => {
             });
         });
         it('should return 400 status if shortDescription field exceeds maximum length', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Создаем строку с более чем 100 символами
             const longString = 'a'.repeat(101);
             // Отправляем запрос на создание поста
@@ -311,6 +298,7 @@ describe('posts tests', () => {
             });
         });
         it('should return 400 status if shortDescription field is not a string', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Отправляем запрос на создание поста, где shortDescription не строка
             const response = await request(app)
                 .post(postsPath)
@@ -333,6 +321,7 @@ describe('posts tests', () => {
             });
         });
         it('should return 400 status if content field is missing', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Отправляем запрос на создание поста без поля content
             const response = await request(app)
                 .post(postsPath)
@@ -354,6 +343,7 @@ describe('posts tests', () => {
             });
         });
         it('should return 400 status if content field is empty', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Отправляем запрос на создание поста с пустым полем content
             const response = await request(app)
                 .post(postsPath)
@@ -376,6 +366,7 @@ describe('posts tests', () => {
             });
         });
         it('should return 400 status if content field exceeds maximum length', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Создаем строку с более чем 1000 символами
             const longString = 'a'.repeat(1001);
             // Отправляем запрос на создание поста
@@ -400,6 +391,7 @@ describe('posts tests', () => {
             });
         });
         it('should return 400 status if content field is not a string', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Отправляем запрос на создание поста, где content не строка
             const response = await request(app)
                 .post(postsPath)
@@ -422,6 +414,7 @@ describe('posts tests', () => {
             });
         });
         it('should return 400 status if blogId field is missing', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Отправляем запрос на создание поста без поля blogId
             const response = await request(app)
                 .post(postsPath)
@@ -512,6 +505,7 @@ describe('posts tests', () => {
         });
         //Проверка создания поста с валидными данными
         it('should create a new post and return 201 status', async () => {
+            const validBlogId: string = await returnValidBlogId()
             // Отправляем запрос на создание поста с валидными данными
             const newPost = {
                 title: 'Test title',
@@ -546,19 +540,10 @@ describe('posts tests', () => {
         });
     });
     describe('GET /posts/:id', () => {
+        beforeEach(deleteAllData)
+        afterEach(deleteAllData)
         it('should return 200 and the specified post', async () => {
-            // Создаем блог для создания поста
-            const newBlogResponse = await request(app)
-                .post(blogsPath)
-                .set('Authorization', authHeader)
-                .send({
-                    name: 'Test Blog',
-                    description: 'This is a test blog',
-                    websiteUrl: 'https://testblog.com'
-                })
-                .expect(201);
-            const validBlogId = newBlogResponse.body.id;
-
+            const validBlogId: string = await returnValidBlogId()
             // Создаем пост
             const newPostResponse = await request(app)
                 .post(postsPath)
@@ -595,6 +580,8 @@ describe('posts tests', () => {
         });
     });
     describe('PUT /posts/:id', () => {
+        beforeEach(deleteAllData)
+        afterEach(deleteAllData)
         let validBlogId: string;
         let validBlogId2: string;
         let validPostId: string;
