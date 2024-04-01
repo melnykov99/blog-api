@@ -6,7 +6,7 @@ import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse"
 import authMiddleware from "../libs/middlewares/authMiddleware";
 import blogsValidationChain from "../libs/validations/blogsValidation";
 import validationErrorCheck from "../libs/validations/validationErrorCheck";
-import {Post, PostInput, PostInputWithoutBlog, PostsOutput} from "../libs/types/postsTypes";
+import {Post, PostInputWithoutBlog, PostsOutput} from "../libs/types/postsTypes";
 import {postsForBlogValidationChain} from "../libs/validations/postsValidation";
 import {SortingPaginationQuery} from "../libs/types/commonTypes";
 import {

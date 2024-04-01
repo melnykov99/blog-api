@@ -40,6 +40,6 @@ function handlerSortingPagination(query: SortingPaginationQuery): SortingPaginat
     const searchEmailTerm: SearchEmailTerm = query.searchEmailTerm === undefined ? null : query.searchEmailTerm;
     const skip: number = (pagination.pageNumber - 1) * pagination.pageSize
     const limit: number = pagination.pageSize
-    return {dbProperties: {skip, limit}, pagination, sorting, searchNameTerm}
+    return {dbProperties: {skip, limit}, pagination, sorting, searchParams: {searchNameTerm, searchLoginTerm, searchEmailTerm}}
 }
 export default handlerSortingPagination;

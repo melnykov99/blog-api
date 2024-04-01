@@ -11,9 +11,25 @@ type UserOutput = {
     email: string,
     createdAt: string,
 }
+type UsersOutput = {
+    pagesCount: number,
+    page: number,
+    pageSize: number,
+    totalCount: number,
+    items: UserOutput[]
+}
 type UserInput = {
     login: string,
     password: string,
     email: string,
 }
-export {User, UserInput};
+type UsersDbOutput = {
+    totalCount: number,
+    foundUsers: User[]
+}
+type UsersDbFilter =
+    Record<string, never> |
+    { login: { $regex: string; $options: string } } |
+    { email: { $regex: string; $options: string } } |
+    { login: { $regex: string; $options: string }, email: { $regex: string; $options: string } }
+export {User, UserInput, UsersDbFilter, UsersDbOutput, UsersOutput};

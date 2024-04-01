@@ -7,7 +7,7 @@ import {SortingPaginationProcessed} from "../libs/types/commonTypes";
 const blogsRepository = {
     async getBlogs(sortingPaginationProcessed: SortingPaginationProcessed): Promise<BlogsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            const filter: BlogsDbFilter = (!sortingPaginationProcessed.searchNameTerm) ? {} : { 'name': { $regex: sortingPaginationProcessed.searchNameTerm, $options: 'i' } };
+            const filter: BlogsDbFilter = (!sortingPaginationProcessed.searchParams.searchNameTerm) ? {} : { name: { $regex: sortingPaginationProcessed.searchParams.searchNameTerm, $options: 'i' } };
             const totalCount: number = await blogsCollection.countDocuments(filter)
             const foundBlogs: Blog[] = await blogsCollection
                 .find(filter, {projection: {_id: false}})

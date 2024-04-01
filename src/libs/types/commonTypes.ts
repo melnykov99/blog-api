@@ -24,9 +24,7 @@ type SortingPaginationProcessed = {
     dbProperties: DbProperties,
     pagination: Pagination,
     sorting: Sorting,
-    searchNameTerm?: SearchNameTerm,
-    searchLoginTerm?: SearchLoginTerm,
-    searchEmailTerm?: SearchEmailTerm,
+    searchParams: {searchNameTerm?: SearchNameTerm, searchLoginTerm?: SearchLoginTerm, searchEmailTerm?: SearchEmailTerm}
 }
 type Pagination = {
     pageSize: number,
@@ -37,10 +35,10 @@ type Sorting = {
     sortDirection: 1 | -1,
 }
 // Используется в запросе /blogs
-type SearchNameTerm = string | null | undefined
+type SearchNameTerm = string | null
 // Используется в запросе /users
-type SearchLoginTerm = string | null | undefined
-type SearchEmailTerm = string | null | undefined
+type SearchLoginTerm = string | null
+type SearchEmailTerm = string | null
 
 type DbProperties = {
     skip: number,
