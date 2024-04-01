@@ -32,4 +32,4 @@ type UsersDbFilter =
     { login: { $regex: string; $options: string } } |
     { email: { $regex: string; $options: string } } |
     { login: { $regex: string; $options: string }, email: { $regex: string; $options: string } }
-export {User, UserInput, UsersDbFilter, UsersDbOutput, UsersOutput};
+export {User, UserInput, UsersDbFilter, UsersDbOutput, UsersOutput, UserOutput};
