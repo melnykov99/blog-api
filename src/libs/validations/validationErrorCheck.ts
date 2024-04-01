@@ -5,11 +5,14 @@ import draftBlogErrorMessage from "../common/errorMessages/blogsErrorMessages";
 import {BlogFieldsForErrorMessages} from "../types/blogsTypes";
 import {PostFieldsForErrorMessages} from "../types/postsTypes";
 import draftPostErrorMessage from "../common/errorMessages/postsErrorMessages";
+import {UserFieldsForErrorMessages} from "../types/usersTypes";
+import draftUserErrorMessage from "../common/errorMessages/usersErrorMessages";
 
 function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
     const result: Result<ValidationError> = validationResult(req)
+    //TODO: для errorsMessages и convertedErrorField надо типы задать как-то
     let errorsMessages; // type :ErrorsMessages
-    let convertedErrorFields; //type <BlogFieldsForErrorMessages | PostFieldsForErrorMessages>
+    let convertedErrorFields; //type <BlogFieldsForErrorMessages | PostFieldsForErrorMessages | UserFieldsForErrorMessages>
     if (!result.isEmpty()) {
         const errorFields: string[] = Object.keys(result.mapped())
         // При создании блога попадаем в этот if
@@ -22,6 +25,10 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
         if (req.baseUrl === '/blogs' && req.path !== '/' || req.baseUrl === '/posts') {
             convertedErrorFields = errorFields.map(field => field as PostFieldsForErrorMessages);
             errorsMessages = draftPostErrorMessage(convertedErrorFields)
+        }
+        if (req.baseUrl === '/users') {
+            convertedErrorFields = errorFields.map(field => field as UserFieldsForErrorMessages);
+            errorsMessages = draftUserErrorMessage(convertedErrorFields)
         }
         res.status(HTTP_STATUSES.BAD_REQUEST).send(errorsMessages)
         return
