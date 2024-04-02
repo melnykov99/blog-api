@@ -9,10 +9,14 @@ import ValidationErrorCheck from "../libs/validations/validationErrorCheck";
 import {
     RequestWithBody,
     RequestWithParams,
-    RequestWithParamsAndBody,
+    RequestWithParamsAndBody, RequestWithParamsAndQuery,
     RequestWithQuery
 } from "../libs/types/requestsResponsesTypes";
 import {SortingPaginationQuery} from "../libs/types/commonTypes";
+import {CommentInput} from "../libs/types/commentsTypes";
+import commentsValidationChain from "../libs/validations/commentsValidation";
+import validationErrorCheck from "../libs/validations/validationErrorCheck";
+import commentsService from "../services/commentsService";
 
 const postsRouter = express.Router()
 
@@ -73,6 +77,12 @@ postsRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{id:str
         return
     }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
+})
+postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<{postId: string}, SortingPaginationQuery>, res: Response) => {
+    const foundComment = await commentsService.getCommentsByPostId(req.params.postId, req.query)
+})
+postsRouter.post('/:postId/comments', commentsValidationChain, validationErrorCheck, (req: RequestWithParamsAndBody<{postId: string}, CommentInput>, res: Response) => {
+
 })
 
 

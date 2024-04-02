@@ -9,6 +9,8 @@ import {UserFieldsForErrorMessages} from "../types/usersTypes";
 import draftUserErrorMessage from "../common/errorMessages/usersErrorMessages";
 import {AuthLoginFieldsForErrorMessages} from "../types/authTypes";
 import draftAuthErrorMessage from "../common/errorMessages/authErrorMessages";
+import {CommentFieldsForErrorMessages} from "../types/commentsTypes";
+import draftCommentErrorMessage from "../common/errorMessages/commentsErrorMessages";
 
 function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
     const result: Result<ValidationError> = validationResult(req)
@@ -35,6 +37,11 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
         if (req.baseUrl === '/auth') {
             convertedErrorFields = errorFields.map(field => field as AuthLoginFieldsForErrorMessages);
             errorsMessages = draftAuthErrorMessage(convertedErrorFields)
+        }
+        // Сюда попадаем при создании comment по postId. Тогда req.path === /:postId/comments
+        if (req.baseUrl === '/posts' && req.path !== '/') {
+            convertedErrorFields = errorFields.map(field => field as CommentFieldsForErrorMessages);
+            errorsMessages = draftCommentErrorMessage(convertedErrorFields)
         }
         res.status(HTTP_STATUSES.BAD_REQUEST).send(errorsMessages)
         return

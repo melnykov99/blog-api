@@ -74,7 +74,7 @@ const postsRepository = {
             const filter: PostsDbFilterByBlogId = {blogId: blogId}
             const totalCount: number = await postsCollection.countDocuments(filter)
             const foundPosts: Post[] = await postsCollection
-                .find(filter)
+                .find(filter, {projection: {_id: false}})
                 .sort({[sortingPaginationProcessed.sorting.sortBy]: sortingPaginationProcessed.sorting.sortDirection})
                 .skip(sortingPaginationProcessed.dbProperties.skip)
                 .limit(sortingPaginationProcessed.dbProperties.limit)

@@ -3,6 +3,7 @@ import 'dotenv/config';
 import {Blog} from "../libs/types/blogsTypes";
 import {Post} from "../libs/types/postsTypes";
 import {User} from "../libs/types/usersTypes";
+import {Commentary, CommentDb} from "../libs/types/commentsTypes";
 
 const mongoUri = process.env.MONGOURI!;
 
@@ -10,7 +11,8 @@ const client = new MongoClient(mongoUri);
 const db = client.db('blog-api');
 const blogsCollection: Collection<Blog> = db.collection<Blog>('blogs');
 const postsCollection: Collection<Post> = db.collection<Post>('posts');
-const usersCollection: Collection<User> = db.collection<User>('users')
+const usersCollection: Collection<User> = db.collection<User>('users');
+const commentsCollection: Collection<CommentDb> = db.collection<CommentDb>('comments');
 async function runDb() {
     try {
         await client.connect();
@@ -20,4 +22,4 @@ async function runDb() {
         await client.close();
     }
 }
-export {runDb, blogsCollection, postsCollection, usersCollection}
+export {runDb, blogsCollection, postsCollection, usersCollection, commentsCollection}
