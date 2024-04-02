@@ -12,8 +12,10 @@
   "author": "Melnykov Dmitry Hobby <melnykov.ds99@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/jest": "^29.5.12",
     "@types/supertest": "^6.0.2",
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",

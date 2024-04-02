@@ -4,6 +4,7 @@ import handlerSortingPagination from "../libs/common/utils/handlerSortingPaginat
 import {User, UserInput, UserOutput, UsersDbOutput, UsersOutput} from "../libs/types/usersTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {randomUUID} from "crypto";
+import bcrypt from 'bcrypt'
 
 const usersService = {
     async getUsers(query: SortingPaginationQuery): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | UsersOutput> {
@@ -25,7 +26,7 @@ const usersService = {
             id: randomUUID(),
             login: bodyUser.login,
             email: bodyUser.email,
-            hash: bodyUser.password,
+            hash: await this._passwordHash(bodyUser.password),
             createdAt: new Date().toISOString()
         }
         const createdResult: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await usersRepository.createUser(newUser)
@@ -36,6 +37,12 @@ const usersService = {
     },
     async deleteUser(id: string): Promise<REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         return await usersRepository.deleteUser(id)
+    },
+    async _passwordHash(password: string): Promise<string> {
+        let userHash: string = '';
+        await bcrypt.hash(password, 10).then(hash => {userHash = hash}).catch(err => console.error(err.message))
+        console.log(userHash)
+        return userHash;
     }
 }
 export default usersService;
