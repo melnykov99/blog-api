@@ -21,6 +21,7 @@ const usersService = {
             items: usersDbOutput.foundUsers
         }
     },
+    //TODO: нет нигде проверки на уникальность email и юзера. В БД не должно быть одинаковых записей по login и email
     async createUser(bodyUser: UserInput): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | UserOutput> {
         const newUser: User = {
             id: randomUUID(),
@@ -41,7 +42,6 @@ const usersService = {
     async _passwordHash(password: string): Promise<string> {
         let userHash: string = '';
         await bcrypt.hash(password, 10).then(hash => {userHash = hash}).catch(err => console.error(err.message))
-        console.log(userHash)
         return userHash;
     }
 }

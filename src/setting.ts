@@ -4,6 +4,7 @@ import deleteDataRouter from "./routes/testingRouter";
 import blogsRouter from "./routes/blogsRouter";
 import postsRouter from "./routes/postsRouter";
 import usersRouter from "./routes/usersRouter";
+import authRouter from "./routes/authRouter";
 
 const app = express();
 
@@ -13,5 +14,6 @@ app.use('/testing/all-data', deleteDataRouter)
 app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
 app.use('/users', usersRouter)
+app.use('/auth', authRouter)
 
 export default app;

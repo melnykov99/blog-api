@@ -7,6 +7,8 @@ import {PostFieldsForErrorMessages} from "../types/postsTypes";
 import draftPostErrorMessage from "../common/errorMessages/postsErrorMessages";
 import {UserFieldsForErrorMessages} from "../types/usersTypes";
 import draftUserErrorMessage from "../common/errorMessages/usersErrorMessages";
+import {AuthLoginFieldsForErrorMessages} from "../types/authTypes";
+import draftAuthErrorMessage from "../common/errorMessages/authErrorMessages";
 
 function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
     const result: Result<ValidationError> = validationResult(req)
@@ -29,6 +31,10 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
         if (req.baseUrl === '/users') {
             convertedErrorFields = errorFields.map(field => field as UserFieldsForErrorMessages);
             errorsMessages = draftUserErrorMessage(convertedErrorFields)
+        }
+        if (req.baseUrl === '/auth') {
+            convertedErrorFields = errorFields.map(field => field as AuthLoginFieldsForErrorMessages);
+            errorsMessages = draftAuthErrorMessage(convertedErrorFields)
         }
         res.status(HTTP_STATUSES.BAD_REQUEST).send(errorsMessages)
         return

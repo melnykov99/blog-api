@@ -20,7 +20,8 @@ const usersRepository = {
                             : {}
             const totalCount: number = await usersCollection.countDocuments(filter)
             const foundUsers: User[] = await usersCollection
-                .find(filter, {projection: {_id: false}})
+                //TODO: скорее всего не репозиторий должен заниматься тем, что хэш и _id убирает. Мб надо мапить в сервисе уже
+                .find(filter, {projection: {_id: false, hash: false}})
                 .sort({[sortingPaginationProcessed.sorting.sortBy]: sortingPaginationProcessed.sorting.sortDirection})
                 .skip(sortingPaginationProcessed.dbProperties.skip)
                 .limit(sortingPaginationProcessed.dbProperties.limit)
@@ -45,6 +46,17 @@ const usersRepository = {
                 return REPOSITORY_RESPONSES.NOT_FOUND
             }
             return REPOSITORY_RESPONSES.SUCCESSFULLY
+        } catch (error) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
+    },
+    async getUserByLoginOrEmail(loginOrEmail: string): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND | User> {
+        try {
+            const foundUser: User | null = await usersCollection.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]})
+            if (foundUser === null) {
+                return REPOSITORY_RESPONSES.NOT_FOUND
+            }
+            return foundUser
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
