@@ -1,4 +1,4 @@
-import express, {Request, Response} from "express";
+import express, {Response} from "express";
 import {HTTP_STATUSES} from "../libs/common/constants/httpStatuses";
 import postsService from "../services/postsService";
 import {Post, PostInput, PostsOutput} from "../libs/types/postsTypes";
@@ -6,16 +6,17 @@ import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse"
 import authMiddleware from "../libs/middlewares/authMiddleware";
 import postsValidationChain from "../libs/validations/postsValidation";
 import ValidationErrorCheck from "../libs/validations/validationErrorCheck";
+import validationErrorCheck from "../libs/validations/validationErrorCheck";
 import {
     RequestWithBody,
     RequestWithParams,
-    RequestWithParamsAndBody, RequestWithParamsAndQuery,
+    RequestWithParamsAndBody,
+    RequestWithParamsAndQuery,
     RequestWithQuery
 } from "../libs/types/requestsResponsesTypes";
 import {SortingPaginationQuery} from "../libs/types/commonTypes";
-import {CommentInput} from "../libs/types/commentsTypes";
+import {CommentInput, CommentsOutput} from "../libs/types/commentsTypes";
 import commentsValidationChain from "../libs/validations/commentsValidation";
-import validationErrorCheck from "../libs/validations/validationErrorCheck";
 import commentsService from "../services/commentsService";
 
 const postsRouter = express.Router()
@@ -37,7 +38,7 @@ postsRouter.post('/', authMiddleware, postsValidationChain, ValidationErrorCheck
     res.status(HTTP_STATUSES.CREATED).send(createdPost)
 })
 
-postsRouter.get('/:id', async (req: RequestWithParams<{id: string}>, res: Response) => {
+postsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
     const postId: string = req.params.id
     const foundPost: Post | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsService.getPostById(postId)
     if (foundPost === REPOSITORY_RESPONSES.NOT_FOUND) {
@@ -65,7 +66,7 @@ postsRouter.put('/:id', authMiddleware, postsValidationChain, ValidationErrorChe
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
 
-postsRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{id:string}>, res: Response) => {
+postsRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: string }>, res: Response) => {
     const postId: string = req.params.id
     const deletionResult: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsService.deletePost(postId)
     if (deletionResult === REPOSITORY_RESPONSES.NOT_FOUND) {
@@ -78,8 +79,19 @@ postsRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{id:str
     }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
-postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<{postId: string}, SortingPaginationQuery>, res: Response) => {
-    const foundComment = await commentsService.getCommentsByPostId(req.params.postId, req.query)
+postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<{
+    postId: string
+}, SortingPaginationQuery>, res: Response) => {
+    const foundComments: CommentsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND = await commentsService.getCommentsByPostId(req.params.postId, req.query)
+    if (foundComments === REPOSITORY_RESPONSES.NOT_FOUND) {
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND)
+        return
+    }
+    if (foundComments === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
+        return
+    }
+    res.status(HTTP_STATUSES.OK).send(foundComments)
 })
 postsRouter.post('/:postId/comments', commentsValidationChain, validationErrorCheck, (req: RequestWithParamsAndBody<{postId: string}, CommentInput>, res: Response) => {
 

@@ -3,7 +3,7 @@ import 'dotenv/config';
 import {Blog} from "../libs/types/blogsTypes";
 import {Post} from "../libs/types/postsTypes";
 import {User} from "../libs/types/usersTypes";
-import {Commentary, CommentDb} from "../libs/types/commentsTypes";
+import {CommentDb} from "../libs/types/commentsTypes";
 
 const mongoUri = process.env.MONGOURI!;
 
