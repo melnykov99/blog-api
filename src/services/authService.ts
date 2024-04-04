@@ -1,11 +1,13 @@
-import {AuthLogin} from "../libs/types/authTypes";
+import {AuthLogin, JWTOutput} from "../libs/types/authTypes";
 import usersRepository from "../repositories/usersRepository";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {User} from "../libs/types/usersTypes";
 import bcrypt from "bcrypt";
+import 'dotenv/config';
+import jwtService from "../libs/common/utils/jwt";
 
 const authService = {
-    async authLogin(bodyLogin: AuthLogin): Promise<boolean | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async authLogin(bodyLogin: AuthLogin): Promise<JWTOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.UNAUTHORIZED> {
         const foundUser: User | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersRepository.getUserByLoginOrEmail(bodyLogin.loginOrEmail);
         if (foundUser === REPOSITORY_RESPONSES.NOT_FOUND || foundUser === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundUser
@@ -15,7 +17,11 @@ const authService = {
         if (loginResult === undefined) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
-        return loginResult;
+        if (loginResult === false) {
+            return REPOSITORY_RESPONSES.UNAUTHORIZED
+        }
+        const token: string = await jwtService.createJWT(foundUser.id);
+        return {accessToken: token}
     }
 }
 export default authService;
