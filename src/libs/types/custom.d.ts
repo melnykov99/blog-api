@@ -4,7 +4,7 @@ declare global {
     namespace Express {
         interface Request {
             ctx: {
-                userId: string;
+                userId?: string | undefined;
             };
         }
     }

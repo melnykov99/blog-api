@@ -1,4 +1,4 @@
-import {AuthLogin, JWTOutput} from "../libs/types/authTypes";
+import {AuthLogin, AuthMeUserInfo, JWTOutput} from "../libs/types/authTypes";
 import usersRepository from "../repositories/usersRepository";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {User} from "../libs/types/usersTypes";
@@ -22,6 +22,17 @@ const authService = {
         }
         const token: string = await jwtService.createJWT(foundUser.id);
         return {accessToken: token}
+    },
+    async authMe(userId: string): Promise<AuthMeUserInfo | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        const foundUser: User | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersRepository.getUserById(userId);
+        if (foundUser === REPOSITORY_RESPONSES.NOT_FOUND || foundUser === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return foundUser
+        }
+        return {
+            email: foundUser.email,
+            login: foundUser.login,
+            userId,
+        }
     }
 }
 export default authService;

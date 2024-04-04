@@ -60,6 +60,17 @@ const usersRepository = {
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
+    },
+    async getUserById(id: string) {
+        try {
+            const foundUser: User | null = await usersCollection.findOne({id: id})
+            if (foundUser === null) {
+                return REPOSITORY_RESPONSES.NOT_FOUND
+            }
+            return foundUser
+        } catch (error) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
     }
 }
 export default usersRepository;
