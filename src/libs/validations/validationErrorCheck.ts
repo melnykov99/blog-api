@@ -39,7 +39,8 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
             errorsMessages = draftAuthErrorMessage(convertedErrorFields)
         }
         // Сюда попадаем при создании comment по postId. Тогда req.path === /:postId/comments
-        if (req.baseUrl === '/posts' && req.path !== '/') {
+        // Или при update comment. Тогда req.baseUrl === '/comments'
+        if (req.baseUrl === '/posts' && req.path !== '/' || req.baseUrl === '/comments') {
             convertedErrorFields = errorFields.map(field => field as CommentFieldsForErrorMessages);
             errorsMessages = draftCommentErrorMessage(convertedErrorFields)
         }

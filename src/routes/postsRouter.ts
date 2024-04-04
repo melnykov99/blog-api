@@ -15,9 +15,10 @@ import {
     RequestWithQuery
 } from "../libs/types/requestsResponsesTypes";
 import {SortingPaginationQuery} from "../libs/types/commonTypes";
-import {CommentInput, CommentsOutput} from "../libs/types/commentsTypes";
+import {CommentInput, CommentOutput, CommentsOutput} from "../libs/types/commentsTypes";
 import commentsValidationChain from "../libs/validations/commentsValidation";
 import commentsService from "../services/commentsService";
+import authBearerMiddleware from "../libs/middlewares/authBearerMiddleware";
 
 const postsRouter = express.Router()
 
@@ -52,7 +53,9 @@ postsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Resp
     res.status(HTTP_STATUSES.OK).send(foundPost)
 })
 
-postsRouter.put('/:id', authBasicMiddleware, postsValidationChain, ValidationErrorCheck, async (req: RequestWithParamsAndBody<{id: string}, PostInput>, res: Response) => {
+postsRouter.put('/:id', authBasicMiddleware, postsValidationChain, ValidationErrorCheck, async (req: RequestWithParamsAndBody<{
+    id: string
+}, PostInput>, res: Response) => {
     const postId: string = req.params.id
     const updatingResult: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsService.updatePost(postId, req.body)
     if (updatingResult === REPOSITORY_RESPONSES.NOT_FOUND) {
@@ -93,8 +96,19 @@ postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<{
     }
     res.status(HTTP_STATUSES.OK).send(foundComments)
 })
-postsRouter.post('/:postId/comments', commentsValidationChain, validationErrorCheck, (req: RequestWithParamsAndBody<{postId: string}, CommentInput>, res: Response) => {
-
+postsRouter.post('/:postId/comments', authBearerMiddleware, commentsValidationChain, validationErrorCheck, async (req: RequestWithParamsAndBody<{
+    postId: string
+}, CommentInput>, res: Response) => {
+    const createdComment: CommentOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await commentsService.createComment(req.params.postId, req.body, req.ctx.userId!);
+    if (createdComment === REPOSITORY_RESPONSES.NOT_FOUND) {
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND)
+        return
+    }
+    if (createdComment === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
+        return
+    }
+    res.status(HTTP_STATUSES.CREATED).send(createdComment)
 })
 
 
