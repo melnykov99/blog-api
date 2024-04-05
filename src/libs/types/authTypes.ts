@@ -1,3 +1,9 @@
+type AuthEmailResending = {
+    email: string
+}
+type AuthRegistrationConfirmation = {
+    code: string
+}
 type AuthLogin = {
     loginOrEmail: string,
     password: string
@@ -7,8 +13,8 @@ type AuthMeUserInfo = {
     login: string,
     userId: string,
 }
-type JWTOutput = {
+type AuthLoginOutput = {
     accessToken: string
 }
 type AuthLoginFieldsForErrorMessages = 'loginOrEmail' | 'password';
-export {AuthLogin, AuthLoginFieldsForErrorMessages, JWTOutput, AuthMeUserInfo};
+export {AuthLogin, AuthLoginFieldsForErrorMessages, AuthLoginOutput, AuthMeUserInfo, AuthEmailResending, AuthRegistrationConfirmation};

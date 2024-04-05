@@ -1,4 +1,4 @@
-import {AuthLogin, AuthMeUserInfo, JWTOutput} from "../libs/types/authTypes";
+import {AuthLogin, AuthMeUserInfo, AuthLoginOutput} from "../libs/types/authTypes";
 import usersRepository from "../repositories/usersRepository";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {User} from "../libs/types/usersTypes";
@@ -7,7 +7,7 @@ import 'dotenv/config';
 import jwtService from "../libs/common/utils/jwt";
 
 const authService = {
-    async authLogin(bodyLogin: AuthLogin): Promise<JWTOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.UNAUTHORIZED> {
+    async authLogin(bodyLogin: AuthLogin): Promise<AuthLoginOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.UNAUTHORIZED> {
         const foundUser: User | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersRepository.getUserByLoginOrEmail(bodyLogin.loginOrEmail);
         if (foundUser === REPOSITORY_RESPONSES.NOT_FOUND || foundUser === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundUser
