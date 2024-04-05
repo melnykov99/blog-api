@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {HTTP_STATUSES} from "../common/constants/httpStatuses";
-import jwtService from "../common/utils/jwt";
+import jwtService from "../common/services/jwtService";
 
 async function authBearerMiddleware(req: Request, res: Response, next: NextFunction) {
     if (!req.headers.authorization) {

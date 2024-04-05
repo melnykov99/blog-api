@@ -3,11 +3,11 @@ import {Post, PostInput, PostsDbOutput, PostsOutput} from "../libs/types/postsTy
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {randomUUID} from "crypto";
 import {SortingPaginationProcessed, SortingPaginationQuery} from "../libs/types/commonTypes";
-import handlerSortingPagination from "../libs/common/utils/handlerSortingPagination";
+import sortingPaginationService from "../libs/common/services/sortingPaginationService";
 
 const postsService = {
     async getPosts(query: SortingPaginationQuery): Promise<PostsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
-        const sortingPaginationProcessed: SortingPaginationProcessed = handlerSortingPagination(query)
+        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query)
         const postsDbOutput: PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsRepository.getPosts(sortingPaginationProcessed)
         if (postsDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return postsDbOutput

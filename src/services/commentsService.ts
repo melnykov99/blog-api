@@ -2,7 +2,7 @@ import postsRepository from "../repositories/postsRepository";
 import {Post} from "../libs/types/postsTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {SortingPaginationProcessed, SortingPaginationQuery} from "../libs/types/commonTypes";
-import handlerSortingPagination from "../libs/common/utils/handlerSortingPagination";
+import sortingPaginationService from "../libs/common/services/sortingPaginationService";
 import commentsRepository from "../repositories/commentsRepository";
 import {CommentDb, CommentInput, CommentOutput, CommentsDbOutput, CommentsOutput} from "../libs/types/commentsTypes";
 import {randomUUID} from "crypto";
@@ -39,7 +39,7 @@ const commentsService = {
         if (foundPost === REPOSITORY_RESPONSES.NOT_FOUND || foundPost === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundPost
         }
-        const sortingPaginationProcessed: SortingPaginationProcessed = handlerSortingPagination(query);
+        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query);
         const commentsDbOutput: REPOSITORY_RESPONSES.UNSUCCESSFULLY | CommentsDbOutput = await commentsRepository.getCommentsByPostId(postId, sortingPaginationProcessed);
         if (commentsDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return commentsDbOutput

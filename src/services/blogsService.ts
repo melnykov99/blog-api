@@ -5,11 +5,11 @@ import {randomUUID} from "crypto";
 import {PostInputWithoutBlog, PostsDbOutput, PostsOutput} from "../libs/types/postsTypes";
 import postsRepository from "../repositories/postsRepository";
 import {SortingPaginationProcessed, SortingPaginationQuery} from "../libs/types/commonTypes";
-import handlerSortingPagination from "../libs/common/utils/handlerSortingPagination";
+import sortingPaginationService from "../libs/common/services/sortingPaginationService";
 
 const blogsService = {
     async getBlogs(query: SortingPaginationQuery): Promise<BlogsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
-        const sortingPaginationProcessed: SortingPaginationProcessed = handlerSortingPagination(query)
+        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query)
         const blogsDbOutput: REPOSITORY_RESPONSES.UNSUCCESSFULLY | BlogsDbOutput = await blogsRepository.getBlogs(sortingPaginationProcessed)
         if (blogsDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return blogsDbOutput
@@ -63,7 +63,7 @@ const blogsService = {
         if (foundBlog === REPOSITORY_RESPONSES.NOT_FOUND || foundBlog === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundBlog
         }
-        const sortingPaginationProcessed: SortingPaginationProcessed = handlerSortingPagination(query)
+        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query)
         const postsDbOutput: PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsRepository.getPostsByBlogId(blogId, sortingPaginationProcessed)
         if (postsDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return postsDbOutput
