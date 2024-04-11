@@ -1,11 +1,11 @@
 import express, {Request, Response, Router} from "express";
 import {RequestWithBody} from "../libs/types/requestsResponsesTypes";
 import {
+    AuthEmailResending,
     AuthLogin,
-    AuthMeUserInfo,
     AuthLoginOutput,
-    AuthRegistrationConfirmation,
-    AuthEmailResending
+    AuthMeUserInfo,
+    AuthRegistrationConfirmation
 } from "../libs/types/authTypes";
 import authLoginValidation from "../libs/validations/authValidation";
 import validationErrorCheck from "../libs/validations/validationErrorCheck";
@@ -14,12 +14,12 @@ import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse"
 import {HTTP_STATUSES} from "../libs/common/constants/httpStatuses";
 import authBearerMiddleware from "../libs/middlewares/authBearerMiddleware";
 import {UserInput} from "../libs/types/usersTypes";
-import usersValidationChain from "../libs/validations/usersValidation";
+import emailService from "../libs/common/services/emailService";
 
 const authRouter: Router = express.Router();
 
-authRouter.post('/registration', usersValidationChain, validationErrorCheck, (req: RequestWithBody<UserInput>, res: Response) => {
-    // sending email
+authRouter.post('/registration', async (req: RequestWithBody<UserInput>, res: Response) => {
+    const confirmationCode: string = await emailService.sendRegistrationMessage(req.body.email);
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
 authRouter.post('/registration-confirmation', (req: RequestWithBody<AuthRegistrationConfirmation>, res: Response) => {

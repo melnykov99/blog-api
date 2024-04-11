@@ -1,29 +1,32 @@
 import nodemailer from 'nodemailer'
+import {randomUUID} from "crypto";
 
 const transporter = nodemailer.createTransport({
-    service: "Gmail",
-    host: "smtp.gmail.com",
+    service: "mail",
+    host: "smtp.mail.ru",
     port: 465,
     secure: true,
     auth: {
-        user: " ",
-        pass: " ",
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
     },
 });
 const emailService = {
-    hello() {
+    async sendRegistrationMessage(emailRecipient: string): Promise<string> {
+        const confirmationCode: string = randomUUID();
         const mailOptions = {
-            from: "Blog-Api",
-            to: " ",
-            subject: "Confirmation email code",
-            text: "",
+            from: "test-dev@internet.ru",
+            to: emailRecipient,
+            subject: "Registration confirmation",
+            text: `Thank fo your registration. To finish registration please follow the link https://somesite.com/confirm-email?code=${confirmationCode}`,
+            html: `<h1>Thank for your registration</h1><p>To finish registration please follow the link below:<a href='https://somesite.com/confirm-email?code=${confirmationCode}'>complete registration</a></p><p>The code is valid for 24 hours</p>`,
         };
-        transporter.sendMail(mailOptions, (error, info) => {
+        await transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error("Error sending email: ", error);
-            } else {
-                console.log("Email sent: ", info.response);
             }
         });
+        return confirmationCode
     }
 }
+export default emailService;

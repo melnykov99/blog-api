@@ -21,7 +21,6 @@ const usersService = {
             items: usersDbOutput.foundUsers
         }
     },
-    //TODO: нет нигде проверки на уникальность email и юзера. В БД не должно быть одинаковых записей по login и email
     async createUser(bodyUser: UserInput): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | UserOutput> {
         const newUser: User = {
             id: randomUUID(),

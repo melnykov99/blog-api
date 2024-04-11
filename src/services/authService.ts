@@ -33,6 +33,9 @@ const authService = {
             login: foundUser.login,
             userId,
         }
+    },
+    async registrationUser(email: string, login: string, password: string, confirmationCode: string) {
+
     }
 }
 export default authService;
