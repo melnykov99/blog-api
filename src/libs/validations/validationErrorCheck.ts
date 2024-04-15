@@ -7,7 +7,7 @@ import {PostFieldsForErrorMessages} from "../types/postsTypes";
 import draftPostErrorMessage from "../common/errorMessages/postsErrorMessages";
 import {UserFieldsForErrorMessages} from "../types/usersTypes";
 import draftUserErrorMessage from "../common/errorMessages/usersErrorMessages";
-import {AuthLoginFieldsForErrorMessages} from "../types/authTypes";
+import {AuthLoginFieldsForErrorMessages, AuthRegistrationFieldsForErrorMessages} from "../types/authTypes";
 import draftAuthErrorMessage from "../common/errorMessages/authErrorMessages";
 import {CommentFieldsForErrorMessages} from "../types/commentsTypes";
 import draftCommentErrorMessage from "../common/errorMessages/commentsErrorMessages";
@@ -34,8 +34,12 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
             convertedErrorFields = errorFields.map(field => field as UserFieldsForErrorMessages);
             errorsMessages = draftUserErrorMessage(convertedErrorFields)
         }
-        if (req.baseUrl === '/auth') {
+        if (req.originalUrl === '/auth/login') {
             convertedErrorFields = errorFields.map(field => field as AuthLoginFieldsForErrorMessages);
+            errorsMessages = draftAuthErrorMessage(convertedErrorFields)
+        }
+        if (req.originalUrl === '/auth/registration') {
+            convertedErrorFields = errorFields.map(field => field as AuthRegistrationFieldsForErrorMessages);
             errorsMessages = draftAuthErrorMessage(convertedErrorFields)
         }
         // Сюда попадаем при создании comment по postId. Тогда req.path === /:postId/comments

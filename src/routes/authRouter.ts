@@ -7,7 +7,7 @@ import {
     AuthMeUserInfo,
     AuthRegistrationConfirmation
 } from "../libs/types/authTypes";
-import authLoginValidation from "../libs/validations/authValidation";
+import {authLoginValidation, authRegistrationValidation} from "../libs/validations/authValidation";
 import validationErrorCheck from "../libs/validations/validationErrorCheck";
 import authService from "../services/authService";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
@@ -19,7 +19,7 @@ import usersService from "../services/usersService";
 
 const authRouter: Router = express.Router();
 
-authRouter.post('/registration', async (req: RequestWithBody<UserInput>, res: Response) => {
+authRouter.post('/registration', authRegistrationValidation, validationErrorCheck, async (req: RequestWithBody<UserInput>, res: Response) => {
     const confirmationCode: string = await emailService.sendRegistrationMessage(req.body.email);
     const createdUserResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersService.createUser(req.body, confirmationCode);
     if (createdUserResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {

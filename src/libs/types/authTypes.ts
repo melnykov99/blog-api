@@ -17,4 +17,5 @@ type AuthLoginOutput = {
     accessToken: string
 }
 type AuthLoginFieldsForErrorMessages = 'loginOrEmail' | 'password';
-export {AuthLogin, AuthLoginFieldsForErrorMessages, AuthLoginOutput, AuthMeUserInfo, AuthEmailResending, AuthRegistrationConfirmation};
+type AuthRegistrationFieldsForErrorMessages = 'login' | 'email' | 'password';
+export {AuthLogin, AuthLoginFieldsForErrorMessages, AuthLoginOutput, AuthMeUserInfo, AuthEmailResending, AuthRegistrationConfirmation, AuthRegistrationFieldsForErrorMessages};

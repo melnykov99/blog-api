@@ -7,6 +7,7 @@ const postsValidationChain: ValidationChain[] = [
     body('shortDescription').isString().bail().trim().notEmpty().bail().isLength({min: 1, max: 100}),
     body('content').isString().bail().trim().notEmpty().bail().isLength({min: 1, max: 1000}),
     body('blogId').isString().bail().trim().notEmpty().bail().custom(async (blogId, {req}) => {
+        //TODO: не надо к коллекции обращаться, нужно к репозиторию
         const foundBlog: Blog | null = await blogsCollection.findOne({id: blogId})
         if (!foundBlog) {
             throw new Error();
