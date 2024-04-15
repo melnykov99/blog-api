@@ -20,7 +20,7 @@ usersRouter.get('/', authBasicMiddleware, async (req: RequestWithQuery<SortingPa
     res.status(HTTP_STATUSES.OK).send(foundUsers)
 })
 usersRouter.post('/', authBasicMiddleware, usersValidationChain, validationErrorCheck, async (req: RequestWithBody<UserInput>, res: Response) => {
-    const createdUser: REPOSITORY_RESPONSES.UNSUCCESSFULLY | UserOutput = await usersService.createUser(req.body)
+    const createdUser: REPOSITORY_RESPONSES.UNSUCCESSFULLY | UserOutput = await usersService.manualCreateUser(req.body)
     if (createdUser === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return

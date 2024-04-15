@@ -8,7 +8,7 @@ import jwtService from "../libs/common/services/jwtService";
 
 const authService = {
     async login(bodyLogin: AuthLogin): Promise<AuthLoginOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.UNAUTHORIZED> {
-        const foundUser: User | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersRepository.getUserByLoginOrEmail(bodyLogin.loginOrEmail);
+        const foundUser = await usersRepository.getUserByLoginOrEmail(bodyLogin.loginOrEmail);
         if (foundUser === REPOSITORY_RESPONSES.NOT_FOUND || foundUser === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundUser
         }
@@ -34,8 +34,5 @@ const authService = {
             userId,
         }
     },
-    async registrationUser(email: string, login: string, password: string, confirmationCode: string) {
-
-    }
 }
 export default authService;

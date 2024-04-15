@@ -4,6 +4,8 @@ type User = {
     email: string,
     hash: string,
     createdAt: string,
+    confirmationCode: string,
+    isConfirmed: boolean,
 }
 type UserOutput = {
     id: string,
@@ -25,7 +27,7 @@ type UserInput = {
 }
 type UsersDbOutput = {
     totalCount: number,
-    foundUsers: User[]
+    foundUsers: UserOutput[]
 }
 type UsersDbFilter =
     Record<string, never> |

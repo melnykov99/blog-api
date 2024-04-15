@@ -21,13 +21,29 @@ const usersService = {
             items: usersDbOutput.foundUsers
         }
     },
-    async createUser(bodyUser: UserInput): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | UserOutput> {
+    // Создание юзера вызванное регистрацией. Необходимо дальнейшее подтверждение
+    async createUser(bodyUser: UserInput, confirmationCode: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const newUser: User = {
             id: randomUUID(),
             login: bodyUser.login,
             email: bodyUser.email,
             hash: await this._passwordHash(bodyUser.password),
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            confirmationCode: confirmationCode,
+            isConfirmed: false,
+        }
+        return await usersRepository.createUser(newUser);
+    },
+    // Ручное создание пользователя. Пользователь сразу считается подтвержденным.
+    async manualCreateUser(bodyUser: UserInput): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | UserOutput> {
+        const newUser: User = {
+            id: randomUUID(),
+            login: bodyUser.login,
+            email: bodyUser.email,
+            hash: await this._passwordHash(bodyUser.password),
+            createdAt: new Date().toISOString(),
+            confirmationCode: '',
+            isConfirmed: true,
         }
         const createdResult: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await usersRepository.createUser(newUser)
         if (createdResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
@@ -40,7 +56,9 @@ const usersService = {
     },
     async _passwordHash(password: string): Promise<string> {
         let userHash: string = '';
-        await bcrypt.hash(password, 10).then(hash => {userHash = hash}).catch(err => console.error(err.message))
+        await bcrypt.hash(password, 10).then(hash => {
+            userHash = hash
+        }).catch(err => console.error(err.message))
         return userHash;
     }
 }

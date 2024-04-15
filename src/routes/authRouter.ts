@@ -15,11 +15,17 @@ import {HTTP_STATUSES} from "../libs/common/constants/httpStatuses";
 import authBearerMiddleware from "../libs/middlewares/authBearerMiddleware";
 import {UserInput} from "../libs/types/usersTypes";
 import emailService from "../libs/common/services/emailService";
+import usersService from "../services/usersService";
 
 const authRouter: Router = express.Router();
 
 authRouter.post('/registration', async (req: RequestWithBody<UserInput>, res: Response) => {
     const confirmationCode: string = await emailService.sendRegistrationMessage(req.body.email);
+    const createdUserResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersService.createUser(req.body, confirmationCode);
+    if (createdUserResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
+        return
+    }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
 authRouter.post('/registration-confirmation', (req: RequestWithBody<AuthRegistrationConfirmation>, res: Response) => {

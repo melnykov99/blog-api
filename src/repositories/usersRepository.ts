@@ -20,8 +20,8 @@ const usersRepository = {
                             : {}
             const totalCount: number = await usersCollection.countDocuments(filter)
             const foundUsers: User[] = await usersCollection
-                //TODO: скорее всего не репозиторий должен заниматься тем, что хэш и _id убирает. Мб надо мапить в сервисе уже
-                .find(filter, {projection: {_id: false, hash: false}})
+                //TODO: скорее всего не репозиторий должен заниматься тем, что ненужные данные убирает. Мб надо мапить в сервисе уже
+                .find(filter, {projection: {_id: false, hash: false, confirmationCode: false, isConfirmed: false}})
                 .sort({[sortingPaginationProcessed.sorting.sortBy]: sortingPaginationProcessed.sorting.sortDirection})
                 .skip(sortingPaginationProcessed.dbProperties.skip)
                 .limit(sortingPaginationProcessed.dbProperties.limit)
