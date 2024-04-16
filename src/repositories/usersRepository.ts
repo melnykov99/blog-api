@@ -2,6 +2,7 @@ import {SortingPaginationProcessed} from "../libs/types/commonTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {User, UsersDbFilter, UsersDbOutput} from "../libs/types/usersTypes";
 import {usersCollection} from "./dbConfig";
+import {UpdateResult} from "mongodb";
 
 const usersRepository = {
     async getUsers(sortingPaginationProcessed: SortingPaginationProcessed): Promise<UsersDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
@@ -31,7 +32,7 @@ const usersRepository = {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
     },
-    async createUser(newUser: User) {
+    async createUser(newUser: User): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
             await usersCollection.insertOne({...newUser})
             return REPOSITORY_RESPONSES.SUCCESSFULLY
@@ -61,13 +62,38 @@ const usersRepository = {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
     },
-    async getUserById(id: string) {
+    async getUserById(id: string): Promise<User | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
             const foundUser: User | null = await usersCollection.findOne({id: id})
             if (foundUser === null) {
                 return REPOSITORY_RESPONSES.NOT_FOUND
             }
             return foundUser
+        } catch (error) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
+    },
+    async getUserByConfirmationCode(code: string): Promise<User | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        try {
+            const foundUser: User | null = await usersCollection.findOne({confirmationCode: code});
+            if (foundUser === null) {
+                return REPOSITORY_RESPONSES.NOT_FOUND
+            }
+            return foundUser
+        } catch (error) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
+    },
+    async confirmUser(code: string): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY> {
+        try {
+            await usersCollection.updateOne({confirmationCode: code}, {
+                $set: {
+                    isConfirmed: true,
+                    confirmationCode: null,
+                    codeExpirationDate: null,
+                }
+            });
+            return REPOSITORY_RESPONSES.SUCCESSFULLY
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }

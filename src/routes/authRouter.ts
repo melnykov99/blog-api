@@ -7,7 +7,11 @@ import {
     AuthMeUserInfo,
     AuthRegistrationConfirmation
 } from "../libs/types/authTypes";
-import {authLoginValidation, authRegistrationValidation} from "../libs/validations/authValidation";
+import {
+    authLoginValidation,
+    authRegistrationConfirmationValidation,
+    authRegistrationValidation
+} from "../libs/validations/authValidation";
 import validationErrorCheck from "../libs/validations/validationErrorCheck";
 import authService from "../services/authService";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
@@ -28,8 +32,12 @@ authRouter.post('/registration', authRegistrationValidation, validationErrorChec
     }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
-authRouter.post('/registration-confirmation', (req: RequestWithBody<AuthRegistrationConfirmation>, res: Response) => {
-    // verified email
+authRouter.post('/registration-confirmation', authRegistrationConfirmationValidation, validationErrorCheck, async (req: RequestWithBody<AuthRegistrationConfirmation>, res: Response) => {
+    const updatedResult: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await usersService.confirmUser(req.body.code)
+    if (updatedResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
+        return
+    }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
 authRouter.post('/registration-email-resending', (req: RequestWithBody<AuthEmailResending>, res: Response) => {

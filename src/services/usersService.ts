@@ -5,6 +5,7 @@ import {User, UserInput, UserOutput, UsersDbOutput, UsersOutput} from "../libs/t
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {randomUUID} from "crypto";
 import bcrypt from 'bcrypt'
+import {add} from 'date-fns'
 
 const usersService = {
     async getUsers(query: SortingPaginationQuery): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | UsersOutput> {
@@ -30,6 +31,7 @@ const usersService = {
             hash: await this._passwordHash(bodyUser.password),
             createdAt: new Date().toISOString(),
             confirmationCode: confirmationCode,
+            codeExpirationDate: add(new Date(), {hours: 24}),
             isConfirmed: false,
         }
         return await usersRepository.createUser(newUser);
@@ -42,7 +44,8 @@ const usersService = {
             email: bodyUser.email,
             hash: await this._passwordHash(bodyUser.password),
             createdAt: new Date().toISOString(),
-            confirmationCode: '',
+            confirmationCode: null,
+            codeExpirationDate: null,
             isConfirmed: true,
         }
         const createdResult: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await usersRepository.createUser(newUser)
@@ -53,6 +56,9 @@ const usersService = {
     },
     async deleteUser(id: string): Promise<REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         return await usersRepository.deleteUser(id)
+    },
+    async confirmUser(code: string): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY> {
+        return await usersRepository.confirmUser(code)
     },
     async _passwordHash(password: string): Promise<string> {
         let userHash: string = '';

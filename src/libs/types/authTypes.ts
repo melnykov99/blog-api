@@ -18,4 +18,5 @@ type AuthLoginOutput = {
 }
 type AuthLoginFieldsForErrorMessages = 'loginOrEmail' | 'password';
 type AuthRegistrationFieldsForErrorMessages = 'login' | 'email' | 'password';
-export {AuthLogin, AuthLoginFieldsForErrorMessages, AuthLoginOutput, AuthMeUserInfo, AuthEmailResending, AuthRegistrationConfirmation, AuthRegistrationFieldsForErrorMessages};
+type AuthRegistrationConfirmationFieldsForErrorMessages = 'code';
+export {AuthLogin, AuthLoginFieldsForErrorMessages, AuthLoginOutput, AuthMeUserInfo, AuthEmailResending, AuthRegistrationConfirmation, AuthRegistrationFieldsForErrorMessages, AuthRegistrationConfirmationFieldsForErrorMessages};

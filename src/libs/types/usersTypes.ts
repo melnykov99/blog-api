@@ -4,7 +4,8 @@ type User = {
     email: string,
     hash: string,
     createdAt: string,
-    confirmationCode: string,
+    confirmationCode: string | null,
+    codeExpirationDate: Date | null,
     isConfirmed: boolean,
 }
 type UserOutput = {
