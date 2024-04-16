@@ -12,7 +12,11 @@ import {
     AuthRegistrationConfirmationFieldsForErrorMessages, AuthRegistrationEmailResendingFieldsForErrorMessages,
     AuthRegistrationFieldsForErrorMessages
 } from "../types/authTypes";
-import draftAuthErrorMessage from "../common/errorMessages/authErrorMessages";
+import {
+    draftAuthLoginErrorMessage,
+    draftAuthRegistrationConfirmationErrorMessage, draftAuthRegistrationEmailResendingErrorMessage,
+    draftAuthRegistrationErrorMessage
+} from "../common/errorMessages/authErrorMessages";
 import {CommentFieldsForErrorMessages} from "../types/commentsTypes";
 import draftCommentErrorMessage from "../common/errorMessages/commentsErrorMessages";
 
@@ -40,19 +44,19 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
         }
         if (req.originalUrl === '/auth/login') {
             convertedErrorFields = errorFields.map(field => field as AuthLoginFieldsForErrorMessages);
-            errorsMessages = draftAuthErrorMessage(convertedErrorFields)
+            errorsMessages = draftAuthLoginErrorMessage(convertedErrorFields)
         }
         if (req.originalUrl === '/auth/registration') {
             convertedErrorFields = errorFields.map(field => field as AuthRegistrationFieldsForErrorMessages);
-            errorsMessages = draftAuthErrorMessage(convertedErrorFields)
+            errorsMessages = draftAuthRegistrationErrorMessage(convertedErrorFields)
         }
         if (req.originalUrl === '/auth/registration-confirmation') {
             convertedErrorFields = errorFields.map(field => field as AuthRegistrationConfirmationFieldsForErrorMessages);
-            errorsMessages = draftAuthErrorMessage(convertedErrorFields)
+            errorsMessages = draftAuthRegistrationConfirmationErrorMessage(convertedErrorFields)
         }
         if (req.originalUrl === '/auth/registration-email-resending') {
             convertedErrorFields = errorFields.map(field => field as AuthRegistrationEmailResendingFieldsForErrorMessages);
-            errorsMessages = draftAuthErrorMessage(convertedErrorFields)
+            errorsMessages = draftAuthRegistrationEmailResendingErrorMessage(convertedErrorFields)
         }
         // Сюда попадаем при создании comment по postId. Тогда req.path === /:postId/comments
         // Или при update comment. Тогда req.baseUrl === '/comments'
