@@ -20,7 +20,7 @@ const authRegistrationValidation: ValidationChain[] = [
         }
         throw new Error();
     }),
-    body('email').isString().bail().trim().notEmpty().bail().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (email, {req}) => {
+    body('email').isString().bail().trim().notEmpty().bail().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).bail().custom(async (email, {req}) => {
         const foundUser: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND | User = await usersRepository.getUserByLoginOrEmail(email)
         if (foundUser === REPOSITORY_RESPONSES.NOT_FOUND) {
             return true
@@ -43,4 +43,17 @@ const authRegistrationConfirmationValidation: ValidationChain[] = [
         return true
     }),
 ]
-export {authLoginValidation, authRegistrationValidation, authRegistrationConfirmationValidation}
+
+const authRegistrationEmailResendingValidation: ValidationChain[] = [
+    body('email').isString().bail().trim().notEmpty().bail().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).bail().custom(async (email, {req}) => {
+        const foundUser: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND | User = await usersRepository.getUserByLoginOrEmail(email)
+        if (foundUser === REPOSITORY_RESPONSES.NOT_FOUND || foundUser === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            throw new Error();
+        }
+        if (foundUser.isConfirmed) {
+            throw new Error();
+        }
+        return true
+    })
+]
+export {authLoginValidation, authRegistrationValidation, authRegistrationConfirmationValidation, authRegistrationEmailResendingValidation}

@@ -97,6 +97,14 @@ const usersRepository = {
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
-    }
+    },
+    async updateConfirmationCodeAndExpDate(userEmail: string, newCode: string, newExpDate: Date): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        try {
+            await usersCollection.updateOne({email: userEmail}, {$set: {confirmationCode: newCode, codeExpirationDate: newExpDate}})
+            return REPOSITORY_RESPONSES.SUCCESSFULLY
+        } catch (error) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
+    },
 }
 export default usersRepository;

@@ -60,6 +60,10 @@ const usersService = {
     async confirmUser(code: string): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY> {
         return await usersRepository.confirmUser(code)
     },
+    async updateConfirmationCodeAndExpDate(userEmail: string, newCode: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        const newCodeExpirationDate: Date = add(new Date(), {hours: 24});
+        return await usersRepository.updateConfirmationCodeAndExpDate(userEmail, newCode, newCodeExpirationDate)
+    },
     async _passwordHash(password: string): Promise<string> {
         let userHash: string = '';
         await bcrypt.hash(password, 10).then(hash => {

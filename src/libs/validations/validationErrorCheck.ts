@@ -9,7 +9,7 @@ import {UserFieldsForErrorMessages} from "../types/usersTypes";
 import draftUserErrorMessage from "../common/errorMessages/usersErrorMessages";
 import {
     AuthLoginFieldsForErrorMessages,
-    AuthRegistrationConfirmationFieldsForErrorMessages,
+    AuthRegistrationConfirmationFieldsForErrorMessages, AuthRegistrationEmailResendingFieldsForErrorMessages,
     AuthRegistrationFieldsForErrorMessages
 } from "../types/authTypes";
 import draftAuthErrorMessage from "../common/errorMessages/authErrorMessages";
@@ -48,6 +48,10 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
         }
         if (req.originalUrl === '/auth/registration-confirmation') {
             convertedErrorFields = errorFields.map(field => field as AuthRegistrationConfirmationFieldsForErrorMessages);
+            errorsMessages = draftAuthErrorMessage(convertedErrorFields)
+        }
+        if (req.originalUrl === '/auth/registration-email-resending') {
+            convertedErrorFields = errorFields.map(field => field as AuthRegistrationEmailResendingFieldsForErrorMessages);
             errorsMessages = draftAuthErrorMessage(convertedErrorFields)
         }
         // Сюда попадаем при создании comment по postId. Тогда req.path === /:postId/comments

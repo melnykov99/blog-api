@@ -9,7 +9,7 @@ import {
 } from "../libs/types/authTypes";
 import {
     authLoginValidation,
-    authRegistrationConfirmationValidation,
+    authRegistrationConfirmationValidation, authRegistrationEmailResendingValidation,
     authRegistrationValidation
 } from "../libs/validations/authValidation";
 import validationErrorCheck from "../libs/validations/validationErrorCheck";
@@ -40,8 +40,13 @@ authRouter.post('/registration-confirmation', authRegistrationConfirmationValida
     }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
-authRouter.post('/registration-email-resending', (req: RequestWithBody<AuthEmailResending>, res: Response) => {
-    // resending email
+authRouter.post('/registration-email-resending', authRegistrationEmailResendingValidation, validationErrorCheck, async (req: RequestWithBody<AuthEmailResending>, res: Response) => {
+    const confirmationCode: string = await emailService.sendRegistrationMessage(req.body.email);
+    const updatedResult: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await usersService.updateConfirmationCodeAndExpDate(req.body.email, confirmationCode)
+    if (updatedResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
+        return
+    }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
 authRouter.post('/login', authLoginValidation, validationErrorCheck, async (req: RequestWithBody<AuthLogin>, res: Response) => {
