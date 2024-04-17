@@ -14,12 +14,13 @@ type SortingPaginationQuery = {
     // Используется в запросе /users
     searchLoginTerm?: string | undefined,
     searchEmailTerm?: string | undefined,
-    // Общие
+    // Общие ключи сортировки и пагинации
     sortBy: string | undefined,
     sortDirection: string | undefined,
     pageNumber: string | undefined,
     pageSize: string | undefined,
 }
+// Объект с обработанными данными сортировки для дальнейшей передачи в repository и работы с mongodb
 type SortingPaginationProcessed = {
     dbProperties: DbProperties,
     pagination: Pagination,
@@ -40,6 +41,7 @@ type SearchNameTerm = string | null
 type SearchLoginTerm = string | null
 type SearchEmailTerm = string | null
 
+// Свойства для find запроса в mongodb
 type DbProperties = {
     skip: number,
     limit: number,

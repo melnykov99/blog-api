@@ -21,19 +21,23 @@ import {CommentFieldsForErrorMessages} from "../types/commentsTypes";
 import draftCommentErrorMessage from "../common/errorMessages/commentsErrorMessages";
 
 function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
-    const result: Result<ValidationError> = validationResult(req)
-    //TODO: для errorsMessages и convertedErrorField надо типы задать как-то
+    // Результат валидации запроса
+    const result: Result<ValidationError> = validationResult(req);
+    // Сразу глобально объявляем errorsMessages и convertedErrorFields, в них будем вносить значение в каком-то из if-ов, если есть ошибки.
     let errorsMessages; // type :ErrorsMessages
-    let convertedErrorFields; //type <BlogFieldsForErrorMessages | PostFieldsForErrorMessages | UserFieldsForErrorMessages>
+    let convertedErrorFields;
     if (!result.isEmpty()) {
-        const errorFields: string[] = Object.keys(result.mapped())
-        // При создании блога попадаем в этот if
+        // Мапим ключи из result, это ключи по которым ошибки в валидации возникли
+        const errorFields: string[] = Object.keys(result.mapped());
+
+        // POST /blogs
         if (req.baseUrl === '/blogs' && req.path === '/') {
+            // Мапим errorFields, проверем что эти ключи соответвуют проверяемым в валидации ключам Blog
             convertedErrorFields = errorFields.map(field => field as BlogFieldsForErrorMessages);
+            // Формируем errorMessage на основе ключей по которым возникла ошибка в валидации
             errorsMessages = draftBlogErrorMessage(convertedErrorFields);
         }
-        // Сюда попадем при создании post по blogId. Тогда req.path === /:blogId/posts
-        // Или при обычном создании post
+        // POST /blogs/:id/posts ИЛИ POST /posts
         if (req.baseUrl === '/blogs' && req.path !== '/' || req.baseUrl === '/posts') {
             convertedErrorFields = errorFields.map(field => field as PostFieldsForErrorMessages);
             errorsMessages = draftPostErrorMessage(convertedErrorFields)
@@ -58,8 +62,7 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
             convertedErrorFields = errorFields.map(field => field as AuthRegistrationEmailResendingFieldsForErrorMessages);
             errorsMessages = draftAuthRegistrationEmailResendingErrorMessage(convertedErrorFields)
         }
-        // Сюда попадаем при создании comment по postId. Тогда req.path === /:postId/comments
-        // Или при update comment. Тогда req.baseUrl === '/comments'
+        // POST /posts/:postId/comments ИЛИ PUT /comments
         if (req.baseUrl === '/posts' && req.path !== '/' || req.baseUrl === '/comments') {
             convertedErrorFields = errorFields.map(field => field as CommentFieldsForErrorMessages);
             errorsMessages = draftCommentErrorMessage(convertedErrorFields)

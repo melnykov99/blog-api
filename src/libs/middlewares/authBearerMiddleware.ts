@@ -7,8 +7,10 @@ async function authBearerMiddleware(req: Request, res: Response, next: NextFunct
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
     }
-    const token: string = req.headers.authorization.split(' ')[1]
-    const userId: string | undefined = await jwtService.getUserIdByJWT(token)
+    // В headers токен лежит в формате: Bearer YWRtaW46cXdlcnR5. Поэтому сплитим и берем элемент с токеном
+    const token: string = req.headers.authorization.split(' ')[1];
+    const userId: string | undefined = await jwtService.getUserIdByJWT(token);
+    // Если в токене нет инфы по userId значит токен невалидный
     if (!userId) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
@@ -17,6 +19,7 @@ async function authBearerMiddleware(req: Request, res: Response, next: NextFunct
     if (!req.ctx) {
         req.ctx = {};
     }
+    // Записываем в req.ctx полученный userId из токена. Понадобится для дальнейших операций в роутах
     req.ctx.userId = userId;
     next()
 }

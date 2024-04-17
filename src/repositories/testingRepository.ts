@@ -11,7 +11,6 @@ export const testingRepository = {
             return REPOSITORY_RESPONSES.SUCCESSFULLY
         }
         catch (error){
-            console.log(error)
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
 

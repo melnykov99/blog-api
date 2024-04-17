@@ -5,6 +5,7 @@ import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse"
 
 const deleteDataRouter = express.Router()
 
+// Роут для удаления всех данных из БД
 deleteDataRouter.delete('/', async (req, res) => {
     const deletionResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await testingService.deleteAllData()
     if (deletionResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
@@ -14,4 +15,4 @@ deleteDataRouter.delete('/', async (req, res) => {
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
 
-export default deleteDataRouter
+export default deleteDataRouter;
