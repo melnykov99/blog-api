@@ -7,7 +7,7 @@ import {HTTP_STATUSES} from "../common/constants/httpStatuses";
 
 // Мидлвара проверки рефреш токена из куки. Если его нет, он истек или лежит в базе невалидных токенов, то прервем запрос и вернем UNAUTHORIZED
 async function checkRefreshTokenMiddleware(req: Request, res: Response, next: NextFunction) {
-    const refreshToken = req.cookies.refreshTokenl;
+    const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
