@@ -72,6 +72,7 @@ blogsRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<{i
     }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
+// Получение постов, относящихся к конкретному блогу
 blogsRouter.get('/:id/posts', async (req: RequestWithParamsAndQuery<{id: string}, SortingPaginationQuery>, res: Response) => {
     const blogId: string = req.params.id;
     const posts: PostsOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getPostsByBlogId(blogId, req.query)
@@ -85,7 +86,7 @@ blogsRouter.get('/:id/posts', async (req: RequestWithParamsAndQuery<{id: string}
     }
     res.status(HTTP_STATUSES.OK).send({items: posts})
 })
-
+// Создание поста для конкретного блога
 blogsRouter.post('/:id/posts', authBasicMiddleware, postsForBlogValidationChain, validationErrorCheck, async (req: RequestWithParamsAndBody<{id: string}, PostInputWithoutBlog>, res: Response) => {
     const blogId: string = req.params.id
     const createdPost: Post | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.createPostByBlogId(blogId, req.body)

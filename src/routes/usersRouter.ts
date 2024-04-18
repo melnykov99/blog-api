@@ -19,6 +19,7 @@ usersRouter.get('/', authBasicMiddleware, async (req: RequestWithQuery<SortingPa
     }
     res.status(HTTP_STATUSES.OK).send(foundUsers)
 })
+// Ручное создание юзера "суперадмином". Юзер сразу становится подтвержденным.
 usersRouter.post('/', authBasicMiddleware, usersValidationChain, validationErrorCheck, async (req: RequestWithBody<UserInput>, res: Response) => {
     const createdUser: REPOSITORY_RESPONSES.UNSUCCESSFULLY | UserOutput = await usersService.manualCreateUser(req.body)
     if (createdUser === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {

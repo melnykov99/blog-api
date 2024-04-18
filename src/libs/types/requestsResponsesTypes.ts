@@ -1,5 +1,7 @@
 import {Request} from "express";
 
+//TODO: response тоже типизировать нужно
+
 type RequestWithBody<T> = Request<{}, {}, T>
 type RequestWithQuery<T> = Request<{}, {}, {}, T>
 type RequestWithParams<T> = Request<T>

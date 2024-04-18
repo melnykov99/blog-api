@@ -8,6 +8,7 @@ const postsRepository = {
     async getPosts(sortingPaginationProcessed: SortingPaginationProcessed): Promise<PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
             const filter: PostsDbFilter = {}
+            //TODO: дублирование кода убрать
             const totalCount: number = await postsCollection.countDocuments(filter)
             const foundPosts: Post[] = await postsCollection
                 .find(filter, {projection: {_id: false}})

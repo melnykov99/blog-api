@@ -22,7 +22,7 @@ const usersService = {
             items: usersDbOutput.foundUsers
         }
     },
-    // Создание юзера вызванное регистрацией. Необходимо дальнейшее подтверждение
+    // Создание юзера вызванное регистрацией. Юзер не подтвержден
     async createUser(bodyUser: UserInput, confirmationCode: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const newUser: User = {
             id: randomUUID(),

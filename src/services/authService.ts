@@ -13,13 +13,17 @@ const authService = {
             return foundUser
         }
         let loginResult;
+        // У найденного юзера сравниваем присланный пароль с хэшем. Если пароль верный, то loginResult присваиваем true
         await bcrypt.compare(bodyLogin.password, foundUser.hash).then(result => loginResult = result).catch(err => console.error(err.message));
+        // Какая-то серверная проблема при сравнении пароля с хэшем
         if (loginResult === undefined) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
+        // Пароль неверный
         if (loginResult === false) {
             return REPOSITORY_RESPONSES.UNAUTHORIZED
         }
+        // Если пароль верный, то создаем и возвращаем jwt токен
         const token: string = await jwtService.createJWT(foundUser.id);
         return {accessToken: token}
     },

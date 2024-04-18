@@ -5,7 +5,6 @@ import {Post, PostInput, PostsOutput} from "../libs/types/postsTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import authBasicMiddleware from "../libs/middlewares/authBasicMiddleware";
 import postsValidationChain from "../libs/validations/postsValidation";
-import ValidationErrorCheck from "../libs/validations/validationErrorCheck";
 import validationErrorCheck from "../libs/validations/validationErrorCheck";
 import {
     RequestWithBody,
@@ -30,7 +29,7 @@ postsRouter.get('/', async (req: RequestWithQuery<SortingPaginationQuery>, res: 
     }
     res.status(HTTP_STATUSES.OK).send(foundPosts)
 })
-postsRouter.post('/', authBasicMiddleware, postsValidationChain, ValidationErrorCheck, async (req: RequestWithBody<PostInput>, res: Response) => {
+postsRouter.post('/', authBasicMiddleware, postsValidationChain, validationErrorCheck, async (req: RequestWithBody<PostInput>, res: Response) => {
     const createdPost: Post | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsService.createPost(req.body)
     if (createdPost === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
@@ -53,7 +52,7 @@ postsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Resp
     res.status(HTTP_STATUSES.OK).send(foundPost)
 })
 
-postsRouter.put('/:id', authBasicMiddleware, postsValidationChain, ValidationErrorCheck, async (req: RequestWithParamsAndBody<{
+postsRouter.put('/:id', authBasicMiddleware, postsValidationChain, validationErrorCheck, async (req: RequestWithParamsAndBody<{
     id: string
 }, PostInput>, res: Response) => {
     const postId: string = req.params.id
@@ -82,6 +81,7 @@ postsRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<{ 
     }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
+// Запрос комментариев конкретного поста
 postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<{
     postId: string
 }, SortingPaginationQuery>, res: Response) => {
@@ -96,6 +96,7 @@ postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<{
     }
     res.status(HTTP_STATUSES.OK).send(foundComments)
 })
+// Создание комментарий к конкретному посту
 postsRouter.post('/:postId/comments', authBearerMiddleware, commentsValidationChain, validationErrorCheck, async (req: RequestWithParamsAndBody<{
     postId: string
 }, CommentInput>, res: Response) => {
