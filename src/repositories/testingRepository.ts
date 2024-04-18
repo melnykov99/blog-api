@@ -1,4 +1,10 @@
-import {blogsCollection, commentsCollection, postsCollection, usersCollection} from "./dbConfig";
+import {
+    blogsCollection,
+    commentsCollection,
+    invalidRefreshTokensCollection,
+    postsCollection,
+    usersCollection
+} from "./dbConfig";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 
 export const testingRepository = {
@@ -8,6 +14,7 @@ export const testingRepository = {
             await postsCollection.deleteMany({})
             await usersCollection.deleteMany({})
             await commentsCollection.deleteMany({})
+            await invalidRefreshTokensCollection.deleteMany({})
             return REPOSITORY_RESPONSES.SUCCESSFULLY
         }
         catch (error){

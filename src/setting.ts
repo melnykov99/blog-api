@@ -6,10 +6,12 @@ import postsRouter from "./routes/postsRouter";
 import usersRouter from "./routes/usersRouter";
 import authRouter from "./routes/authRouter";
 import commentsRouter from "./routes/commentsRouter";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cookieParser())
 app.get('/', (req, res) => {res.send('main page')});
 app.use('/testing/all-data', deleteDataRouter)
 app.use('/blogs', blogsRouter)

@@ -1,10 +1,14 @@
 import jwt from "jsonwebtoken";
 
 const jwtService = {
-    async createJWT(userId: string) {
-        // Создание jwt токена, в него закладываем userId пользователя для которого генерируется токен
+    async createAccessToken(userId: string) {
+        // Создание access токена, в него закладываем userId пользователя для которого генерируется токен
         // Срок жизни jwt токена 1 час
         return jwt.sign({userId: userId}, process.env.JWT_SECRET!, {expiresIn: '1h'})
+    },
+    async createRefreshToken(userId: string) {
+        // Создание refreshToken. Аналогично с access, но время жизни 72 часа
+        return jwt.sign({userId: userId}, process.env.JWT_SECRET!, {expiresIn: '72h'})
     },
     async getUserIdByJWT(token: string): Promise<string | undefined> {
         try {

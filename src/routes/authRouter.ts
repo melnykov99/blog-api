@@ -3,9 +3,8 @@ import {RequestWithBody} from "../libs/types/requestsResponsesTypes";
 import {
     AuthEmailResending,
     AuthLogin,
-    AuthLoginOutput,
     AuthMeUserInfo,
-    AuthRegistrationConfirmation
+    AuthRegistrationConfirmation, AccessAndRefreshToken
 } from "../libs/types/authTypes";
 import {
     authLoginValidation,
@@ -53,9 +52,10 @@ authRouter.post('/registration-email-resending', authRegistrationEmailResendingV
     }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
-// Авторизация. Если пароль неверный или юзер с таким login/email не найден, то вернем UNAUTHORIZED. Если данные правильные, то вернем accessToken
+// Авторизация. Если пароль неверный или юзер с таким login/email не найден, то вернем UNAUTHORIZED.
+// Если данные правильные, то вернем accessToken в res.body и refreshToken в res.cookie
 authRouter.post('/login', authLoginValidation, validationErrorCheck, async (req: RequestWithBody<AuthLogin>, res: Response) => {
-    const loginResult: AuthLoginOutput | REPOSITORY_RESPONSES.UNAUTHORIZED | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await authService.login(req.body);
+    const loginResult: AccessAndRefreshToken | REPOSITORY_RESPONSES.UNAUTHORIZED | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await authService.login(req.body);
     if (loginResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return
@@ -64,7 +64,8 @@ authRouter.post('/login', authLoginValidation, validationErrorCheck, async (req:
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
     }
-    res.status(HTTP_STATUSES.OK).send(loginResult)
+    res.cookie('refreshToken', loginResult.refreshToken, {httpOnly: true, secure: true,})
+    res.status(HTTP_STATUSES.OK).send(loginResult.accessToken)
 })
 // Роут идентификации пользователя по accessToken. Токен приходит в headers.authorization, если нашли юзера, то возвращаем инфу о нем: email, login, userId
 // Проверка токена и поиск юзера по userId происходит в мидлваре authBearerMiddleware
