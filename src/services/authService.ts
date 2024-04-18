@@ -29,30 +29,21 @@ const authService = {
         const refreshToken: string = await jwtService.createRefreshToken(foundUser.id)
         return {accessToken: accessToken, refreshToken: refreshToken}
     },
-    // Проверка пришедшего refreshToken. Если он валидный, то генерируем новую пару access refresh token
-    async refreshTokens(refreshToken: string | undefined): Promise<AccessAndRefreshToken | REPOSITORY_RESPONSES.UNAUTHORIZED | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
-        // Если в куках не прислали refreshToken
-        if (!refreshToken) {
-            return REPOSITORY_RESPONSES.UNAUTHORIZED
-        }
-        // undefined вернется, если в payload токена почему-то нет userId. UNAUTHORIZED вернется если токен просрочился.
-        const userId: string | undefined | REPOSITORY_RESPONSES.UNAUTHORIZED = await jwtService.getUserIdByJWT(refreshToken);
-        if (!userId || userId === REPOSITORY_RESPONSES.UNAUTHORIZED) {
-            return REPOSITORY_RESPONSES.UNAUTHORIZED
-        }
-        // Проверяем валидность токена. Если токен лежит в базе невалидных токенов, то вернем UNAUTHORIZED
-        const checkValidityToken: InvalidRefreshTokenDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND = await invalidRefreshTokensRepository.checkRefreshToken(refreshToken);
-        if (checkValidityToken === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
-            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
-        }
-        // Если токен был найден в базе невалидных токенов, то возвращаем UNAUTHORIZED
-        if (checkValidityToken !== REPOSITORY_RESPONSES.NOT_FOUND) {
-            return REPOSITORY_RESPONSES.UNAUTHORIZED
-        }
-        return {
+    async logout(refreshToken: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        return await invalidRefreshTokensRepository.addRefreshTokenToInvalid(refreshToken)
+    },
+    // Генерация новой пары access refresh token.
+    async refreshTokens(refreshToken: string, userId: string): Promise<AccessAndRefreshToken | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        const accessAndRefreshToken: AccessAndRefreshToken = {
             accessToken: await jwtService.createAccessToken(userId),
             refreshToken: await jwtService.createRefreshToken(userId)
         }
+        // Старый токен делаем невалидным
+        const addRefreshTokenToInvalid: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await invalidRefreshTokensRepository.addRefreshTokenToInvalid(refreshToken);
+        if (addRefreshTokenToInvalid === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
+        return accessAndRefreshToken
     },
     async authMe(userId: string): Promise<AuthMeUserInfo | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const foundUser: User | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersRepository.getUserById(userId);

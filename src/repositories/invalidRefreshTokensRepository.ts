@@ -14,5 +14,13 @@ const invalidRefreshTokensRepository = {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
     },
+    async addRefreshTokenToInvalid(refreshToken: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        try {
+            await invalidRefreshTokensCollection.insertOne({refreshToken})
+            return REPOSITORY_RESPONSES.SUCCESSFULLY
+        } catch (error) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
+    },
 }
 export default invalidRefreshTokensRepository;
