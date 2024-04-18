@@ -1,6 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {HTTP_STATUSES} from "../common/constants/httpStatuses";
 import jwtService from "../common/services/jwtService";
+import {REPOSITORY_RESPONSES} from "../common/constants/repositoryResponse";
 
 async function authBearerMiddleware(req: Request, res: Response, next: NextFunction) {
     if (!req.headers.authorization) {
@@ -9,9 +10,9 @@ async function authBearerMiddleware(req: Request, res: Response, next: NextFunct
     }
     // В headers токен лежит в формате: Bearer YWRtaW46cXdlcnR5. Поэтому сплитим и берем элемент с токеном
     const token: string = req.headers.authorization.split(' ')[1];
-    const userId: string | undefined = await jwtService.getUserIdByJWT(token);
-    // Если в токене нет инфы по userId значит токен невалидный
-    if (!userId) {
+    // undefined вернется, если в payload токена почему-то нет userId. UNAUTHORIZED вернется если токен просрочился.
+    const userId: string | REPOSITORY_RESPONSES.UNAUTHORIZED | undefined = await jwtService.getUserIdByJWT(token);
+    if (!userId || userId === REPOSITORY_RESPONSES.UNAUTHORIZED) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
     }

@@ -1,14 +1,16 @@
 import express, {Request, Response, Router} from "express";
 import {RequestWithBody} from "../libs/types/requestsResponsesTypes";
 import {
+    AccessAndRefreshToken,
     AuthEmailResending,
     AuthLogin,
     AuthMeUserInfo,
-    AuthRegistrationConfirmation, AccessAndRefreshToken
+    AuthRegistrationConfirmation
 } from "../libs/types/authTypes";
 import {
     authLoginValidation,
-    authRegistrationConfirmationValidation, authRegistrationEmailResendingValidation,
+    authRegistrationConfirmationValidation,
+    authRegistrationEmailResendingValidation,
     authRegistrationValidation
 } from "../libs/validations/authValidation";
 import validationErrorCheck from "../libs/validations/validationErrorCheck";
@@ -64,8 +66,22 @@ authRouter.post('/login', authLoginValidation, validationErrorCheck, async (req:
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
     }
-    res.cookie('refreshToken', loginResult.refreshToken, {httpOnly: true, secure: true,})
-    res.status(HTTP_STATUSES.OK).send(loginResult.accessToken)
+    res.cookie('refreshToken', loginResult.refreshToken, {httpOnly: true, secure: true})
+    res.status(HTTP_STATUSES.OK).send({accessToken: loginResult.accessToken})
+})
+// В куке запроса приходит refreshToken. Если этот токен не истек и валидный, то возвращаем новую пару access и refresh токенов
+authRouter.post('/refresh-token', async (req: Request, res: Response) => {
+    const refreshTokensResult: AccessAndRefreshToken | REPOSITORY_RESPONSES.UNAUTHORIZED | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await authService.refreshTokens(req.cookies.refreshToken);
+    if (refreshTokensResult === REPOSITORY_RESPONSES.UNAUTHORIZED) {
+        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
+        return
+    }
+    if (refreshTokensResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
+        return
+    }
+    res.cookie('refreshToken', refreshTokensResult.refreshToken, {httpOnly: true, secure: true})
+    res.status(HTTP_STATUSES.OK).send({accessToken: refreshTokensResult.accessToken})
 })
 // Роут идентификации пользователя по accessToken. Токен приходит в headers.authorization, если нашли юзера, то возвращаем инфу о нем: email, login, userId
 // Проверка токена и поиск юзера по userId происходит в мидлваре authBearerMiddleware
