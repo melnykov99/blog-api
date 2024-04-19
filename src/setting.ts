@@ -7,6 +7,7 @@ import usersRouter from "./routes/usersRouter";
 import authRouter from "./routes/authRouter";
 import commentsRouter from "./routes/commentsRouter";
 import cookieParser from "cookie-parser";
+import securityDevicesRouter from "./routes/securityDevicesRouter";
 
 const app = express();
 
@@ -19,5 +20,6 @@ app.use('/posts', postsRouter)
 app.use('/users', usersRouter)
 app.use('/auth', authRouter)
 app.use('/comments', commentsRouter)
+app.use('/security/devices', securityDevicesRouter)
 
 export default app;

@@ -5,6 +5,7 @@ import {Post} from "../libs/types/postsTypes";
 import {User} from "../libs/types/usersTypes";
 import {CommentDb} from "../libs/types/commentsTypes";
 import {InvalidRefreshTokenDB} from "../libs/types/authTypes";
+import {SecurityDeviceDB} from "../libs/types/securityDevicesTypes";
 
 const mongoUri = process.env.MONGOURI!;
 
@@ -16,6 +17,7 @@ const usersCollection: Collection<User> = db.collection<User>('users');
 const commentsCollection: Collection<CommentDb> = db.collection<CommentDb>('comments');
 //TODO: нужна какая-то крона, которая будет проходится по этой коллекции и удалять истекшие токены, их уже нет смысла хранить в БД. При попытке их использовать будет ошибка потому что они истекли.
 const invalidRefreshTokensCollection: Collection<InvalidRefreshTokenDB> = db.collection<InvalidRefreshTokenDB>('invalidRefreshTokens');
+const securityDevicesCollection: Collection<SecurityDeviceDB> = db.collection<SecurityDeviceDB>('securityDevices');
 async function runDb() {
     try {
         await client.connect();
@@ -25,4 +27,4 @@ async function runDb() {
         await client.close();
     }
 }
-export {runDb, blogsCollection, postsCollection, usersCollection, commentsCollection, invalidRefreshTokensCollection}
+export {runDb, blogsCollection, postsCollection, usersCollection, commentsCollection, invalidRefreshTokensCollection, securityDevicesCollection}
