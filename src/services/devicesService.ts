@@ -6,8 +6,8 @@ const devicesService = {
     async getDevices(userId: string): Promise<DeviceOutput[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         return await devicesRepository.getDevices(userId);
     },
-    async deleteOtherDevices() {
-
+    async deleteOtherDevices(deviceId: string, userId: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        return await devicesRepository.deleteOtherDevices(deviceId, userId);
     },
     async deleteDeviceById(deviceId: string, userId: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.FORBIDDEN | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const devicesUserId: string | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesRepository.getDevicesUser(deviceId);

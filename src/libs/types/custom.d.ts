@@ -1,11 +1,12 @@
 import { Request } from "express";
 
-// Расширяем тип Request, добавляя в него ctx.userId
+// Расширяем тип Request, добавляя в него userId и deviceId.
 declare global {
     namespace Express {
         interface Request {
             ctx: {
                 userId?: string | undefined;
+                deviceId?: string | undefined;
             };
         }
     }

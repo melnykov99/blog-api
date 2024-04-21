@@ -11,8 +11,14 @@ const devicesRepository = {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
     },
-    async deleteOtherDevices() {
-
+    async deleteOtherDevices(deviceId: string, userId: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        try {
+            // Удаляем все девайсы юзера, кроме переданного в deviceId
+            await devicesCollection.deleteMany({$and: [{userId: userId}, {deviceId: {$ne: deviceId}}]});
+            return REPOSITORY_RESPONSES.SUCCESSFULLY
+        } catch (error) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
     },
     async getDevicesUser(deviceId: string): Promise<string | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
