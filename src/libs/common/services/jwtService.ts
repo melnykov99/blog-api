@@ -22,6 +22,10 @@ const jwtService = {
             // Если токен просрочился, то попадем в catch и вернем REPOSITORY_RESPONSES.UNAUTHORIZED
             return REPOSITORY_RESPONSES.UNAUTHORIZED
         }
+    },
+    //TODO: any не должно быть
+    async getDecodedToken(token: string): Promise<any> {
+        return jwt.decode(token)
     }
 }
 export default jwtService;

@@ -1,6 +1,6 @@
 import {
     blogsCollection,
-    commentsCollection,
+    commentsCollection, devicesCollection,
     invalidRefreshTokensCollection,
     postsCollection,
     usersCollection
@@ -15,6 +15,7 @@ export const testingRepository = {
             await usersCollection.deleteMany({})
             await commentsCollection.deleteMany({})
             await invalidRefreshTokensCollection.deleteMany({})
+            await devicesCollection.deleteMany({})
             return REPOSITORY_RESPONSES.SUCCESSFULLY
         }
         catch (error){

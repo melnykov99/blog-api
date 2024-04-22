@@ -20,6 +20,14 @@ const devicesRepository = {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
     },
+    async addDevice(newDevice: DeviceDB): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY> {
+        try {
+            await devicesCollection.insertOne({...newDevice})
+            return REPOSITORY_RESPONSES.SUCCESSFULLY
+        } catch (error) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
+    },
     async getDevicesUser(deviceId: string): Promise<string | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
             const foundDevice: DeviceDB | null = await devicesCollection.findOne({deviceId});

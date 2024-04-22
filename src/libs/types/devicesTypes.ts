@@ -1,8 +1,8 @@
 type DeviceDB = {
-    id: string,
     ip: string,
     title: string,
     lastActiveDate: string,
+    expirationSessionDate: string,
     deviceId: string,
     userId: string,
 }
@@ -12,5 +12,9 @@ type DeviceOutput = {
     lastActiveDate: string,
     deviceId: string,
 }
+type DeviceInputInfo = {
+    browser: string | undefined,
+    ip: string | undefined,
+}
 
-export {DeviceDB, DeviceOutput}
+export {DeviceDB, DeviceOutput, DeviceInputInfo}

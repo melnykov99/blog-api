@@ -5,8 +5,15 @@ import {InvalidRefreshTokenDB} from "../types/authTypes";
 import invalidRefreshTokensRepository from "../../repositories/invalidRefreshTokensRepository";
 import {HTTP_STATUSES} from "../common/constants/httpStatuses";
 
-// Мидлвара проверки рефреш токена из куки. Если его нет, он истек или лежит в базе невалидных токенов, то прервем запрос и вернем UNAUTHORIZED
+// Мидлвара проверки рефреш токена и deviceId из куки.
+// Если refreshToken-а нет, он истек или лежит в базе невалидных токенов, то прервем запрос и вернем UNAUTHORIZED
+// deviceId проверяем только на наличие
 async function checkRefreshTokenMiddleware(req: Request, res: Response, next: NextFunction) {
+    const deviceId = req.cookies.deviceId;
+    if (!deviceId) {
+        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
+        return
+    }
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
@@ -20,7 +27,7 @@ async function checkRefreshTokenMiddleware(req: Request, res: Response, next: Ne
     }
     // Проверяем валидность токена. Если токен лежит в базе невалидных токенов, то вернем UNAUTHORIZED
     const checkValidityToken: InvalidRefreshTokenDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND = await invalidRefreshTokensRepository.checkRefreshToken(refreshToken);
-        // если серверная ошибка в бд произойдет
+    // если серверная ошибка в бд произойдет
     if (checkValidityToken === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return
@@ -35,4 +42,5 @@ async function checkRefreshTokenMiddleware(req: Request, res: Response, next: Ne
     req.ctx.userId = userId;
     next()
 }
+
 export default checkRefreshTokenMiddleware;

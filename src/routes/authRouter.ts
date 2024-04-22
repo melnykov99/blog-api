@@ -3,9 +3,9 @@ import {RequestWithBody} from "../libs/types/requestsResponsesTypes";
 import {
     AccessAndRefreshToken,
     AuthEmailResending,
-    AuthLogin,
+    AuthLogin, AuthLoginOutput,
     AuthMeUserInfo,
-    AuthRegistrationConfirmation
+    AuthRegistrationConfirmation,
 } from "../libs/types/authTypes";
 import {
     authLoginValidation,
@@ -22,6 +22,7 @@ import {UserInput} from "../libs/types/usersTypes";
 import emailService from "../libs/common/services/emailService";
 import usersService from "../services/usersService";
 import checkRefreshTokenMiddleware from "../libs/middlewares/checkRefreshTokenMiddleware";
+import {DeviceInputInfo} from "../libs/types/devicesTypes";
 
 const authRouter: Router = express.Router();
 
@@ -57,8 +58,10 @@ authRouter.post('/registration-email-resending', authRegistrationEmailResendingV
 })
 // Авторизация. Если пароль неверный или юзер с таким login/email не найден, то вернем UNAUTHORIZED.
 // Если данные правильные, то вернем accessToken в res.body и refreshToken в res.cookie
+// Также присвоим deviceId и положим в res.cookie
 authRouter.post('/login', authLoginValidation, validationErrorCheck, async (req: RequestWithBody<AuthLogin>, res: Response) => {
-    const loginResult: AccessAndRefreshToken | REPOSITORY_RESPONSES.UNAUTHORIZED | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await authService.login(req.body);
+    const deviceInfo: DeviceInputInfo = {browser: req.headers['user-agent'], ip: req.socket.remoteAddress}
+    const loginResult: AuthLoginOutput | REPOSITORY_RESPONSES.UNAUTHORIZED | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await authService.login(req.body, deviceInfo);
     if (loginResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return
@@ -67,12 +70,13 @@ authRouter.post('/login', authLoginValidation, validationErrorCheck, async (req:
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
     }
-    res.cookie('refreshToken', loginResult.refreshToken, {httpOnly: true, secure: true})
-    res.status(HTTP_STATUSES.OK).send({accessToken: loginResult.accessToken})
+    res.cookie('refreshToken', loginResult.tokens.refreshToken, {httpOnly: true, secure: true})
+    res.cookie('deviceId', loginResult.deviceId, {httpOnly: true, secure: true})
+    res.status(HTTP_STATUSES.OK).send({accessToken: loginResult.tokens.accessToken})
 })
-// При logout делаем присланный refreshToken невалидным
+// При logout делаем присланный refreshToken невалидным и удаляем deviceId из БД
 authRouter.post('/logout', checkRefreshTokenMiddleware, async (req: Request, res: Response) => {
-    const logoutResult: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await authService.logout(req.cookies.refreshToken)
+    const logoutResult: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await authService.logout(req.cookies.refreshToken, req.cookies.deviceId)
     if (logoutResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return
