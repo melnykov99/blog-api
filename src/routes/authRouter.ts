@@ -23,12 +23,13 @@ import emailService from "../libs/common/services/emailService";
 import usersService from "../services/usersService";
 import checkRefreshTokenMiddleware from "../libs/middlewares/checkRefreshTokenMiddleware";
 import {DeviceInputInfo} from "../libs/types/devicesTypes";
+import limiter from "../libs/middlewares/rateLimitMiddleware";
 
 const authRouter: Router = express.Router();
 
 // Регистрация. Отправляем на указанный в body email письмо с кодом подтверждения.
 // В БД создаем юзера, устанавливаем ему confirmationCode с временем жизни 1 сутки. У юзера ключ isConfirmed с значением false
-authRouter.post('/registration', authRegistrationValidation, validationErrorCheck, async (req: RequestWithBody<UserInput>, res: Response) => {
+authRouter.post('/registration', limiter, authRegistrationValidation, validationErrorCheck, async (req: RequestWithBody<UserInput>, res: Response) => {
     const confirmationCode: string = await emailService.sendRegistrationMessage(req.body.email);
     const createdUserResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersService.createUser(req.body, confirmationCode);
     if (createdUserResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
@@ -38,7 +39,7 @@ authRouter.post('/registration', authRegistrationValidation, validationErrorChec
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
 // Подтверждение юзера. Если валидация прошла, то делаем юзера подтвержденным. confirmationCode и codeExpirationDate становятся null
-authRouter.post('/registration-confirmation', authRegistrationConfirmationValidation, validationErrorCheck, async (req: RequestWithBody<AuthRegistrationConfirmation>, res: Response) => {
+authRouter.post('/registration-confirmation', limiter, authRegistrationConfirmationValidation, validationErrorCheck, async (req: RequestWithBody<AuthRegistrationConfirmation>, res: Response) => {
     const updatedResult: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await usersService.confirmUser(req.body.code)
     if (updatedResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
@@ -47,7 +48,7 @@ authRouter.post('/registration-confirmation', authRegistrationConfirmationValida
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
 // Переотправка письма с кодом подтверждения. В БД затираем старый код новым и меняем срок жизни кода
-authRouter.post('/registration-email-resending', authRegistrationEmailResendingValidation, validationErrorCheck, async (req: RequestWithBody<AuthEmailResending>, res: Response) => {
+authRouter.post('/registration-email-resending', limiter, authRegistrationEmailResendingValidation, validationErrorCheck, async (req: RequestWithBody<AuthEmailResending>, res: Response) => {
     const confirmationCode: string = await emailService.sendRegistrationMessage(req.body.email);
     const updatedResult: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await usersService.updateConfirmationCodeAndExpDate(req.body.email, confirmationCode)
     if (updatedResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
@@ -59,7 +60,7 @@ authRouter.post('/registration-email-resending', authRegistrationEmailResendingV
 // Авторизация. Если пароль неверный или юзер с таким login/email не найден, то вернем UNAUTHORIZED.
 // Если данные правильные, то вернем accessToken в res.body и refreshToken в res.cookie
 // Также присвоим deviceId и положим в res.cookie
-authRouter.post('/login', authLoginValidation, validationErrorCheck, async (req: RequestWithBody<AuthLogin>, res: Response) => {
+authRouter.post('/login', limiter, authLoginValidation, validationErrorCheck, async (req: RequestWithBody<AuthLogin>, res: Response) => {
     const deviceInfo: DeviceInputInfo = {browser: req.headers['user-agent'], ip: req.socket.remoteAddress}
     const loginResult: AuthLoginOutput | REPOSITORY_RESPONSES.UNAUTHORIZED | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await authService.login(req.body, deviceInfo);
     if (loginResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
