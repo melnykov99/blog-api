@@ -15,7 +15,7 @@ async function checkRefreshTokenMiddleware(req: Request, res: Response, next: Ne
     }
     const decodedRefreshToken = await jwtService.getDecodedToken(refreshToken)
     // Проверяем не просрочен ли токен
-    if (new Date() > (new Date(decodedRefreshToken.iat * 1000))) {
+    if (new Date() > (new Date(decodedRefreshToken.exp * 1000))) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
     }
@@ -31,7 +31,7 @@ async function checkRefreshTokenMiddleware(req: Request, res: Response, next: Ne
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return
     }
-    if (checkValidityToken !== REPOSITORY_RESPONSES.NOT_FOUND) {
+    if (checkValidityToken === REPOSITORY_RESPONSES.NOT_FOUND) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
     }
