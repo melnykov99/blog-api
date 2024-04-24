@@ -38,9 +38,9 @@ const authService = {
             ip: deviceInfo.ip ?? 'unknown ip',
             title: deviceInfo.browser ?? 'unknown browser',
             // Дата создания только что созданного accessToken, это и будет временем последней активности юзера
-            lastActiveDate: decodedAccessToken.iat,
-            // Дата, когда истечет refreshToken. Храним в БД, чтобы периодически зачищать девайсы с протухшими сессиями
             // new Date принимает время в милисекундах, а в refreshToken оно в секундах лежит, поэтому умножаем на 1000
+            lastActiveDate: new Date(decodedAccessToken.iat * 1000).toISOString(),
+            // Дата, когда истечет refreshToken. Храним в БД, чтобы периодически зачищать девайсы с протухшими сессиями
             expirationSessionDate: new Date(decodedRefreshToken.exp * 1000).toISOString(),
             deviceId: deviceId,
             userId: foundUser.id,
