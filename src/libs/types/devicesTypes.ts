@@ -2,7 +2,8 @@ type DeviceDB = {
     ip: string,
     title: string,
     lastActiveDate: string,
-    expirationSessionDate: string,
+    iatRefreshToken: string,
+    expRefreshToken: string,
     deviceId: string,
     userId: string,
 }

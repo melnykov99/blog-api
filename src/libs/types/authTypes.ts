@@ -17,9 +17,6 @@ type AccessAndRefreshToken = {
     accessToken: string,
     refreshToken: string,
 }
-type InvalidRefreshTokenDB = {
-    refreshToken: string
-}
 type AuthLoginFieldsForErrorMessages = 'loginOrEmail' | 'password';
 type AuthRegistrationFieldsForErrorMessages = 'login' | 'email' | 'password';
 type AuthRegistrationConfirmationFieldsForErrorMessages = 'code';
@@ -34,5 +31,4 @@ export {
     AuthRegistrationConfirmationFieldsForErrorMessages,
     AuthRegistrationEmailResendingFieldsForErrorMessages,
     AccessAndRefreshToken,
-    InvalidRefreshTokenDB,
 };

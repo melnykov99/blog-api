@@ -1,7 +1,6 @@
 import {
     blogsCollection,
     commentsCollection, devicesCollection,
-    invalidRefreshTokensCollection,
     postsCollection,
     usersCollection
 } from "./dbConfig";
@@ -14,7 +13,6 @@ export const testingRepository = {
             await postsCollection.deleteMany({})
             await usersCollection.deleteMany({})
             await commentsCollection.deleteMany({})
-            await invalidRefreshTokensCollection.deleteMany({})
             await devicesCollection.deleteMany({})
             return REPOSITORY_RESPONSES.SUCCESSFULLY
         }

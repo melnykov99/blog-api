@@ -5,7 +5,6 @@ import {User} from "../libs/types/usersTypes";
 import bcrypt from "bcrypt";
 import 'dotenv/config';
 import jwtService from "../libs/common/services/jwtService";
-import invalidRefreshTokensRepository from "../repositories/invalidRefreshTokensRepository";
 import {DeviceDB, DeviceInputInfo} from "../libs/types/devicesTypes";
 import {randomUUID} from "crypto";
 import devicesRepository from "../repositories/devicesRepository";
@@ -40,8 +39,10 @@ const authService = {
             // Дата создания только что созданного accessToken, это и будет временем последней активности юзера
             // new Date принимает время в милисекундах, а в refreshToken оно в секундах лежит, поэтому умножаем на 1000
             lastActiveDate: new Date(decodedAccessToken.iat * 1000).toISOString(),
+            // Время создания refreshToken, по нему проверяем валидность/актуальность токена
+            iatRefreshToken: decodedRefreshToken.iat,
             // Дата, когда истечет refreshToken. Храним в БД, чтобы периодически зачищать девайсы с протухшими сессиями
-            expirationSessionDate: new Date(decodedRefreshToken.exp * 1000).toISOString(),
+            expRefreshToken: decodedRefreshToken.exp,
             deviceId: deviceId,
             userId: foundUser.id,
         }
@@ -51,17 +52,13 @@ const authService = {
         }
         return {accessToken: accessToken, refreshToken: refreshToken}
     },
-    // При логауте делаем токен инвалидным и удаляем сессию по deviceId
+    // При логауте удаляем сессию по deviceId
     async logout(refreshToken: string, deviceId: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
-        const invalidTokenResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await invalidRefreshTokensRepository.addRefreshTokenToInvalid(refreshToken)
-        if (invalidTokenResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
-            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
-        }
         const deleteDeviceResult: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesRepository.deleteDeviceById(deviceId)
         if (deleteDeviceResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
-        // Только при сервеной ошибке возвращаем UNSUCCESSFULLY, даже если в deleteDeviceResult будет NOT_FOUND, то успешно разлогиним пользователя. Значит сессии его уже итак нет
+        // Только при сервеной ошибке возвращаем UNSUCCESSFULLY, даже если в deleteDeviceResult будет NOT_FOUND, то успешно разлогиним пользователя. Значит сессии его уже и так нет
         return REPOSITORY_RESPONSES.SUCCESSFULLY
     },
     // Генерация новой пары access refresh token.
@@ -70,10 +67,12 @@ const authService = {
             accessToken: await jwtService.createAccessToken(userId),
             refreshToken: await jwtService.createRefreshToken(userId, deviceId)
         }
-        // Старый токен делаем невалидным
-        const addRefreshTokenToInvalid: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await invalidRefreshTokensRepository.addRefreshTokenToInvalid(refreshToken);
-        if (addRefreshTokenToInvalid === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
-            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        const decodedAccessToken = await jwtService.getDecodedToken(accessAndRefreshToken.accessToken);
+        const decodedRefreshToken = await jwtService.getDecodedToken(accessAndRefreshToken.refreshToken);
+        // У device меняем lastActiveDate и даты создания/окончания refreshToken
+        const updatedResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesRepository.updateDeviceTokenDates(deviceId, (new Date(decodedAccessToken.iat * 1000).toISOString()), decodedRefreshToken.iat, decodedAccessToken.exp)
+        if (updatedResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return updatedResult
         }
         return accessAndRefreshToken
     },

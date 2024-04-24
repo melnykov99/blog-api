@@ -22,17 +22,6 @@ const jwtService = {
             return REPOSITORY_RESPONSES.UNAUTHORIZED
         }
     },
-    async getDeviceIdByJWT(token: string): Promise<string | REPOSITORY_RESPONSES.UNAUTHORIZED | undefined> {
-        // Если токен верифицировали, то достаем из payload deviceId
-        try {
-            //TODO: any не должно быть
-            const result: any = jwt.verify(token, process.env.JWT_SECRET!)
-            return result.deviceId
-        } catch (error) {
-            // Если токен просрочился, то попадем в catch и вернем REPOSITORY_RESPONSES.UNAUTHORIZED
-            return REPOSITORY_RESPONSES.UNAUTHORIZED
-        }
-    },
     //TODO: any не должно быть
     async getDecodedToken(token: string): Promise<any> {
         return jwt.decode(token)
