@@ -9,8 +9,9 @@ const devicesRepository = {
             return await devicesCollection.find({userId}, {
                 projection: {
                     _id: false,
-                    userId: false,
-                    expirationSessionDate: false
+                    iatRefreshToken: false,
+                    expRefreshToken: false,
+                    userId: false
                 }
             }).toArray()
         } catch (error) {
