@@ -18,7 +18,7 @@ devicesRouter.get('/', checkRefreshTokenMiddleware, async (req: Request, res: Re
 })
 
 devicesRouter.delete('/', checkRefreshTokenMiddleware, async (req: Request, res: Response) => {
-    const deletionResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesService.deleteOtherDevices(req.cookies.deviceId!, req.ctx.userId!);
+    const deletionResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesService.deleteOtherDevices(req.ctx.deviceId!, req.ctx.userId!);
     if (deletionResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return

@@ -6,9 +6,9 @@ const jwtService = {
         // Создание access токена, в него закладываем userId пользователя для которого генерируется токен
         return jwt.sign({userId: userId}, process.env.JWT_SECRET!, {expiresIn: '10s'})
     },
-    async createRefreshToken(userId: string) {
+    async createRefreshToken(userId: string, deviceId: string) {
         // Создание refreshToken. Аналогично с access, но время жизни другое
-        return jwt.sign({userId: userId}, process.env.JWT_SECRET!, {expiresIn: '20s'})
+        return jwt.sign({userId: userId, deviceId: deviceId}, process.env.JWT_SECRET!, {expiresIn: '20s'})
     },
     // Верификация jwt токена и получение userId из него
     async getUserIdByJWT(token: string): Promise<string | REPOSITORY_RESPONSES.UNAUTHORIZED | undefined> {
@@ -17,6 +17,17 @@ const jwtService = {
             //TODO: any не должно быть
             const result: any = jwt.verify(token, process.env.JWT_SECRET!)
             return result.userId
+        } catch (error) {
+            // Если токен просрочился, то попадем в catch и вернем REPOSITORY_RESPONSES.UNAUTHORIZED
+            return REPOSITORY_RESPONSES.UNAUTHORIZED
+        }
+    },
+    async getDeviceIdByJWT(token: string): Promise<string | REPOSITORY_RESPONSES.UNAUTHORIZED | undefined> {
+        // Если токен верифицировали, то достаем из payload deviceId
+        try {
+            //TODO: any не должно быть
+            const result: any = jwt.verify(token, process.env.JWT_SECRET!)
+            return result.deviceId
         } catch (error) {
             // Если токен просрочился, то попадем в catch и вернем REPOSITORY_RESPONSES.UNAUTHORIZED
             return REPOSITORY_RESPONSES.UNAUTHORIZED

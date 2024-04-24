@@ -1,4 +1,4 @@
-import {AccessAndRefreshToken, AuthLogin, AuthLoginOutput, AuthMeUserInfo} from "../libs/types/authTypes";
+import {AccessAndRefreshToken, AuthLogin, AuthMeUserInfo} from "../libs/types/authTypes";
 import usersRepository from "../repositories/usersRepository";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {User} from "../libs/types/usersTypes";
@@ -11,7 +11,7 @@ import {randomUUID} from "crypto";
 import devicesRepository from "../repositories/devicesRepository";
 
 const authService = {
-    async login(bodyLogin: AuthLogin, deviceInfo: DeviceInputInfo): Promise<AuthLoginOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.UNAUTHORIZED> {
+    async login(bodyLogin: AuthLogin, deviceInfo: DeviceInputInfo): Promise<AccessAndRefreshToken | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.UNAUTHORIZED> {
         const foundUser: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND | User = await usersRepository.getUserByLoginOrEmail(bodyLogin.loginOrEmail);
         if (foundUser === REPOSITORY_RESPONSES.NOT_FOUND || foundUser === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundUser
@@ -28,8 +28,9 @@ const authService = {
             return REPOSITORY_RESPONSES.UNAUTHORIZED
         }
         // Если пароль верный, то создаем и возвращаем пару access и refresh tokens
+        const deviceId: string = randomUUID();
         const accessToken: string = await jwtService.createAccessToken(foundUser.id);
-        const refreshToken: string = await jwtService.createRefreshToken(foundUser.id)
+        const refreshToken: string = await jwtService.createRefreshToken(foundUser.id, deviceId);
         const decodedAccessToken = await jwtService.getDecodedToken(accessToken)
         const decodedRefreshToken = await jwtService.getDecodedToken(refreshToken)
         // Создаем новый девайс и добавляем его в БД
@@ -40,14 +41,14 @@ const authService = {
             lastActiveDate: decodedAccessToken.iat,
             // Дата, когда истечет refreshToken. Храним в БД, чтобы периодически зачищать девайсы с протухшими сессиями
             expirationSessionDate: decodedRefreshToken.exp,
-            deviceId: randomUUID(),
+            deviceId: deviceId,
             userId: foundUser.id,
         }
         const addDeviceResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesRepository.addDevice(newDevice)
         if (addDeviceResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
-        return {tokens: {accessToken: accessToken, refreshToken: refreshToken}, deviceId: newDevice.deviceId}
+        return {accessToken: accessToken, refreshToken: refreshToken}
     },
     // При логауте делаем токен инвалидным и удаляем сессию по deviceId
     async logout(refreshToken: string, deviceId: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
@@ -63,10 +64,10 @@ const authService = {
         return REPOSITORY_RESPONSES.SUCCESSFULLY
     },
     // Генерация новой пары access refresh token.
-    async refreshTokens(refreshToken: string, userId: string): Promise<AccessAndRefreshToken | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async refreshTokens(refreshToken: string, userId: string, deviceId: string): Promise<AccessAndRefreshToken | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const accessAndRefreshToken: AccessAndRefreshToken = {
             accessToken: await jwtService.createAccessToken(userId),
-            refreshToken: await jwtService.createRefreshToken(userId)
+            refreshToken: await jwtService.createRefreshToken(userId, deviceId)
         }
         // Старый токен делаем невалидным
         const addRefreshTokenToInvalid: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await invalidRefreshTokensRepository.addRefreshTokenToInvalid(refreshToken);

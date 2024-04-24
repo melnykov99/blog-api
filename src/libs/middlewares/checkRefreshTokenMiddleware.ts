@@ -5,23 +5,23 @@ import {InvalidRefreshTokenDB} from "../types/authTypes";
 import invalidRefreshTokensRepository from "../../repositories/invalidRefreshTokensRepository";
 import {HTTP_STATUSES} from "../common/constants/httpStatuses";
 
-// Мидлвара проверки рефреш токена и deviceId из куки.
+// Мидлвара проверки рефреш токена
 // Если refreshToken-а нет, он истек или лежит в базе невалидных токенов, то прервем запрос и вернем UNAUTHORIZED
-// deviceId проверяем только на наличие
 async function checkRefreshTokenMiddleware(req: Request, res: Response, next: NextFunction) {
-    const deviceId = req.cookies.deviceId;
-    if (!deviceId) {
-        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
-        return
-    }
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
     }
     // undefined вернется, если в payload токена почему-то нет userId. UNAUTHORIZED вернется если токен просрочился.
+    //TODO: объединить метод getUserIdByJWT и getDeviceIdByJWT
     const userId: string | undefined | REPOSITORY_RESPONSES.UNAUTHORIZED = await jwtService.getUserIdByJWT(refreshToken);
     if (!userId || userId === REPOSITORY_RESPONSES.UNAUTHORIZED) {
+        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
+        return
+    }
+    const deviceId: string | undefined | REPOSITORY_RESPONSES.UNAUTHORIZED = await jwtService.getDeviceIdByJWT(refreshToken);
+    if (!deviceId || deviceId === REPOSITORY_RESPONSES.UNAUTHORIZED) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
     }
@@ -40,6 +40,7 @@ async function checkRefreshTokenMiddleware(req: Request, res: Response, next: Ne
         req.ctx = {};
     }
     req.ctx.userId = userId;
+    req.ctx.deviceId = deviceId;
     next()
 }
 

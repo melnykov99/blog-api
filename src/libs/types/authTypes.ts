@@ -17,10 +17,6 @@ type AccessAndRefreshToken = {
     accessToken: string,
     refreshToken: string,
 }
-type AuthLoginOutput = {
-    tokens: AccessAndRefreshToken,
-    deviceId: string,
-}
 type InvalidRefreshTokenDB = {
     refreshToken: string
 }
@@ -39,5 +35,4 @@ export {
     AuthRegistrationEmailResendingFieldsForErrorMessages,
     AccessAndRefreshToken,
     InvalidRefreshTokenDB,
-    AuthLoginOutput,
 };
