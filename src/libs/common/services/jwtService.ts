@@ -4,12 +4,11 @@ import {REPOSITORY_RESPONSES} from "../constants/repositoryResponse";
 const jwtService = {
     async createAccessToken(userId: string) {
         // Создание access токена, в него закладываем userId пользователя для которого генерируется токен
-        // Срок жизни jwt токена 3 часа
-        return jwt.sign({userId: userId}, process.env.JWT_SECRET!, {expiresIn: '3h'})
+        return jwt.sign({userId: userId}, process.env.JWT_SECRET!, {expiresIn: '10s'})
     },
     async createRefreshToken(userId: string) {
-        // Создание refreshToken. Аналогично с access, но время жизни 72 часа
-        return jwt.sign({userId: userId}, process.env.JWT_SECRET!, {expiresIn: '72h'})
+        // Создание refreshToken. Аналогично с access, но время жизни другое
+        return jwt.sign({userId: userId}, process.env.JWT_SECRET!, {expiresIn: '20s'})
     },
     // Верификация jwt токена и получение userId из него
     async getUserIdByJWT(token: string): Promise<string | REPOSITORY_RESPONSES.UNAUTHORIZED | undefined> {
