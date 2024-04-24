@@ -6,7 +6,7 @@ import {DeleteResult} from "mongodb";
 const devicesRepository = {
     async getDevices(userId: string): Promise<DeviceOutput[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            return await devicesCollection.find({userId}, {projection: {_id: false, userId: false}}).toArray()
+            return await devicesCollection.find({userId}, {projection: {_id: false, userId: false, expirationSessionDate: false}}).toArray()
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
