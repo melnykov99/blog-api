@@ -58,7 +58,7 @@ const devicesRepository = {
         }
     },
     // Если токен токен с таким userId и временем создания не найден значит он уже невалидный (был заменен более актуальный токеном или девайс удален).
-    async getDeviceByRefreshTokenData(userId: string, iatRefreshToken: string): Promise<DeviceDB | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async getDeviceByRefreshTokenData(userId: string, iatRefreshToken: number): Promise<DeviceDB | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
             const foundDevice: DeviceDB | null = await devicesCollection.findOne({
                 userId: userId,
@@ -73,7 +73,7 @@ const devicesRepository = {
         }
     },
     // Обновление даты последний активности и дат refreshToken у девайса. Выполняется при обновлении токенов
-    async updateDeviceTokenDates(deviceId: string, lastActiveDate: string, iatRefreshToken: string, expRefreshToken: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async updateDeviceTokenDates(deviceId: string, lastActiveDate: string, iatRefreshToken: number, expRefreshToken: number): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
             await devicesCollection.updateOne({deviceId: deviceId}, {
                 $set: {

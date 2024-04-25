@@ -8,6 +8,7 @@ import jwtService from "../libs/common/services/jwtService";
 import {DeviceDB, DeviceInputInfo} from "../libs/types/devicesTypes";
 import {randomUUID} from "crypto";
 import devicesRepository from "../repositories/devicesRepository";
+import tokensBlacklistRepository from "../repositories/tokensBlackListRepository";
 
 const authService = {
     async login(bodyLogin: AuthLogin, deviceInfo: DeviceInputInfo): Promise<AccessAndRefreshToken | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.UNAUTHORIZED> {
@@ -58,6 +59,12 @@ const authService = {
         if (deleteDeviceResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
+        // Добавляем refreshToken токен в blacklist
+        const decodedToken = await jwtService.getDecodedToken(refreshToken)
+        const addRefreshTokenToBlacklist: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await tokensBlacklistRepository.addTokenToBlacklist(refreshToken, decodedToken.exp)
+        if (addRefreshTokenToBlacklist === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
         // Только при сервеной ошибке возвращаем UNSUCCESSFULLY, даже если в deleteDeviceResult будет NOT_FOUND, то успешно разлогиним пользователя. Значит сессии его уже и так нет
         return REPOSITORY_RESPONSES.SUCCESSFULLY
     },
@@ -73,6 +80,12 @@ const authService = {
         const updatedResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesRepository.updateDeviceTokenDates(deviceId, (new Date(decodedAccessToken.iat * 1000).toISOString()), decodedRefreshToken.iat, decodedAccessToken.exp)
         if (updatedResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return updatedResult
+        }
+        // Добавляем refreshToken токен в blacklist
+        const decodeOldRefreshToken = await jwtService.getDecodedToken(refreshToken)
+        const addRefreshTokenToBlacklist: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await tokensBlacklistRepository.addTokenToBlacklist(refreshToken, decodeOldRefreshToken.exp)
+        if (addRefreshTokenToBlacklist === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
         return accessAndRefreshToken
     },
