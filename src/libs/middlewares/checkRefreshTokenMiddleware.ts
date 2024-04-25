@@ -8,7 +8,7 @@ import tokensBlacklistRepository from "../../repositories/tokensBlackListReposit
 import {TokenBlackList} from "../types/tokenBlackListTypes";
 
 // Мидлвара проверки рефреш токена
-// Если refreshToken-а нет, он истек или не находим по его данным device, то прервем запрос и вернем UNAUTHORIZED
+// Если refreshToken-а нет, он истек, находится в черном списке или не находим по его данным device, то прервем запрос и вернем UNAUTHORIZED
 async function checkRefreshTokenMiddleware(req: Request, res: Response, next: NextFunction) {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
@@ -27,6 +27,7 @@ async function checkRefreshTokenMiddleware(req: Request, res: Response, next: Ne
         return
     }
     // TODO: у нас здесь две проверки валидности токена получилось. По блеклисту проверяем и по дате создания в девайсах. Нужно что-то одно выбрать и сделать. !!! UPD: а может и не нужно ниче менять, ведь при удалении девайса нельзя пускать запрос с рефреш токеном этого девайса, поэтому нужна проверка на время создания
+    // TODO: ПОдумать над тем, что могут 2 запроса на логин одновременно прилететь от одного юзера и тогда у них iat одинаковый. При удалении девайса одного его рефреш токен будет продолжать быть валидным
     // Проверяем нет ли токена в списке использованных
     const checkTokenInBlacklist: TokenBlackList | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await tokensBlacklistRepository.checkTokenInBlacklist(refreshToken)
     if (checkTokenInBlacklist === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
