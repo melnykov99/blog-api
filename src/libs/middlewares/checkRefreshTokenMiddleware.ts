@@ -26,9 +26,7 @@ async function checkRefreshTokenMiddleware(req: Request, res: Response, next: Ne
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
     }
-    // TODO: у нас здесь две проверки валидности токена получилось. По блеклисту проверяем и по дате создания в девайсах. Нужно что-то одно выбрать и сделать. !!! UPD: а может и не нужно ниче менять, ведь при удалении девайса нельзя пускать запрос с рефреш токеном этого девайса, поэтому нужна проверка на время создания
-    // TODO: ПОдумать над тем, что могут 2 запроса на логин одновременно прилететь от одного юзера и тогда у них iat одинаковый. При удалении девайса одного его рефреш токен будет продолжать быть валидным
-    // Проверяем нет ли токена в списке использованных
+    // Проверяем нет ли токена в черном списке (список невалидных токенов, помещаем туда при разлогине например)
     const checkTokenInBlacklist: TokenBlackList | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await tokensBlacklistRepository.checkTokenInBlacklist(refreshToken)
     if (checkTokenInBlacklist === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)

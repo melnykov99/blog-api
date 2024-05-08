@@ -33,7 +33,7 @@ const sortingPaginationService = {
     },
     // Функция содержит возможные ключи блогов и постов. Для проверки значения sortBy
     isValidSortByValue(value: any): value is keyof Blog | Post{
-        //TODO: неидеально работает. При запросе блогов можно указать title и будет сортировка по title, которого в блогах нет
+        //TODO: неидеально работает. При запросе блогов можно указать title поста и будет сортировка по title, которого в блогах нет. Разделить нужно
         return Object.keys({
             //blog keys
             id: true,

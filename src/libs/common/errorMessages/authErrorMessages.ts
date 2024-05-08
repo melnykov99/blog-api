@@ -15,7 +15,7 @@ const registrationFieldsMessages = {
     password: 'password must be string from 6 to 20 characters',
 }
 const registrationConfirmationFieldsMessages = {
-    code: 'incorrect code. Either it has expired or the user has already been confirmed.',
+    code: 'invalid code. The format of the sent code is incorrect, or the code has expired, or the user has already been confirmed.',
 }
 const registrationEmailResendingFieldsMessages = {
     email: 'email must be string email format. A user with that email must exist and not yet be confirmed'

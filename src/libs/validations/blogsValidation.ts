@@ -1,8 +1,15 @@
 import {body, ValidationChain} from "express-validator";
+import {BLOG_LIMITS, COMMON_LIMITS} from "../common/constants/characterLimits";
 
 const blogsValidationChain: ValidationChain[] = [
-    body('name').isString().bail().trim().notEmpty().bail().isLength({min: 1, max: 15}),
-    body('description').isString().bail().trim().notEmpty().bail().isLength({min: 1, max: 500}),
-    body('websiteUrl').isString().bail().trim().notEmpty().bail().isLength({max: 500}).bail().isURL(),
+    body('name').isString().bail().trim().notEmpty().bail().isLength({
+        max: BLOG_LIMITS.name.max
+    }),
+    body('description').isString().bail().trim().notEmpty().bail().isLength({
+        max: BLOG_LIMITS.description.max
+    }),
+    body('websiteUrl').isString().bail().trim().notEmpty().bail().isLength({
+        max: BLOG_LIMITS.websiteUrl.max
+    }).bail().isURL(),
 ]
 export default blogsValidationChain;
