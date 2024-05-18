@@ -8,27 +8,27 @@ type User = {
     codeExpirationDate: Date | null,
     isConfirmed: boolean,
 }
+type UserInput = {
+    login: string,
+    password: string,
+    email: string,
+}
 type UserOutput = {
     id: string,
     login: string,
     email: string,
     createdAt: string,
 }
-type UsersOutput = {
+type OutputPagesUsers = {
     pagesCount: number,
     page: number,
     pageSize: number,
     totalCount: number,
     items: UserOutput[]
 }
-type UserInput = {
-    login: string,
-    password: string,
-    email: string,
-}
-type UsersDbOutput = {
+type UsersFoundDB = {
     totalCount: number,
-    foundUsers: UserOutput[]
+    foundUsers: User[]
 }
 type UsersDbFilter =
     Record<string, never> |
@@ -37,4 +37,4 @@ type UsersDbFilter =
     { login: { $regex: string; $options: string }, email: { $regex: string; $options: string } }
 type UserFieldsForErrorMessages = 'login' | 'email' | 'password'
 
-export {User, UserInput, UsersDbFilter, UsersDbOutput, UsersOutput, UserOutput, UserFieldsForErrorMessages};
+export {User, UserInput, UsersDbFilter, UsersFoundDB, OutputPagesUsers, UserOutput, UserFieldsForErrorMessages};

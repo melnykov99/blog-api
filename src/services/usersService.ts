@@ -1,25 +1,27 @@
 import {SortingPaginationProcessed, SortingPaginationQuery} from "../libs/types/commonTypes";
 import usersRepository from "../repositories/usersRepository";
 import sortingPaginationService from "../libs/common/services/sortingPaginationService";
-import {User, UserInput, UserOutput, UsersDbOutput, UsersOutput} from "../libs/types/usersTypes";
+import {User, UserInput, UserOutput, UsersFoundDB, OutputPagesUsers} from "../libs/types/usersTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {randomUUID} from "crypto";
 import bcrypt from 'bcrypt'
 import {add} from 'date-fns'
 
 const usersService = {
-    async getUsers(query: SortingPaginationQuery): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | UsersOutput> {
+    async getUsers(query: SortingPaginationQuery): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | OutputPagesUsers> {
         const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query)
-        const usersDbOutput: UsersDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersRepository.getUsers(sortingPaginationProcessed)
-        if (usersDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
-            return usersDbOutput
+        const foundUsers: UsersFoundDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersRepository.getUsers(sortingPaginationProcessed)
+        if (foundUsers === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return foundUsers
         }
+        //Мапим, убирая лишние значения, которые пришли из БД. Оставляем только то, что можно выводить в ответе
+        const users: UserOutput[] = foundUsers.foundUsers.map(user => this._mapUserOutput(user))
         return {
-            pagesCount: Math.ceil(usersDbOutput.totalCount / sortingPaginationProcessed.pagination.pageSize),
+            pagesCount: Math.ceil(foundUsers.totalCount / sortingPaginationProcessed.pagination.pageSize),
             page: sortingPaginationProcessed.pagination.pageNumber,
             pageSize: sortingPaginationProcessed.pagination.pageSize,
-            totalCount: usersDbOutput.totalCount,
-            items: usersDbOutput.foundUsers
+            totalCount: foundUsers.totalCount,
+            items: users
         }
     },
     // Создание юзера вызванное регистрацией. Юзер не подтвержден
@@ -70,6 +72,14 @@ const usersService = {
             userHash = hash
         }).catch(err => console.error(err.message))
         return userHash;
-    }
+    },
+    _mapUserOutput(user: User): UserOutput {
+        return {
+            id: user.id,
+            login: user.login,
+            email: user.email,
+            createdAt: user.createdAt,
+        }
+    },
 }
 export default usersService;

@@ -1,17 +1,16 @@
 import {SortingPaginationProcessed} from "../libs/types/commonTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
-import {User, UsersDbFilter, UsersDbOutput} from "../libs/types/usersTypes";
+import {User, UsersDbFilter, UsersFoundDB} from "../libs/types/usersTypes";
 import {usersCollection} from "./dbConfig";
 import filterService from "../libs/common/services/filterService";
 
 const usersRepository = {
-    async getUsers(sortingPaginationProcessed: SortingPaginationProcessed): Promise<UsersDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async getUsers(sortingPaginationProcessed: SortingPaginationProcessed): Promise<UsersFoundDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
             const filter: UsersDbFilter = filterService.filterForUsers(sortingPaginationProcessed.searchParams.searchLoginTerm, sortingPaginationProcessed.searchParams.searchEmailTerm)
             const totalCount: number = await usersCollection.countDocuments(filter)
             const foundUsers: User[] = await usersCollection
-                //TODO: скорее всего не репозиторий должен заниматься тем, что ненужные данные убирает. Мб надо мапить в сервисе уже
-                .find(filter, {projection: {_id: false, hash: false, confirmationCode: false, isConfirmed: false}})
+                .find(filter)
                 .sort({[sortingPaginationProcessed.sorting.sortBy]: sortingPaginationProcessed.sorting.sortDirection})
                 .skip(sortingPaginationProcessed.dbProperties.skip)
                 .limit(sortingPaginationProcessed.dbProperties.limit)

@@ -4,7 +4,7 @@ import {RequestWithBody, RequestWithParams, RequestWithQuery} from "../libs/type
 import {SortingPaginationQuery} from "../libs/types/commonTypes";
 import usersService from "../services/usersService";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
-import {UserInput, UserOutput, UsersOutput} from "../libs/types/usersTypes";
+import {UserInput, UserOutput, OutputPagesUsers} from "../libs/types/usersTypes";
 import {HTTP_STATUSES} from "../libs/common/constants/httpStatuses";
 import usersValidationChain from "../libs/validations/usersValidation";
 import validationErrorCheck from "../libs/validations/validationErrorCheck";
@@ -12,7 +12,7 @@ import validationErrorCheck from "../libs/validations/validationErrorCheck";
 const usersRouter: Router = express.Router();
 
 usersRouter.get('/', authBasicMiddleware, async (req: RequestWithQuery<SortingPaginationQuery>, res: Response) => {
-    const foundUsers: REPOSITORY_RESPONSES.UNSUCCESSFULLY | UsersOutput = await usersService.getUsers(req.query)
+    const foundUsers: REPOSITORY_RESPONSES.UNSUCCESSFULLY | OutputPagesUsers = await usersService.getUsers(req.query)
     if (foundUsers === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return
