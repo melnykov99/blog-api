@@ -4,16 +4,9 @@ import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse"
 import {DeleteResult} from "mongodb";
 
 const devicesRepository = {
-    async getDevices(userId: string): Promise<DeviceOutput[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async getDevices(userId: string): Promise<DeviceDB[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            return await devicesCollection.find({userId}, {
-                projection: {
-                    _id: false,
-                    iatRefreshToken: false,
-                    expRefreshToken: false,
-                    userId: false
-                }
-            }).toArray()
+            return await devicesCollection.find({userId}).toArray()
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }

@@ -1,7 +1,7 @@
 import express, {Response} from "express";
 import {HTTP_STATUSES} from "../libs/common/constants/httpStatuses";
 import postsService from "../services/postsService";
-import {Post, PostInput, PostsOutput} from "../libs/types/postsTypes";
+import {Post, PostInput, OutputPagesPosts, PostOutput} from "../libs/types/postsTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import authBasicMiddleware from "../libs/middlewares/authBasicMiddleware";
 import postsValidationChain from "../libs/validations/postsValidation";
@@ -14,7 +14,7 @@ import {
     RequestWithQuery
 } from "../libs/types/requestsResponsesTypes";
 import {SortingPaginationQuery} from "../libs/types/commonTypes";
-import {CommentInput, CommentOutput, CommentsOutput} from "../libs/types/commentsTypes";
+import {CommentInput, CommentOutput, OutputPagesComments} from "../libs/types/commentsTypes";
 import commentsValidationChain from "../libs/validations/commentsValidation";
 import commentsService from "../services/commentsService";
 import authBearerMiddleware from "../libs/middlewares/authBearerMiddleware";
@@ -22,7 +22,7 @@ import authBearerMiddleware from "../libs/middlewares/authBearerMiddleware";
 const postsRouter = express.Router()
 
 postsRouter.get('/', async (req: RequestWithQuery<SortingPaginationQuery>, res: Response) => {
-    const foundPosts: PostsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsService.getPosts(req.query)
+    const foundPosts: OutputPagesPosts | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsService.getPosts(req.query)
     if (foundPosts === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return
@@ -40,7 +40,7 @@ postsRouter.post('/', authBasicMiddleware, postsValidationChain, validationError
 
 postsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
     const postId: string = req.params.id
-    const foundPost: Post | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsService.getPostById(postId)
+    const foundPost: PostOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsService.getPostById(postId)
     if (foundPost === REPOSITORY_RESPONSES.NOT_FOUND) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND)
         return
@@ -85,7 +85,7 @@ postsRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<{ 
 postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<{
     postId: string
 }, SortingPaginationQuery>, res: Response) => {
-    const foundComments: CommentsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND = await commentsService.getCommentsByPostId(req.params.postId, req.query)
+    const foundComments: OutputPagesComments | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND = await commentsService.getCommentsByPostId(req.params.postId, req.query)
     if (foundComments === REPOSITORY_RESPONSES.NOT_FOUND) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND)
         return

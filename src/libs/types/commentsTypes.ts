@@ -5,13 +5,16 @@ type CommentDb = {
     commentatorInfo: CommentatorInfo,
     createdAt: string,
 }
+type CommentInput = {
+    content: string,
+}
 type CommentOutput = {
     id: string,
     content: string,
     commentatorInfo: CommentatorInfo,
     createdAt: string,
 }
-type CommentsOutput = {
+type OutputPagesComments = {
     pagesCount: number,
     page: number,
     pageSize: number,
@@ -22,12 +25,9 @@ type CommentatorInfo = {
     userId: string,
     userLogin: string,
 }
-type CommentInput = {
-    content: string,
-}
-type CommentsDbOutput = {
+type CountAndCommentsDB = {
     totalCount: number,
-    foundComments: CommentOutput[]
+    foundComments: CommentDb[]
 }
 type CommentFieldsForErrorMessages = 'content';
 type CommentsDbFilterByPostId = { postId: string };
@@ -35,10 +35,10 @@ type CommentsDbFilterByPostId = { postId: string };
 export {
     CommentDb,
     CommentOutput,
-    CommentsOutput,
+    OutputPagesComments,
     CommentatorInfo,
     CommentInput,
     CommentFieldsForErrorMessages,
     CommentsDbFilterByPostId,
-    CommentsDbOutput
+    CountAndCommentsDB
 }

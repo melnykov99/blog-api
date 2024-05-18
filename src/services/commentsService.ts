@@ -4,14 +4,18 @@ import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse"
 import {SortingPaginationProcessed, SortingPaginationQuery} from "../libs/types/commonTypes";
 import sortingPaginationService from "../libs/common/services/sortingPaginationService";
 import commentsRepository from "../repositories/commentsRepository";
-import {CommentDb, CommentInput, CommentOutput, CommentsDbOutput, CommentsOutput} from "../libs/types/commentsTypes";
+import {CommentDb, CommentInput, CommentOutput, CountAndCommentsDB, OutputPagesComments} from "../libs/types/commentsTypes";
 import {randomUUID} from "crypto";
 import usersRepository from "../repositories/usersRepository";
 import {User} from "../libs/types/usersTypes";
 
 const commentsService = {
     async getCommentById(id: string): Promise<CommentOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
-        return commentsRepository.getCommentById(id)
+        const foundComment: CommentDb | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await commentsRepository.getCommentById(id);
+        if (foundComment === REPOSITORY_RESPONSES.NOT_FOUND || foundComment === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return foundComment
+        }
+        return this._mapCommentToOutput(foundComment)
     },
     async updateComment(commentId: string, commentBody: CommentInput, userId: string) {
         const foundComment: CommentOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await commentsRepository.getCommentById(commentId);
@@ -21,7 +25,7 @@ const commentsService = {
         if (foundComment.commentatorInfo.userId !== userId) {
             return REPOSITORY_RESPONSES.FORBIDDEN
         }
-       return await commentsRepository.updateComment(commentId, commentBody.content)
+        return await commentsRepository.updateComment(commentId, commentBody.content)
     },
     async deleteComment(commentId: string, userId: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.FORBIDDEN | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const foundComment: CommentOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await commentsRepository.getCommentById(commentId);
@@ -34,22 +38,23 @@ const commentsService = {
         return await commentsRepository.deleteComment(commentId)
 
     },
-    async getCommentsByPostId(postId: string, query: SortingPaginationQuery): Promise<CommentsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND> {
+    async getCommentsByPostId(postId: string, query: SortingPaginationQuery): Promise<OutputPagesComments | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND> {
         const foundPost: Post | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsRepository.getPostById(postId);
         if (foundPost === REPOSITORY_RESPONSES.NOT_FOUND || foundPost === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundPost
         }
         const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query);
-        const commentsDbOutput: REPOSITORY_RESPONSES.UNSUCCESSFULLY | CommentsDbOutput = await commentsRepository.getCommentsByPostId(postId, sortingPaginationProcessed);
-        if (commentsDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
-            return commentsDbOutput
+        const commentsAndCount: REPOSITORY_RESPONSES.UNSUCCESSFULLY | CountAndCommentsDB = await commentsRepository.getCommentsByPostId(postId, sortingPaginationProcessed);
+        if (commentsAndCount === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return commentsAndCount
         }
+        const commentsOutput: CommentOutput[] = commentsAndCount.foundComments.map(comment => this._mapCommentToOutput(comment))
         return {
-            pagesCount: Math.ceil(commentsDbOutput.totalCount / sortingPaginationProcessed.pagination.pageSize),
+            pagesCount: Math.ceil(commentsAndCount.totalCount / sortingPaginationProcessed.pagination.pageSize),
             page: sortingPaginationProcessed.pagination.pageNumber,
             pageSize: sortingPaginationProcessed.pagination.pageSize,
-            totalCount: commentsDbOutput.totalCount,
-            items: commentsDbOutput.foundComments
+            totalCount: commentsAndCount.totalCount,
+            items: commentsOutput
         }
     },
     async createComment(postId: string, commentBody: CommentInput, userId: string): Promise<CommentOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
@@ -80,6 +85,14 @@ const commentsService = {
             content: newComment.content,
             commentatorInfo: newComment.commentatorInfo,
             createdAt: newComment.createdAt
+        }
+    },
+    _mapCommentToOutput(comment: CommentDb): CommentOutput {
+        return {
+            id: comment.id,
+            content: comment.content,
+            commentatorInfo: comment.commentatorInfo,
+            createdAt: comment.createdAt,
         }
     }
 }

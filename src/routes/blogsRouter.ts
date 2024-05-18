@@ -6,7 +6,7 @@ import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse"
 import authBasicMiddleware from "../libs/middlewares/authBasicMiddleware";
 import blogsValidationChain from "../libs/validations/blogsValidation";
 import validationErrorCheck from "../libs/validations/validationErrorCheck";
-import {Post, PostInputWithoutBlog, PostsOutput} from "../libs/types/postsTypes";
+import {Post, PostInputWithoutBlog, OutputPagesPosts} from "../libs/types/postsTypes";
 import {postsForBlogValidationChain} from "../libs/validations/postsValidation";
 import {SortingPaginationQuery} from "../libs/types/commonTypes";
 import {
@@ -75,7 +75,7 @@ blogsRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<{i
 // Получение постов, относящихся к конкретному блогу
 blogsRouter.get('/:id/posts', async (req: RequestWithParamsAndQuery<{id: string}, SortingPaginationQuery>, res: Response) => {
     const blogId: string = req.params.id;
-    const posts: PostsOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getPostsByBlogId(blogId, req.query)
+    const posts: OutputPagesPosts | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getPostsByBlogId(blogId, req.query)
     if (posts === REPOSITORY_RESPONSES.NOT_FOUND) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND)
         return

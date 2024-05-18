@@ -12,6 +12,7 @@ type BlogInput = {
     websiteUrl: string,
 }
 type BlogOutput = {
+    id: string,
     name: string,
     description: string,
     websiteUrl: string,

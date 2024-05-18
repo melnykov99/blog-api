@@ -2,10 +2,11 @@ import blogsRepository from "../repositories/blogsRepository";
 import {Blog, BlogInput, BlogOutput, CountAndBlogsDB, OutputPagesBlogs} from "../libs/types/blogsTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {randomUUID} from "crypto";
-import {PostInputWithoutBlog, PostsDbOutput, PostsOutput} from "../libs/types/postsTypes";
+import {PostInputWithoutBlog, CountAndPostsDB, OutputPagesPosts, PostOutput} from "../libs/types/postsTypes";
 import postsRepository from "../repositories/postsRepository";
 import {SortingPaginationProcessed, SortingPaginationQuery} from "../libs/types/commonTypes";
 import sortingPaginationService from "../libs/common/services/sortingPaginationService";
+import postsService from "./postsService";
 
 const blogsService = {
     async getBlogs(query: SortingPaginationQuery): Promise<OutputPagesBlogs | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
@@ -63,22 +64,23 @@ const blogsService = {
     async deleteBlog(id: string): Promise<REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         return await blogsRepository.deleteBlog(id)
     },
-    async getPostsByBlogId(blogId: string, query: SortingPaginationQuery): Promise<PostsOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async getPostsByBlogId(blogId: string, query: SortingPaginationQuery): Promise<OutputPagesPosts | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const foundBlog: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | Blog = await blogsRepository.getBlogById(blogId)
         if (foundBlog === REPOSITORY_RESPONSES.NOT_FOUND || foundBlog === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundBlog
         }
         const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query)
-        const postsDbOutput: PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsRepository.getPostsByBlogId(blogId, sortingPaginationProcessed)
-        if (postsDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
-            return postsDbOutput
+        const postsAndCount: CountAndPostsDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsRepository.getPostsByBlogId(blogId, sortingPaginationProcessed)
+        if (postsAndCount === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return postsAndCount
         }
+        const postsOutput: PostOutput[] = postsAndCount.foundPosts.map(post => postsService._mapPostToOutput(post))
         return {
-            pagesCount: Math.ceil(postsDbOutput.totalCount / sortingPaginationProcessed.pagination.pageSize),
+            pagesCount: Math.ceil(postsAndCount.totalCount / sortingPaginationProcessed.pagination.pageSize),
             page: sortingPaginationProcessed.pagination.pageNumber,
             pageSize: sortingPaginationProcessed.pagination.pageSize,
-            totalCount: postsDbOutput.totalCount,
-            items: postsDbOutput.foundPosts
+            totalCount: postsAndCount.totalCount,
+            items: postsOutput
         }
     },
     async createPostByBlogId(blogId: string, postBody: PostInputWithoutBlog) {
@@ -103,6 +105,7 @@ const blogsService = {
     },
     _mapBlogToOutput(blog: Blog): BlogOutput {
         return {
+            id: blog.id,
             name: blog.name,
             description: blog.description,
             websiteUrl: blog.websiteUrl,

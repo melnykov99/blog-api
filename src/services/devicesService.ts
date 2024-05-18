@@ -1,10 +1,14 @@
 import devicesRepository from "../repositories/devicesRepository";
-import {DeviceOutput} from "../libs/types/devicesTypes";
+import {DeviceDB, DeviceOutput} from "../libs/types/devicesTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 
 const devicesService = {
     async getDevices(userId: string): Promise<DeviceOutput[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
-        return await devicesRepository.getDevices(userId);
+        const foundDevices: DeviceDB[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesRepository.getDevices(userId);
+        if (foundDevices === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return foundDevices
+        }
+        return foundDevices.map(device => this._mapDeviceToOutput(device))
     },
     async deleteOtherDevices(deviceId: string, userId: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         return await devicesRepository.deleteOtherDevices(deviceId, userId);
@@ -25,6 +29,14 @@ const devicesService = {
         }
         // Удаляем девайс
         return await devicesRepository.deleteDeviceById(deviceId);
+    },
+    _mapDeviceToOutput(device: DeviceDB) {
+        return {
+            ip: device.ip,
+            title: device.title,
+            lastActiveDate: device.lastActiveDate,
+            deviceId: device.deviceId,
+        }
     },
 }
 export default devicesService;

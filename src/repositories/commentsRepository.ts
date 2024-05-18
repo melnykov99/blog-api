@@ -1,18 +1,13 @@
 import {SortingPaginationProcessed} from "../libs/types/commonTypes";
-import {commentsCollection, postsCollection} from "./dbConfig";
+import {commentsCollection} from "./dbConfig";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
-import {CommentDb, CommentOutput, CommentsDbFilterByPostId} from "../libs/types/commentsTypes";
+import {CommentDb, CommentOutput, CommentsDbFilterByPostId, CountAndCommentsDB} from "../libs/types/commentsTypes";
 import {DeleteResult, UpdateResult} from "mongodb";
 
 const commentsRepository = {
-    async getCommentById(id: string): Promise<CommentOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async getCommentById(id: string): Promise<CommentDb | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            const foundComment: CommentOutput | null = await commentsCollection.findOne({id: id}, {
-                projection: {
-                    _id: false,
-                    postId: false
-                }
-            });
+            const foundComment: CommentDb | null = await commentsCollection.findOne({id: id});
             if (!foundComment) {
                 return REPOSITORY_RESPONSES.NOT_FOUND
             }
@@ -43,12 +38,12 @@ const commentsRepository = {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
     },
-    async getCommentsByPostId(postId: string, sortingPaginationProcessed: SortingPaginationProcessed) {
+    async getCommentsByPostId(postId: string, sortingPaginationProcessed: SortingPaginationProcessed): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | CountAndCommentsDB> {
         try {
             const filter: CommentsDbFilterByPostId = {postId: postId}
             const totalCount: number = await commentsCollection.countDocuments(filter)
-            const foundComments: CommentOutput[] = await commentsCollection
-                .find(filter, {projection: {_id: false, postId: false}})
+            const foundComments: CommentDb[] = await commentsCollection
+                .find(filter)
                 .sort({[sortingPaginationProcessed.sorting.sortBy]: sortingPaginationProcessed.sorting.sortDirection})
                 .skip(sortingPaginationProcessed.dbProperties.skip)
                 .limit(sortingPaginationProcessed.dbProperties.limit)
