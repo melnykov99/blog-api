@@ -8,15 +8,7 @@ const postsRepository = {
     async getPosts(sortingPaginationProcessed: SortingPaginationProcessed): Promise<PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
             const filter: PostsDbFilter = {}
-            //TODO: дублирование кода убрать
-            const totalCount: number = await postsCollection.countDocuments(filter)
-            const foundPosts: Post[] = await postsCollection
-                .find(filter, {projection: {_id: false}})
-                .sort({[sortingPaginationProcessed.sorting.sortBy]: sortingPaginationProcessed.sorting.sortDirection})
-                .skip(sortingPaginationProcessed.dbProperties.skip)
-                .limit(sortingPaginationProcessed.dbProperties.limit)
-                .toArray();
-            return {totalCount, foundPosts}
+            return await this._getAndSortingPosts(filter, sortingPaginationProcessed)
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
@@ -73,17 +65,20 @@ const postsRepository = {
     async getPostsByBlogId(blogId: string, sortingPaginationProcessed: SortingPaginationProcessed): Promise<PostsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
             const filter: PostsDbFilterByBlogId = {blogId: blogId}
-            const totalCount: number = await postsCollection.countDocuments(filter)
-            const foundPosts: Post[] = await postsCollection
-                .find(filter, {projection: {_id: false}})
-                .sort({[sortingPaginationProcessed.sorting.sortBy]: sortingPaginationProcessed.sorting.sortDirection})
-                .skip(sortingPaginationProcessed.dbProperties.skip)
-                .limit(sortingPaginationProcessed.dbProperties.limit)
-                .toArray()
-            return {totalCount, foundPosts}
+            return await this._getAndSortingPosts(filter, sortingPaginationProcessed)
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
-    }
+    },
+    async _getAndSortingPosts(filter: PostsDbFilter | PostsDbFilterByBlogId, sortingPaginationProcessed: SortingPaginationProcessed) {
+        const totalCount: number = await postsCollection.countDocuments(filter)
+        const foundPosts: Post[] = await postsCollection
+            .find(filter, {projection: {_id: false}})
+            .sort({[sortingPaginationProcessed.sorting.sortBy]: sortingPaginationProcessed.sorting.sortDirection})
+            .skip(sortingPaginationProcessed.dbProperties.skip)
+            .limit(sortingPaginationProcessed.dbProperties.limit)
+            .toArray()
+        return {totalCount, foundPosts}
+    },
 }
 export default postsRepository;
