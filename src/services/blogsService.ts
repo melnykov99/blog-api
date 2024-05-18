@@ -1,5 +1,5 @@
 import blogsRepository from "../repositories/blogsRepository";
-import {Blog, BlogInput, BlogsDbOutput, BlogsOutput} from "../libs/types/blogsTypes";
+import {Blog, BlogInput, BlogOutput, CountAndBlogsDB, OutputPagesBlogs} from "../libs/types/blogsTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {randomUUID} from "crypto";
 import {PostInputWithoutBlog, PostsDbOutput, PostsOutput} from "../libs/types/postsTypes";
@@ -8,18 +8,19 @@ import {SortingPaginationProcessed, SortingPaginationQuery} from "../libs/types/
 import sortingPaginationService from "../libs/common/services/sortingPaginationService";
 
 const blogsService = {
-    async getBlogs(query: SortingPaginationQuery): Promise<BlogsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async getBlogs(query: SortingPaginationQuery): Promise<OutputPagesBlogs | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query)
-        const blogsDbOutput: REPOSITORY_RESPONSES.UNSUCCESSFULLY | BlogsDbOutput = await blogsRepository.getBlogs(sortingPaginationProcessed)
-        if (blogsDbOutput === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
-            return blogsDbOutput
+        const blogsAndCount: REPOSITORY_RESPONSES.UNSUCCESSFULLY | CountAndBlogsDB = await blogsRepository.getBlogs(sortingPaginationProcessed)
+        if (blogsAndCount === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return blogsAndCount
         }
+        const blogsOutput: BlogOutput[] = blogsAndCount.foundBlogs.map(blog => this._mapBlogToOutput(blog))
         return {
-            pagesCount: Math.ceil(blogsDbOutput.totalCount / sortingPaginationProcessed.pagination.pageSize),
+            pagesCount: Math.ceil(blogsAndCount.totalCount / sortingPaginationProcessed.pagination.pageSize),
             page: sortingPaginationProcessed.pagination.pageNumber,
             pageSize: sortingPaginationProcessed.pagination.pageSize,
-            totalCount: blogsDbOutput.totalCount,
-            items: blogsDbOutput.foundBlogs
+            totalCount: blogsAndCount.totalCount,
+            items: blogsOutput
         }
     },
     async createBlog(bodyBlog: BlogInput): Promise<Blog | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
@@ -95,6 +96,15 @@ const blogsService = {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
         return newPost
+    },
+    _mapBlogToOutput(blog: Blog): BlogOutput {
+        return {
+            name: blog.name,
+            description: blog.description,
+            websiteUrl: blog.websiteUrl,
+            createdAt: blog.createdAt,
+            isMembership: blog.isMembership,
+        }
     }
 }
 export default blogsService;

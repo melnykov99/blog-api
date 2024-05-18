@@ -1,7 +1,7 @@
 import {SortingPaginationProcessed, SortingPaginationQuery} from "../libs/types/commonTypes";
 import usersRepository from "../repositories/usersRepository";
 import sortingPaginationService from "../libs/common/services/sortingPaginationService";
-import {User, UserInput, UserOutput, UsersFoundDB, OutputPagesUsers} from "../libs/types/usersTypes";
+import {User, UserInput, UserOutput, CountAndUsersDB, OutputPagesUsers} from "../libs/types/usersTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {randomUUID} from "crypto";
 import bcrypt from 'bcrypt'
@@ -10,18 +10,18 @@ import {add} from 'date-fns'
 const usersService = {
     async getUsers(query: SortingPaginationQuery): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | OutputPagesUsers> {
         const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query)
-        const foundUsers: UsersFoundDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersRepository.getUsers(sortingPaginationProcessed)
-        if (foundUsers === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
-            return foundUsers
+        const usersAndCount: CountAndUsersDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersRepository.getUsers(sortingPaginationProcessed)
+        if (usersAndCount === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return usersAndCount
         }
         //Мапим, убирая лишние значения, которые пришли из БД. Оставляем только то, что можно выводить в ответе
-        const users: UserOutput[] = foundUsers.foundUsers.map(user => this._mapUserOutput(user))
+        const usersOutput: UserOutput[] = usersAndCount.foundUsers.map(user => this._mapUserToOutput(user))
         return {
-            pagesCount: Math.ceil(foundUsers.totalCount / sortingPaginationProcessed.pagination.pageSize),
+            pagesCount: Math.ceil(usersAndCount.totalCount / sortingPaginationProcessed.pagination.pageSize),
             page: sortingPaginationProcessed.pagination.pageNumber,
             pageSize: sortingPaginationProcessed.pagination.pageSize,
-            totalCount: foundUsers.totalCount,
-            items: users
+            totalCount: usersAndCount.totalCount,
+            items: usersOutput
         }
     },
     // Создание юзера вызванное регистрацией. Юзер не подтвержден
@@ -73,7 +73,7 @@ const usersService = {
         }).catch(err => console.error(err.message))
         return userHash;
     },
-    _mapUserOutput(user: User): UserOutput {
+    _mapUserToOutput(user: User): UserOutput {
         return {
             id: user.id,
             login: user.login,

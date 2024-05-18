@@ -1,11 +1,11 @@
 import {SortingPaginationProcessed} from "../libs/types/commonTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
-import {User, UsersDbFilter, UsersFoundDB} from "../libs/types/usersTypes";
+import {User, UsersDbFilter, CountAndUsersDB} from "../libs/types/usersTypes";
 import {usersCollection} from "./dbConfig";
 import filterService from "../libs/common/services/filterService";
 
 const usersRepository = {
-    async getUsers(sortingPaginationProcessed: SortingPaginationProcessed): Promise<UsersFoundDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async getUsers(sortingPaginationProcessed: SortingPaginationProcessed): Promise<CountAndUsersDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
             const filter: UsersDbFilter = filterService.filterForUsers(sortingPaginationProcessed.searchParams.searchLoginTerm, sortingPaginationProcessed.searchParams.searchEmailTerm)
             const totalCount: number = await usersCollection.countDocuments(filter)

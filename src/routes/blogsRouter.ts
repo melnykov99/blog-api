@@ -1,7 +1,7 @@
 import express, {Response} from "express";
 import {HTTP_STATUSES} from "../libs/common/constants/httpStatuses";
 import blogsService from "../services/blogsService";
-import {Blog, BlogInput, BlogsOutput} from "../libs/types/blogsTypes";
+import {Blog, BlogInput, OutputPagesBlogs} from "../libs/types/blogsTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import authBasicMiddleware from "../libs/middlewares/authBasicMiddleware";
 import blogsValidationChain from "../libs/validations/blogsValidation";
@@ -18,7 +18,7 @@ import {
 
 const blogsRouter = express.Router()
 blogsRouter.get('/', async (req: RequestWithQuery<SortingPaginationQuery>, res: Response) => {
-    const foundBlogs: BlogsOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getBlogs(req.query);
+    const foundBlogs: OutputPagesBlogs | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getBlogs(req.query);
     if (foundBlogs === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return

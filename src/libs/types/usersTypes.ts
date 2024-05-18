@@ -26,7 +26,7 @@ type OutputPagesUsers = {
     totalCount: number,
     items: UserOutput[]
 }
-type UsersFoundDB = {
+type CountAndUsersDB = {
     totalCount: number,
     foundUsers: User[]
 }
@@ -37,4 +37,4 @@ type UsersDbFilter =
     { login: { $regex: string; $options: string }, email: { $regex: string; $options: string } }
 type UserFieldsForErrorMessages = 'login' | 'email' | 'password'
 
-export {User, UserInput, UsersDbFilter, UsersFoundDB, OutputPagesUsers, UserOutput, UserFieldsForErrorMessages};
+export {User, UserInput, UsersDbFilter, CountAndUsersDB, OutputPagesUsers, UserOutput, UserFieldsForErrorMessages};
