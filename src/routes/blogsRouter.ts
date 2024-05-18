@@ -1,7 +1,7 @@
 import express, {Response} from "express";
 import {HTTP_STATUSES} from "../libs/common/constants/httpStatuses";
 import blogsService from "../services/blogsService";
-import {Blog, BlogInput, OutputPagesBlogs} from "../libs/types/blogsTypes";
+import {Blog, BlogInput, BlogOutput, OutputPagesBlogs} from "../libs/types/blogsTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import authBasicMiddleware from "../libs/middlewares/authBasicMiddleware";
 import blogsValidationChain from "../libs/validations/blogsValidation";
@@ -35,7 +35,7 @@ blogsRouter.post('/', authBasicMiddleware, blogsValidationChain, validationError
 })
 blogsRouter.get('/:id', async (req: RequestWithParams<{id: string}>, res: Response) => {
     const blogId: string = req.params.id
-    const foundBlog: Blog | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getBlogById(blogId)
+    const foundBlog: BlogOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getBlogById(blogId)
     if (foundBlog === REPOSITORY_RESPONSES.NOT_FOUND) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND)
         return

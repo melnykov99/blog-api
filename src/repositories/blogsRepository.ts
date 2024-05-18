@@ -31,7 +31,7 @@ const blogsRepository = {
     },
     async getBlogById(id: string): Promise<Blog | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            const foundBlog: Blog | null = await blogsCollection.findOne({id: id}, {projection: {_id: false}});
+            const foundBlog: Blog | null = await blogsCollection.findOne({id: id});
             if (!foundBlog) {
                 return REPOSITORY_RESPONSES.NOT_FOUND
             }

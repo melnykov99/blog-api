@@ -38,8 +38,12 @@ const blogsService = {
         }
         return newBlog
     },
-    async getBlogById(id: string): Promise<Blog | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
-        return await blogsRepository.getBlogById(id)
+    async getBlogById(id: string): Promise<BlogOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+        const foundBlog: Blog | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND = await blogsRepository.getBlogById(id);
+        if (foundBlog === REPOSITORY_RESPONSES.NOT_FOUND || foundBlog === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
+            return foundBlog
+        }
+        return this._mapBlogToOutput(foundBlog)
     },
     async updateBlog(id: string, bodyBlog: BlogInput): Promise<REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const foundBlog: Blog | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsRepository.getBlogById(id);
@@ -78,7 +82,7 @@ const blogsService = {
         }
     },
     async createPostByBlogId(blogId: string, postBody: PostInputWithoutBlog) {
-        const foundBlog: Blog | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await this.getBlogById(blogId)
+        const foundBlog: BlogOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await this.getBlogById(blogId)
         if (foundBlog === REPOSITORY_RESPONSES.NOT_FOUND || foundBlog === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundBlog
         }
