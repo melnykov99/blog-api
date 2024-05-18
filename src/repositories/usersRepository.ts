@@ -2,23 +2,12 @@ import {SortingPaginationProcessed} from "../libs/types/commonTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {User, UsersDbFilter, UsersDbOutput} from "../libs/types/usersTypes";
 import {usersCollection} from "./dbConfig";
-import {UpdateResult} from "mongodb";
+import filterService from "../libs/common/services/filterService";
 
 const usersRepository = {
     async getUsers(sortingPaginationProcessed: SortingPaginationProcessed): Promise<UsersDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            //TODO: этот страх  нужно вынести отдельно куда-то. У blogs возможно тоже
-            const filter: UsersDbFilter =
-                (sortingPaginationProcessed.searchParams.searchLoginTerm && sortingPaginationProcessed.searchParams.searchEmailTerm)
-                    ? {
-                        login: {$regex: sortingPaginationProcessed.searchParams.searchLoginTerm, $options: 'i'},
-                        email: {$regex: sortingPaginationProcessed.searchParams.searchEmailTerm, $options: 'i'}
-                    }
-                    : (sortingPaginationProcessed.searchParams.searchLoginTerm && !sortingPaginationProcessed.searchParams.searchEmailTerm)
-                        ? {login: {$regex: sortingPaginationProcessed.searchParams.searchLoginTerm, $options: 'i'}}
-                        : (!sortingPaginationProcessed.searchParams.searchLoginTerm && sortingPaginationProcessed.searchParams.searchEmailTerm)
-                            ? {email: {$regex: sortingPaginationProcessed.searchParams.searchEmailTerm, $options: 'i'}}
-                            : {}
+            const filter: UsersDbFilter = filterService.filterForUsers(sortingPaginationProcessed.searchParams.searchLoginTerm, sortingPaginationProcessed.searchParams.searchEmailTerm)
             const totalCount: number = await usersCollection.countDocuments(filter)
             const foundUsers: User[] = await usersCollection
                 //TODO: скорее всего не репозиторий должен заниматься тем, что ненужные данные убирает. Мб надо мапить в сервисе уже

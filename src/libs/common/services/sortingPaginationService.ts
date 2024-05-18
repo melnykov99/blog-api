@@ -22,9 +22,9 @@ const sortingPaginationService = {
             // Если значение в sortBy невалидно и не соответствует полям блогов или постов, то сортировка по createdAt
             sortBy: query.sortBy === undefined ? 'createdAt' : (!this.isValidSortByValue(query.sortBy)) ? 'createdAt' : query.sortBy
         }
-        const searchNameTerm: SearchNameTerm = query.searchNameTerm === undefined ? null : query.searchNameTerm;
-        const searchLoginTerm: SearchLoginTerm = query.searchLoginTerm === undefined ? null : query.searchLoginTerm;
-        const searchEmailTerm: SearchEmailTerm = query.searchEmailTerm === undefined ? null : query.searchEmailTerm;
+        const searchNameTerm: SearchNameTerm = query.searchNameTerm === undefined ? undefined : query.searchNameTerm;
+        const searchLoginTerm: SearchLoginTerm = query.searchLoginTerm === undefined ? undefined : query.searchLoginTerm;
+        const searchEmailTerm: SearchEmailTerm = query.searchEmailTerm === undefined ? undefined : query.searchEmailTerm;
         // skip по формуле считаем
         const skip: number = (pagination.pageNumber - 1) * pagination.pageSize;
         // limit это pageSize

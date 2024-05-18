@@ -3,11 +3,12 @@ import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse"
 import {blogsCollection} from "./dbConfig";
 import {UpdateResult} from "mongodb";
 import {SortingPaginationProcessed} from "../libs/types/commonTypes";
+import filterService from "../libs/common/services/filterService";
 
 const blogsRepository = {
     async getBlogs(sortingPaginationProcessed: SortingPaginationProcessed): Promise<BlogsDbOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            const filter: BlogsDbFilter = (!sortingPaginationProcessed.searchParams.searchNameTerm) ? {} : { name: { $regex: sortingPaginationProcessed.searchParams.searchNameTerm, $options: 'i' } };
+            const filter: BlogsDbFilter = filterService.filterForBlogs(sortingPaginationProcessed.searchParams.searchNameTerm)
             const totalCount: number = await blogsCollection.countDocuments(filter)
             const foundBlogs: Blog[] = await blogsCollection
                 .find(filter, {projection: {_id: false}})

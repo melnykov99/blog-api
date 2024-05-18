@@ -36,10 +36,10 @@ type Sorting = {
     sortDirection: 1 | -1,
 }
 // Используется в запросе /blogs
-type SearchNameTerm = string | null
+type SearchNameTerm = string | undefined
 // Используется в запросе /users
-type SearchLoginTerm = string | null
-type SearchEmailTerm = string | null
+type SearchLoginTerm = string | undefined
+type SearchEmailTerm = string | undefined
 
 // Свойства для find запроса в mongodb
 type DbProperties = {
