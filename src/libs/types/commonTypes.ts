@@ -1,5 +1,6 @@
 import {Blog} from "./blogsTypes";
 import {Post} from "./postsTypes";
+import {JwtPayload} from "jsonwebtoken";
 
 type CommonError = {
     message: string,
@@ -46,4 +47,11 @@ type DbProperties = {
     skip: number,
     limit: number,
 }
-export {CommonError, ErrorsMessages, SortingPaginationQuery, Pagination, DbProperties, SortingPaginationProcessed, Sorting, SearchNameTerm, SearchLoginTerm, SearchEmailTerm};
+
+// Интерфейс, расширяющий стандартный тип JwtPayload, добавляем в него свойства userId и deviceId
+interface CustomJwtPayload extends JwtPayload {
+    userId: string;
+    deviceId?: string;
+}
+
+export {CommonError, ErrorsMessages, SortingPaginationQuery, Pagination, DbProperties, SortingPaginationProcessed, Sorting, SearchNameTerm, SearchLoginTerm, SearchEmailTerm, CustomJwtPayload};

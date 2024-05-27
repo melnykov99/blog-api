@@ -9,6 +9,7 @@ import {DeviceDB, DeviceInputInfo} from "../libs/types/devicesTypes";
 import {randomUUID} from "crypto";
 import devicesRepository from "../repositories/devicesRepository";
 import tokensBlacklistRepository from "../repositories/tokensBlackListRepository";
+import {JwtPayload} from "jsonwebtoken";
 
 const authService = {
     async login(bodyLogin: AuthLogin, deviceInfo: DeviceInputInfo): Promise<AccessAndRefreshToken | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.UNAUTHORIZED> {
@@ -31,8 +32,17 @@ const authService = {
         const deviceId: string = randomUUID();
         const accessToken: string = await jwtService.createAccessToken(foundUser.id);
         const refreshToken: string = await jwtService.createRefreshToken(foundUser.id, deviceId);
-        const decodedAccessToken = await jwtService.getDecodedToken(accessToken)
-        const decodedRefreshToken = await jwtService.getDecodedToken(refreshToken)
+        const decodedAccessToken: string | JwtPayload | null = await jwtService.getDecodedToken(accessToken);
+        // Декодируем только что созданный accessToken, нужно чтобы достать данные из него.
+        // Проверяем успешно ли декодировали токен. Проверяем на null, на string, на наличие и iat в JwtPayload
+        if (!decodedAccessToken || typeof decodedAccessToken === 'string' || decodedAccessToken.iat === undefined) {
+            return REPOSITORY_RESPONSES.UNAUTHORIZED
+        }
+        const decodedRefreshToken: string | JwtPayload | null = await jwtService.getDecodedToken(refreshToken);
+        // Также декодируем и проверяем и созданный refreshToken
+        if (!decodedRefreshToken || typeof decodedRefreshToken === 'string' || decodedRefreshToken.exp === undefined || decodedRefreshToken.iat === undefined) {
+            return REPOSITORY_RESPONSES.UNAUTHORIZED
+        }
         // Создаем новый девайс и добавляем его в БД
         const newDevice: DeviceDB = {
             ip: deviceInfo.ip ?? 'unknown ip',
@@ -59,8 +69,12 @@ const authService = {
         if (deleteDeviceResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
+        // Декодируем токен и проверяем, что успешно декодировали
+        const decodedToken: string | JwtPayload | null = await jwtService.getDecodedToken(refreshToken);
+        if (!decodedToken || typeof decodedToken === 'string' || decodedToken.exp === undefined) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
         // Добавляем refreshToken токен в blacklist
-        const decodedToken = await jwtService.getDecodedToken(refreshToken)
         const addRefreshTokenToBlacklist: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await tokensBlacklistRepository.addTokenToBlacklist(refreshToken, decodedToken.exp)
         if (addRefreshTokenToBlacklist === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
@@ -75,14 +89,26 @@ const authService = {
             refreshToken: await jwtService.createRefreshToken(userId, deviceId)
         }
         const decodedAccessToken = await jwtService.getDecodedToken(accessAndRefreshToken.accessToken);
+        // Декодируем присланный accessToken. Проверяем успешно ли декодировали токен. Проверяем на null, на string, на наличие exp и iat в JwtPayload
+        if (!decodedAccessToken || typeof decodedAccessToken === 'string' || decodedAccessToken.exp === undefined || decodedAccessToken.iat === undefined) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
         const decodedRefreshToken = await jwtService.getDecodedToken(accessAndRefreshToken.refreshToken);
+        // Также декодируем и проверяем refreshToken
+        if (!decodedRefreshToken || typeof decodedRefreshToken === 'string' || decodedRefreshToken.iat === undefined) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
         // У device меняем lastActiveDate и даты создания/окончания refreshToken
         const updatedResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesRepository.updateDeviceTokenDates(deviceId, (new Date(decodedAccessToken.iat * 1000).toISOString()), decodedRefreshToken.iat, decodedAccessToken.exp)
         if (updatedResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return updatedResult
         }
         // Добавляем refreshToken токен в blacklist
-        const decodeOldRefreshToken = await jwtService.getDecodedToken(refreshToken)
+        const decodeOldRefreshToken = await jwtService.getDecodedToken(refreshToken);
+        // Декодируем старый refreshToken и проверяем, что успешно декодировали
+        if (!decodeOldRefreshToken || typeof decodeOldRefreshToken === 'string' || decodeOldRefreshToken.exp === undefined) {
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+        }
         const addRefreshTokenToBlacklist: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await tokensBlacklistRepository.addTokenToBlacklist(refreshToken, decodeOldRefreshToken.exp)
         if (addRefreshTokenToBlacklist === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY

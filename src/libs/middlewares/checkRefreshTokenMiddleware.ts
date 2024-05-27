@@ -6,6 +6,7 @@ import devicesRepository from "../../repositories/devicesRepository";
 import {DeviceDB} from "../types/devicesTypes";
 import tokensBlacklistRepository from "../../repositories/tokensBlackListRepository";
 import {TokenBlackList} from "../types/tokenBlackListTypes";
+import {JwtPayload} from "jsonwebtoken";
 
 // Мидлвара проверки рефреш токена
 // Если refreshToken-а нет, он истек, находится в черном списке или не находим по его данным device, то прервем запрос и вернем UNAUTHORIZED
@@ -15,7 +16,12 @@ async function checkRefreshTokenMiddleware(req: Request, res: Response, next: Ne
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
     }
-    const decodedRefreshToken = await jwtService.getDecodedToken(refreshToken)
+    const decodedRefreshToken: string | JwtPayload | null = await jwtService.getDecodedToken(refreshToken)
+    // Проверяем успешно ли декодировали токен. Проверяем на null, на string, на наличие exp и iat в JwtPayload
+    if (!decodedRefreshToken || typeof decodedRefreshToken === 'string' || decodedRefreshToken.exp === undefined || decodedRefreshToken.iat === undefined) {
+        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
+        return
+    }
     // Проверяем не просрочен ли токен
     if (new Date() > (new Date(decodedRefreshToken.exp * 1000))) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
