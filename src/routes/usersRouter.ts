@@ -11,8 +11,8 @@ import validationErrorCheck from "../libs/validations/validationErrorCheck";
 
 const usersRouter: Router = express.Router();
 
-usersRouter.get('/', authBasicMiddleware, async (req: RequestWithQuery<SortingPaginationQuery>, res: Response) => {
-    const foundUsers: REPOSITORY_RESPONSES.UNSUCCESSFULLY | OutputPagesUsers = await usersService.getUsers(req.query)
+usersRouter.get('/', authBasicMiddleware, async (req: RequestWithQuery<SortingPaginationQuery>, res: Response<OutputPagesUsers>) => {
+    const foundUsers: OutputPagesUsers | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersService.getUsers(req.query)
     if (foundUsers === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return
@@ -20,8 +20,8 @@ usersRouter.get('/', authBasicMiddleware, async (req: RequestWithQuery<SortingPa
     res.status(HTTP_STATUSES.OK).send(foundUsers)
 })
 // Ручное создание юзера "суперадмином". Юзер сразу становится подтвержденным.
-usersRouter.post('/', authBasicMiddleware, usersValidationChain, validationErrorCheck, async (req: RequestWithBody<UserInput>, res: Response) => {
-    const createdUser: REPOSITORY_RESPONSES.UNSUCCESSFULLY | UserOutput = await usersService.manualCreateUser(req.body)
+usersRouter.post('/', authBasicMiddleware, usersValidationChain, validationErrorCheck, async (req: RequestWithBody<UserInput>, res: Response<UserOutput>) => {
+    const createdUser: UserOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersService.manualCreateUser(req.body)
     if (createdUser === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return

@@ -1,7 +1,7 @@
 import express, {Request, Response, Router} from "express";
 import {RequestWithBody} from "../libs/types/requestsResponsesTypes";
 import {
-    AccessAndRefreshToken,
+    AccessAndRefreshToken, AccessTokenOutput,
     AuthEmailResending,
     AuthLogin,
     AuthMeUserInfo,
@@ -64,7 +64,7 @@ authRouter.post('/registration-email-resending', registrationEmailResendingLimit
 })
 // Авторизация. Если пароль неверный или юзер с таким login/email не найден, то вернем UNAUTHORIZED.
 // Если данные правильные, то вернем accessToken в res.body и refreshToken в res.cookie
-authRouter.post('/login', loginLimiter, authLoginValidation, validationErrorCheck, async (req: RequestWithBody<AuthLogin>, res: Response) => {
+authRouter.post('/login', loginLimiter, authLoginValidation, validationErrorCheck, async (req: RequestWithBody<AuthLogin>, res: Response<AccessTokenOutput>) => {
     const deviceInfo: DeviceInputInfo = {browser: req.headers['user-agent'], ip: req.socket.remoteAddress}
     const loginResult: AccessAndRefreshToken | SERVICE_RESPONSES.UNAUTHORIZED | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await authService.login(req.body, deviceInfo);
     if (loginResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
@@ -88,7 +88,7 @@ authRouter.post('/logout', checkRefreshTokenMiddleware, async (req: Request, res
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
 // В куке запроса приходит refreshToken, проверяем его на валидность в мидлваре. Если токен валидный, то генерируем новую пару
-authRouter.post('/refresh-token', checkRefreshTokenMiddleware, async (req: Request, res: Response) => {
+authRouter.post('/refresh-token', checkRefreshTokenMiddleware, async (req: Request, res: Response<AccessTokenOutput>) => {
     const newTokens: AccessAndRefreshToken | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await authService.refreshTokens(req.cookies.refreshToken, req.ctx.userId!,  req.ctx.deviceId!);
     if (newTokens === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
@@ -99,7 +99,7 @@ authRouter.post('/refresh-token', checkRefreshTokenMiddleware, async (req: Reque
 })
 // Роут идентификации пользователя по accessToken. Токен приходит в headers.authorization, если нашли юзера, то возвращаем инфу о нем: email, login, userId
 // Проверка токена и поиск юзера по userId происходит в мидлваре authBearerMiddleware
-authRouter.get('/me', authBearerMiddleware, async (req: Request, res: Response) => {
+authRouter.get('/me', authBearerMiddleware, async (req: Request, res: Response<AuthMeUserInfo>) => {
     const userInfo: AuthMeUserInfo | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await authService.authMe(req.ctx.userId!);
     if (userInfo === REPOSITORY_RESPONSES.NOT_FOUND) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)

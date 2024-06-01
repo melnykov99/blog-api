@@ -8,7 +8,7 @@ import {RequestWithParams} from "../libs/types/requestsResponsesTypes";
 
 const devicesRouter: Router = express.Router();
 
-devicesRouter.get('/', checkRefreshTokenMiddleware, async (req: Request, res: Response) => {
+devicesRouter.get('/', checkRefreshTokenMiddleware, async (req: Request, res: Response<DeviceOutput[]>) => {
     const foundDevices: DeviceOutput[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesService.getDevices(req.ctx.userId!);
     if (foundDevices === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)

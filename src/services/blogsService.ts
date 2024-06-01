@@ -2,7 +2,7 @@ import blogsRepository from "../repositories/blogsRepository";
 import {Blog, BlogInput, BlogOutput, CountAndBlogsDB, OutputPagesBlogs} from "../libs/types/blogsTypes";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {randomUUID} from "crypto";
-import {PostInputWithoutBlog, CountAndPostsDB, OutputPagesPosts, PostOutput} from "../libs/types/postsTypes";
+import {PostInputWithoutBlog, CountAndPostsDB, OutputPagesPosts, PostOutput, Post} from "../libs/types/postsTypes";
 import postsRepository from "../repositories/postsRepository";
 import {SortingPaginationProcessed, SortingPaginationQuery} from "../libs/types/commonTypes";
 import sortingPaginationService from "../libs/common/services/sortingPaginationService";
@@ -24,7 +24,7 @@ const blogsService = {
             items: blogsOutput
         }
     },
-    async createBlog(bodyBlog: BlogInput): Promise<Blog | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async createBlog(bodyBlog: BlogInput): Promise<BlogOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const newBlog: Blog = {
             id: randomUUID(),
             name: bodyBlog.name,
@@ -83,12 +83,12 @@ const blogsService = {
             items: postsOutput
         }
     },
-    async createPostByBlogId(blogId: string, postBody: PostInputWithoutBlog) {
+    async createPostByBlogId(blogId: string, postBody: PostInputWithoutBlog): Promise<PostOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND> {
         const foundBlog: BlogOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await this.getBlogById(blogId)
         if (foundBlog === REPOSITORY_RESPONSES.NOT_FOUND || foundBlog === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundBlog
         }
-        const newPost = {
+        const newPost: Post = {
             id: randomUUID(),
             title: postBody.title,
             shortDescription: postBody.shortDescription,

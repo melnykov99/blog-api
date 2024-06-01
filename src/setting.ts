@@ -1,4 +1,4 @@
-import express from "express";
+import express, {Request, Response} from "express";
 import bodyParser from "body-parser";
 import deleteDataRouter from "./routes/testingRouter";
 import blogsRouter from "./routes/blogsRouter";
@@ -13,7 +13,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cookieParser())
-app.get('/', (req, res) => {res.send('main page')});
+app.get('/', (req: Request, res: Response) => {res.send('main page')});
 app.use('/testing/all-data', deleteDataRouter)
 app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
