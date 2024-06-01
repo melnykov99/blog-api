@@ -7,7 +7,7 @@ import sortingPaginationService from "../libs/common/services/sortingPaginationS
 
 const postsService = {
     async getPosts(query: SortingPaginationQuery): Promise<OutputPagesPosts | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
-        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query)
+        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query, 'posts')
         const postsAndCount: CountAndPostsDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsRepository.getPosts(sortingPaginationProcessed)
         if (postsAndCount === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return postsAndCount

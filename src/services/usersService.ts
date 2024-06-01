@@ -9,7 +9,7 @@ import {add} from 'date-fns'
 
 const usersService = {
     async getUsers(query: SortingPaginationQuery): Promise<REPOSITORY_RESPONSES.UNSUCCESSFULLY | OutputPagesUsers> {
-        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query)
+        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query, 'users')
         const usersAndCount: CountAndUsersDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersRepository.getUsers(sortingPaginationProcessed)
         if (usersAndCount === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return usersAndCount

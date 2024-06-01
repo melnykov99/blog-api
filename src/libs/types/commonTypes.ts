@@ -1,6 +1,8 @@
-import {Blog} from "./blogsTypes";
-import {Post} from "./postsTypes";
+import {Blog, BlogOutput} from "./blogsTypes";
+import {Post, PostOutput} from "./postsTypes";
 import {JwtPayload} from "jsonwebtoken";
+import {CommentOutput} from "./commentsTypes";
+import {UserOutput} from "./usersTypes";
 
 type CommonError = {
     message: string,
@@ -33,7 +35,7 @@ type Pagination = {
     pageNumber: number,
 }
 type Sorting = {
-    sortBy: keyof Blog | keyof Post,
+    sortBy: keyof BlogOutput | keyof PostOutput | keyof CommentOutput | keyof UserOutput,
     sortDirection: 1 | -1,
 }
 // Используется в запросе /blogs
@@ -48,10 +50,12 @@ type DbProperties = {
     limit: number,
 }
 
+type ServiceForSortingPagination = 'blogs' | 'posts' | 'comments' | 'users';
+
 // Интерфейс, расширяющий стандартный тип JwtPayload, добавляем в него свойства userId и deviceId
 interface CustomJwtPayload extends JwtPayload {
     userId: string;
     deviceId?: string;
 }
 
-export {CommonError, ErrorsMessages, SortingPaginationQuery, Pagination, DbProperties, SortingPaginationProcessed, Sorting, SearchNameTerm, SearchLoginTerm, SearchEmailTerm, CustomJwtPayload};
+export {CommonError, ErrorsMessages, SortingPaginationQuery, Pagination, DbProperties, SortingPaginationProcessed, Sorting, SearchNameTerm, SearchLoginTerm, SearchEmailTerm, CustomJwtPayload, ServiceForSortingPagination};

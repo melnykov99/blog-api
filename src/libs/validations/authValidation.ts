@@ -41,7 +41,6 @@ const authRegistrationValidation: ValidationChain[] = [
 ]
 
 const authRegistrationConfirmationValidation: ValidationChain[] = [
-    //TODO: возвращаем одну и ту же ошибку при неправильном формате code и если code уже истек. Нужно разделить
     //Проверка кода подтверждения. Если у найденного по коду юзера в codeExpirationDate null значит он уже должен быть подтвержден
     //Если у найденного юзера codeExpirationDate меньше текущей даты, значит срок действия кода истек и нужно запросить новый
     body('code').isString().bail().trim().notEmpty().bail().isLength({
@@ -59,7 +58,6 @@ const authRegistrationConfirmationValidation: ValidationChain[] = [
 ]
 
 const authRegistrationEmailResendingValidation: ValidationChain[] = [
-    //TODO: возвращаем одну и ту же ошибку при неправильном формате email и если юзер с таким email уже подтвержден, если он не найден. Нужно разделить.
     //Проверка email при запросе повторной отправки кода подтверждения. Возвращаем ошибку, если юзер с таким email не найден или он уже подтвержден
     body('email').isString().bail().trim().notEmpty().bail().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).bail().isLength({
         max: COMMON_LIMITS.MAX

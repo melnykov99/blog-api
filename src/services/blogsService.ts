@@ -10,7 +10,7 @@ import postsService from "./postsService";
 
 const blogsService = {
     async getBlogs(query: SortingPaginationQuery): Promise<OutputPagesBlogs | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
-        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query)
+        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query, 'blogs')
         const blogsAndCount: REPOSITORY_RESPONSES.UNSUCCESSFULLY | CountAndBlogsDB = await blogsRepository.getBlogs(sortingPaginationProcessed)
         if (blogsAndCount === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return blogsAndCount
@@ -69,7 +69,7 @@ const blogsService = {
         if (foundBlog === REPOSITORY_RESPONSES.NOT_FOUND || foundBlog === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundBlog
         }
-        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query)
+        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query, 'blogs')
         const postsAndCount: CountAndPostsDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsRepository.getPostsByBlogId(blogId, sortingPaginationProcessed)
         if (postsAndCount === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return postsAndCount

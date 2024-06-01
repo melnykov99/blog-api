@@ -43,7 +43,7 @@ const commentsService = {
         if (foundPost === REPOSITORY_RESPONSES.NOT_FOUND || foundPost === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundPost
         }
-        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query);
+        const sortingPaginationProcessed: SortingPaginationProcessed = sortingPaginationService.processingSortPag(query, 'comments');
         const commentsAndCount: REPOSITORY_RESPONSES.UNSUCCESSFULLY | CountAndCommentsDB = await commentsRepository.getCommentsByPostId(postId, sortingPaginationProcessed);
         if (commentsAndCount === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return commentsAndCount
