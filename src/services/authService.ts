@@ -1,6 +1,6 @@
 import {AccessAndRefreshToken, AuthLogin, AuthMeUserInfo} from "../libs/types/authTypes";
 import usersRepository from "../repositories/usersRepository";
-import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
+import {REPOSITORY_RESPONSES, SERVICE_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {User} from "../libs/types/usersTypes";
 import bcrypt from "bcrypt";
 import 'dotenv/config';
@@ -12,7 +12,7 @@ import tokensBlacklistRepository from "../repositories/tokensBlackListRepository
 import {JwtPayload} from "jsonwebtoken";
 
 const authService = {
-    async login(bodyLogin: AuthLogin, deviceInfo: DeviceInputInfo): Promise<AccessAndRefreshToken | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.UNAUTHORIZED> {
+    async login(bodyLogin: AuthLogin, deviceInfo: DeviceInputInfo): Promise<AccessAndRefreshToken | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | SERVICE_RESPONSES.UNAUTHORIZED> {
         const foundUser: REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND | User = await usersRepository.getUserByLoginOrEmail(bodyLogin.loginOrEmail);
         if (foundUser === REPOSITORY_RESPONSES.NOT_FOUND || foundUser === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundUser
@@ -26,7 +26,7 @@ const authService = {
         }
         // Пароль неверный
         if (loginResult === false) {
-            return REPOSITORY_RESPONSES.UNAUTHORIZED
+            return SERVICE_RESPONSES.UNAUTHORIZED
         }
         // Если пароль верный, то создаем и возвращаем пару access и refresh tokens
         const deviceId: string = randomUUID();
@@ -36,12 +36,12 @@ const authService = {
         // Декодируем только что созданный accessToken, нужно чтобы достать данные из него.
         // Проверяем успешно ли декодировали токен. Проверяем на null, на string, на наличие и iat в JwtPayload
         if (!decodedAccessToken || typeof decodedAccessToken === 'string' || decodedAccessToken.iat === undefined) {
-            return REPOSITORY_RESPONSES.UNAUTHORIZED
+            return SERVICE_RESPONSES.UNAUTHORIZED
         }
         const decodedRefreshToken: string | JwtPayload | null = await jwtService.getDecodedToken(refreshToken);
         // Также декодируем и проверяем и созданный refreshToken
         if (!decodedRefreshToken || typeof decodedRefreshToken === 'string' || decodedRefreshToken.exp === undefined || decodedRefreshToken.iat === undefined) {
-            return REPOSITORY_RESPONSES.UNAUTHORIZED
+            return SERVICE_RESPONSES.UNAUTHORIZED
         }
         // Создаем новый девайс и добавляем его в БД
         const newDevice: DeviceDB = {

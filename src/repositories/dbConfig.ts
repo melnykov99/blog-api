@@ -15,9 +15,9 @@ const blogsCollection: Collection<Blog> = db.collection<Blog>('blogs');
 const postsCollection: Collection<Post> = db.collection<Post>('posts');
 const usersCollection: Collection<User> = db.collection<User>('users');
 const commentsCollection: Collection<CommentDb> = db.collection<CommentDb>('comments');
-//TODO: нужна какая-то крона, которая будет проходится по этой коллекции и удалять девайсы с истекшими токенами, их уже нет смысла хранить в БД.
+// Предполагается, что тут будет какая-то крона, которая будет проходится по этой коллекции и удалять девайсы с истекшими токенами, их уже нет смысла хранить в БД.
 const devicesCollection: Collection<DeviceDB> = db.collection<DeviceDB>('devices');
-//TODO: и тут нужна крона которая будет удалять протухшие токены
+// И тут крона, которая будет удалять протухшие токены
 const tokensBlacklistCollection: Collection<TokenBlackList> = db.collection<TokenBlackList>('tokensBlackList')
 async function runDb() {
     try {

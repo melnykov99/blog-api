@@ -1,6 +1,6 @@
 import postsRepository from "../repositories/postsRepository";
 import {Post} from "../libs/types/postsTypes";
-import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
+import {REPOSITORY_RESPONSES, SERVICE_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {SortingPaginationProcessed, SortingPaginationQuery} from "../libs/types/commonTypes";
 import sortingPaginationService from "../libs/common/services/sortingPaginationService";
 import commentsRepository from "../repositories/commentsRepository";
@@ -17,23 +17,23 @@ const commentsService = {
         }
         return this._mapCommentToOutput(foundComment)
     },
-    async updateComment(commentId: string, commentBody: CommentInput, userId: string) {
+    async updateComment(commentId: string, commentBody: CommentInput, userId: string): Promise<SERVICE_RESPONSES.FORBIDDEN | REPOSITORY_RESPONSES> {
         const foundComment: CommentOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await commentsRepository.getCommentById(commentId);
         if (foundComment === REPOSITORY_RESPONSES.NOT_FOUND || foundComment === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundComment
         }
         if (foundComment.commentatorInfo.userId !== userId) {
-            return REPOSITORY_RESPONSES.FORBIDDEN
+            return SERVICE_RESPONSES.FORBIDDEN
         }
         return await commentsRepository.updateComment(commentId, commentBody.content)
     },
-    async deleteComment(commentId: string, userId: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.FORBIDDEN | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async deleteComment(commentId: string, userId: string): Promise<SERVICE_RESPONSES.FORBIDDEN | REPOSITORY_RESPONSES> {
         const foundComment: CommentOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await commentsRepository.getCommentById(commentId);
         if (foundComment === REPOSITORY_RESPONSES.NOT_FOUND || foundComment === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
             return foundComment
         }
         if (foundComment.commentatorInfo.userId !== userId) {
-            return REPOSITORY_RESPONSES.FORBIDDEN
+            return SERVICE_RESPONSES.FORBIDDEN
         }
         return await commentsRepository.deleteComment(commentId)
 

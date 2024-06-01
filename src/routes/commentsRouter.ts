@@ -2,7 +2,7 @@ import express, {Response, Router} from "express";
 import {RequestWithParams, RequestWithParamsAndBody} from "../libs/types/requestsResponsesTypes";
 import commentsService from "../services/commentsService";
 import {CommentInput, CommentOutput} from "../libs/types/commentsTypes";
-import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
+import {REPOSITORY_RESPONSES, SERVICE_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {HTTP_STATUSES} from "../libs/common/constants/httpStatuses";
 import authBearerMiddleware from "../libs/middlewares/authBearerMiddleware";
 import commentsValidationChain from "../libs/validations/commentsValidation";
@@ -23,8 +23,8 @@ commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: R
     res.status(HTTP_STATUSES.OK).send(foundComment)
 })
 commentsRouter.put('/:id', authBearerMiddleware, commentsValidationChain, validationErrorCheck, async (req: RequestWithParamsAndBody<{id: string}, CommentInput>, res: Response) => {
-    const updatingResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.FORBIDDEN | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await commentsService.updateComment(req.params.id, req.body, req.ctx.userId!)
-    if (updatingResult === REPOSITORY_RESPONSES.FORBIDDEN) {
+    const updatingResult: SERVICE_RESPONSES.FORBIDDEN | REPOSITORY_RESPONSES = await commentsService.updateComment(req.params.id, req.body, req.ctx.userId!)
+    if (updatingResult === SERVICE_RESPONSES.FORBIDDEN) {
         res.sendStatus(HTTP_STATUSES.FORBIDDEN)
         return
     }
@@ -39,8 +39,8 @@ commentsRouter.put('/:id', authBearerMiddleware, commentsValidationChain, valida
     res.sendStatus(HTTP_STATUSES.NO_CONTENT)
 })
 commentsRouter.delete('/:id', authBearerMiddleware, async (req: RequestWithParams<{ id: string }>, res: Response) => {
-    const deletionResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.FORBIDDEN | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await commentsService.deleteComment(req.params.id, req.ctx.userId!);
-    if (deletionResult === REPOSITORY_RESPONSES.FORBIDDEN) {
+    const deletionResult: SERVICE_RESPONSES.FORBIDDEN | REPOSITORY_RESPONSES = await commentsService.deleteComment(req.params.id, req.ctx.userId!);
+    if (deletionResult === SERVICE_RESPONSES.FORBIDDEN) {
         res.sendStatus(HTTP_STATUSES.FORBIDDEN)
         return
     }

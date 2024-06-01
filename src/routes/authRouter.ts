@@ -15,7 +15,7 @@ import {
 } from "../libs/validations/authValidation";
 import validationErrorCheck from "../libs/validations/validationErrorCheck";
 import authService from "../services/authService";
-import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
+import {REPOSITORY_RESPONSES, SERVICE_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {HTTP_STATUSES} from "../libs/common/constants/httpStatuses";
 import authBearerMiddleware from "../libs/middlewares/authBearerMiddleware";
 import {UserInput} from "../libs/types/usersTypes";
@@ -66,12 +66,12 @@ authRouter.post('/registration-email-resending', registrationEmailResendingLimit
 // Если данные правильные, то вернем accessToken в res.body и refreshToken в res.cookie
 authRouter.post('/login', loginLimiter, authLoginValidation, validationErrorCheck, async (req: RequestWithBody<AuthLogin>, res: Response) => {
     const deviceInfo: DeviceInputInfo = {browser: req.headers['user-agent'], ip: req.socket.remoteAddress}
-    const loginResult: AccessAndRefreshToken | REPOSITORY_RESPONSES.UNAUTHORIZED | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await authService.login(req.body, deviceInfo);
+    const loginResult: AccessAndRefreshToken | SERVICE_RESPONSES.UNAUTHORIZED | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await authService.login(req.body, deviceInfo);
     if (loginResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
         return
     }
-    if (loginResult === REPOSITORY_RESPONSES.NOT_FOUND || loginResult === REPOSITORY_RESPONSES.UNAUTHORIZED) {
+    if (loginResult === REPOSITORY_RESPONSES.NOT_FOUND || loginResult === SERVICE_RESPONSES.UNAUTHORIZED) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED)
         return
     }

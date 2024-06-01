@@ -1,5 +1,5 @@
 import jwt, {JwtPayload} from "jsonwebtoken";
-import {REPOSITORY_RESPONSES} from "../constants/repositoryResponse";
+import {REPOSITORY_RESPONSES, SERVICE_RESPONSES} from "../constants/repositoryResponse";
 import {CustomJwtPayload} from "../../types/commonTypes";
 
 const jwtService = {
@@ -12,14 +12,14 @@ const jwtService = {
         return jwt.sign({userId: userId, deviceId: deviceId}, process.env.JWT_SECRET!, {expiresIn: '20s'})
     },
     // Верификация jwt токена и получение userId из него
-    async getUserIdByJWT(token: string): Promise<string | REPOSITORY_RESPONSES.UNAUTHORIZED | undefined> {
+    async getUserIdByJWT(token: string): Promise<string | SERVICE_RESPONSES.UNAUTHORIZED | undefined> {
         // Если токен верифицировали, то достаем из payload userId
         try {
             const result: CustomJwtPayload = jwt.verify(token, process.env.JWT_SECRET!) as CustomJwtPayload
             return result.userId
         } catch (error) {
             // Если токен просрочился, то попадем в catch и вернем REPOSITORY_RESPONSES.UNAUTHORIZED
-            return REPOSITORY_RESPONSES.UNAUTHORIZED
+            return SERVICE_RESPONSES.UNAUTHORIZED
         }
     },
     // Декодируем токен.

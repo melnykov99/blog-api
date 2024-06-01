@@ -1,6 +1,6 @@
 import devicesRepository from "../repositories/devicesRepository";
 import {DeviceDB, DeviceOutput} from "../libs/types/devicesTypes";
-import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
+import {REPOSITORY_RESPONSES, SERVICE_RESPONSES} from "../libs/common/constants/repositoryResponse";
 
 const devicesService = {
     async getDevices(userId: string): Promise<DeviceOutput[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
@@ -13,7 +13,7 @@ const devicesService = {
     async deleteOtherDevices(deviceId: string, userId: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         return await devicesRepository.deleteOtherDevices(deviceId, userId);
     },
-    async deleteDeviceById(deviceId: string, userId: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.FORBIDDEN | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async deleteDeviceById(deviceId: string, userId: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND | SERVICE_RESPONSES.FORBIDDEN | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const devicesUserId: string | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesRepository.getDevicesUser(deviceId);
         // Если возникла серверная ошибка в репозитории
         if (devicesUserId === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
@@ -25,7 +25,7 @@ const devicesService = {
         }
         // Если userId у device отличается от того, что пришел в refreshToken (попытка удалить чужой девайс)
         if (devicesUserId !== userId) {
-            return REPOSITORY_RESPONSES.FORBIDDEN
+            return SERVICE_RESPONSES.FORBIDDEN
         }
         // Удаляем девайс
         return await devicesRepository.deleteDeviceById(deviceId);

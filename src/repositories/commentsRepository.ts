@@ -16,7 +16,7 @@ const commentsRepository = {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
     },
-    async updateComment(id: string, updatedContent: string): Promise<REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async updateComment(id: string, updatedContent: string): Promise<REPOSITORY_RESPONSES> {
         try {
             const updatingResult: UpdateResult = await commentsCollection.updateOne({id: id}, {$set: {content: updatedContent}})
             if (updatingResult.modifiedCount === 0) {
@@ -27,7 +27,7 @@ const commentsRepository = {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY
         }
     },
-    async deleteComment(id: string): Promise<REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
+    async deleteComment(id: string): Promise<REPOSITORY_RESPONSES> {
         try {
             const deletionResult: DeleteResult = await commentsCollection.deleteOne({id: id})
             if (deletionResult.deletedCount === 0) {
