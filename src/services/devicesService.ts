@@ -6,9 +6,9 @@ const devicesService = {
     async getDevices(userId: string): Promise<DeviceOutput[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const foundDevices: DeviceDB[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesRepository.getDevices(userId);
         if (foundDevices === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
-            return foundDevices
+            return foundDevices;
         }
-        return foundDevices.map(device => this._mapDeviceToOutput(device))
+        return foundDevices.map(device => this._mapDeviceToOutput(device));
     },
     async deleteOtherDevices(deviceId: string, userId: string): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         return await devicesRepository.deleteOtherDevices(deviceId, userId);
@@ -17,15 +17,15 @@ const devicesService = {
         const devicesUserId: string | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesRepository.getDevicesUser(deviceId);
         // Если возникла серверная ошибка в репозитории
         if (devicesUserId === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
-            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY;
         }
         // Если device с таким id не был найден
         if (devicesUserId === REPOSITORY_RESPONSES.NOT_FOUND) {
-            return REPOSITORY_RESPONSES.NOT_FOUND
+            return REPOSITORY_RESPONSES.NOT_FOUND;
         }
         // Если userId у device отличается от того, что пришел в refreshToken (попытка удалить чужой девайс)
         if (devicesUserId !== userId) {
-            return SERVICE_RESPONSES.FORBIDDEN
+            return SERVICE_RESPONSES.FORBIDDEN;
         }
         // Удаляем девайс
         return await devicesRepository.deleteDeviceById(deviceId);
@@ -36,7 +36,7 @@ const devicesService = {
             title: device.title,
             lastActiveDate: device.lastActiveDate,
             deviceId: device.deviceId,
-        }
+        };
     },
-}
+};
 export default devicesService;

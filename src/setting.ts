@@ -12,14 +12,16 @@ import devicesRouter from "./routes/devicesRouter";
 const app = express();
 
 app.use(bodyParser.json());
-app.use(cookieParser())
-app.get('/', (req: Request, res: Response) => {res.send('main page')});
-app.use('/testing/all-data', deleteDataRouter)
-app.use('/blogs', blogsRouter)
-app.use('/posts', postsRouter)
-app.use('/users', usersRouter)
-app.use('/auth', authRouter)
-app.use('/comments', commentsRouter)
-app.use('/security/devices', devicesRouter)
+app.use(cookieParser());
+app.get("/", (req: Request, res: Response) => {
+    res.send("main page");
+});
+app.use("/testing/all-data", deleteDataRouter);
+app.use("/blogs", blogsRouter);
+app.use("/posts", postsRouter);
+app.use("/users", usersRouter);
+app.use("/auth", authRouter);
+app.use("/comments", commentsRouter);
+app.use("/security/devices", devicesRouter);
 
 export default app;

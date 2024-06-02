@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer'
+import nodemailer from "nodemailer";
 import {randomUUID} from "crypto";
 
 const transporter = nodemailer.createTransport({
@@ -19,14 +19,14 @@ const emailService = {
             to: emailRecipient,
             subject: "Registration confirmation",
             text: `Thank fo your registration. To finish registration please follow the link https://somesite.com/confirm-email?code=${confirmationCode}`,
-            html: `<h1>Thank for your registration</h1><p>To finish registration please follow the link below:<a href='https://somesite.com/confirm-email?code=${confirmationCode}'>complete registration</a></p><p>The code is valid for 24 hours</p>`,
+            html: `<h1>Thank for your registration</h1><p>To finish registration please follow the link below:<a href="https://somesite.com/confirm-email?code=${confirmationCode}">complete registration</a></p><p>The code is valid for 24 hours</p>`,
         };
-        await transporter.sendMail(mailOptions, (error, info) => {
+        await transporter.sendMail(mailOptions, (error) => {
             if (error) {
                 console.error("Error sending email: ", error);
             }
         });
-        return confirmationCode
+        return confirmationCode;
     }
-}
+};
 export default emailService;

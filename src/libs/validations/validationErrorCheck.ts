@@ -31,46 +31,46 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
         const errorFields: string[] = Object.keys(result.mapped());
 
         // POST /blogs
-        if (req.baseUrl === '/blogs' && req.path === '/') {
+        if (req.baseUrl === "/blogs" && req.path === "/") {
             // Мапим errorFields, проверем что эти ключи соответвуют проверяемым в валидации ключам Blog
             convertedErrorFields = errorFields.map(field => field as BlogFieldsForErrorMessages);
             // Формируем errorMessage на основе ключей по которым возникла ошибка в валидации
             errorsMessages = draftBlogErrorMessage(convertedErrorFields);
         }
         // POST /blogs/:id/posts ИЛИ POST /posts
-        if (req.baseUrl === '/blogs' && req.path !== '/' || req.baseUrl === '/posts') {
+        if (req.baseUrl === "/blogs" && req.path !== "/" || req.baseUrl === "/posts") {
             convertedErrorFields = errorFields.map(field => field as PostFieldsForErrorMessages);
-            errorsMessages = draftPostErrorMessage(convertedErrorFields)
+            errorsMessages = draftPostErrorMessage(convertedErrorFields);
         }
-        if (req.baseUrl === '/users') {
+        if (req.baseUrl === "/users") {
             convertedErrorFields = errorFields.map(field => field as UserFieldsForErrorMessages);
-            errorsMessages = draftUserErrorMessage(convertedErrorFields)
+            errorsMessages = draftUserErrorMessage(convertedErrorFields);
         }
-        if (req.originalUrl === '/auth/login') {
+        if (req.originalUrl === "/auth/login") {
             convertedErrorFields = errorFields.map(field => field as AuthLoginFieldsForErrorMessages);
-            errorsMessages = draftAuthLoginErrorMessage(convertedErrorFields)
+            errorsMessages = draftAuthLoginErrorMessage(convertedErrorFields);
         }
-        if (req.originalUrl === '/auth/registration') {
+        if (req.originalUrl === "/auth/registration") {
             convertedErrorFields = errorFields.map(field => field as AuthRegistrationFieldsForErrorMessages);
-            errorsMessages = draftAuthRegistrationErrorMessage(convertedErrorFields)
+            errorsMessages = draftAuthRegistrationErrorMessage(convertedErrorFields);
         }
-        if (req.originalUrl === '/auth/registration-confirmation') {
+        if (req.originalUrl === "/auth/registration-confirmation") {
             convertedErrorFields = errorFields.map(field => field as AuthRegistrationConfirmationFieldsForErrorMessages);
-            errorsMessages = draftAuthRegistrationConfirmationErrorMessage(convertedErrorFields)
+            errorsMessages = draftAuthRegistrationConfirmationErrorMessage(convertedErrorFields);
         }
-        if (req.originalUrl === '/auth/registration-email-resending') {
+        if (req.originalUrl === "/auth/registration-email-resending") {
             convertedErrorFields = errorFields.map(field => field as AuthRegistrationEmailResendingFieldsForErrorMessages);
-            errorsMessages = draftAuthRegistrationEmailResendingErrorMessage(convertedErrorFields)
+            errorsMessages = draftAuthRegistrationEmailResendingErrorMessage(convertedErrorFields);
         }
         // POST /posts/:postId/comments ИЛИ PUT /comments
-        if (req.baseUrl === '/posts' && req.path !== '/' || req.baseUrl === '/comments') {
+        if (req.baseUrl === "/posts" && req.path !== "/" || req.baseUrl === "/comments") {
             convertedErrorFields = errorFields.map(field => field as CommentFieldsForErrorMessages);
-            errorsMessages = draftCommentErrorMessage(convertedErrorFields)
+            errorsMessages = draftCommentErrorMessage(convertedErrorFields);
         }
-        res.status(HTTP_STATUSES.BAD_REQUEST).send(errorsMessages)
-        return
+        res.status(HTTP_STATUSES.BAD_REQUEST).send(errorsMessages);
+        return;
     }
-    next()
+    next();
 }
 
 export default validationErrorCheck;

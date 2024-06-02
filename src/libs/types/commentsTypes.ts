@@ -29,7 +29,7 @@ type CountAndCommentsDB = {
     totalCount: number,
     foundComments: CommentDb[]
 }
-type CommentFieldsForErrorMessages = 'content';
+type CommentFieldsForErrorMessages = "content";
 type CommentsDbFilterByPostId = { postId: string };
 
 export {
@@ -41,4 +41,4 @@ export {
     CommentFieldsForErrorMessages,
     CommentsDbFilterByPostId,
     CountAndCommentsDB
-}
+};

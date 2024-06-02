@@ -20,10 +20,10 @@ type AccessAndRefreshToken = {
 type AccessTokenOutput = {
     accessToken: string,
 }
-type AuthLoginFieldsForErrorMessages = 'loginOrEmail' | 'password';
-type AuthRegistrationFieldsForErrorMessages = 'login' | 'email' | 'password';
-type AuthRegistrationConfirmationFieldsForErrorMessages = 'code';
-type AuthRegistrationEmailResendingFieldsForErrorMessages = 'email';
+type AuthLoginFieldsForErrorMessages = "loginOrEmail" | "password";
+type AuthRegistrationFieldsForErrorMessages = "login" | "email" | "password";
+type AuthRegistrationConfirmationFieldsForErrorMessages = "code";
+type AuthRegistrationEmailResendingFieldsForErrorMessages = "email";
 export {
     AuthLogin,
     AuthLoginFieldsForErrorMessages,

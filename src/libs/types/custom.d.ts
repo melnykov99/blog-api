@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Request } from "express";
 
 // Расширяем тип Request, добавляя в него userId и deviceId.

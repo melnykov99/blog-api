@@ -11,33 +11,33 @@ import validationErrorCheck from "../libs/validations/validationErrorCheck";
 
 const usersRouter: Router = express.Router();
 
-usersRouter.get('/', authBasicMiddleware, async (req: RequestWithQuery<SortingPaginationQuery>, res: Response<OutputPagesUsers>) => {
-    const foundUsers: OutputPagesUsers | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersService.getUsers(req.query)
+usersRouter.get("/", authBasicMiddleware, async (req: RequestWithQuery<SortingPaginationQuery>, res: Response<OutputPagesUsers>) => {
+    const foundUsers: OutputPagesUsers | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersService.getUsers(req.query);
     if (foundUsers === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
-        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
-        return
+        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
+        return;
     }
-    res.status(HTTP_STATUSES.OK).send(foundUsers)
-})
+    res.status(HTTP_STATUSES.OK).send(foundUsers);
+});
 // Ручное создание юзера "суперадмином". Юзер сразу становится подтвержденным.
-usersRouter.post('/', authBasicMiddleware, usersValidationChain, validationErrorCheck, async (req: RequestWithBody<UserInput>, res: Response<UserOutput>) => {
-    const createdUser: UserOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersService.manualCreateUser(req.body)
+usersRouter.post("/", authBasicMiddleware, usersValidationChain, validationErrorCheck, async (req: RequestWithBody<UserInput>, res: Response<UserOutput>) => {
+    const createdUser: UserOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await usersService.manualCreateUser(req.body);
     if (createdUser === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
-        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
-        return
+        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
+        return;
     }
-    res.status(HTTP_STATUSES.CREATED).send(createdUser)
-})
-usersRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<{ id: string }>, res: Response) => {
-    const deletionResult: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await usersService.deleteUser(req.params.id)
+    res.status(HTTP_STATUSES.CREATED).send(createdUser);
+});
+usersRouter.delete("/:id", authBasicMiddleware, async (req: RequestWithParams<{ id: string }>, res: Response) => {
+    const deletionResult: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.SUCCESSFULLY = await usersService.deleteUser(req.params.id);
     if (deletionResult === REPOSITORY_RESPONSES.NOT_FOUND) {
-        res.sendStatus(HTTP_STATUSES.NOT_FOUND)
-        return
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND);
+        return;
     }
     if (deletionResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
-        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
-        return
+        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
+        return;
     }
-    res.sendStatus(HTTP_STATUSES.NO_CONTENT)
-})
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT);
+});
 export default usersRouter;

@@ -41,5 +41,5 @@ type CountAndPostsDB = {
 }
 type PostsDbFilterByBlogId = {blogId: string}
 type PostsDbFilter = Record<string, never>
-type PostFieldsForErrorMessages = 'title' | 'shortDescription' | 'content' | 'blogId';
+type PostFieldsForErrorMessages = "title" | "shortDescription" | "content" | "blogId";
 export {OutputPagesPosts, Post, PostInput, PostInputWithoutBlog, CountAndPostsDB, PostFieldsForErrorMessages, PostsDbFilter, PostsDbFilterByBlogId, PostOutput};

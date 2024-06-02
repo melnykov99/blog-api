@@ -6,7 +6,8 @@
     "dev": "yarn nodemon dist/src/index.js",
     "watch": "tsc -w",
     "start": "concurrently \"yarn watch\" \"yarn dev\"",
-    "test": "jest --runInBand --forceExit"
+    "test": "jest --runInBand --forceExit",
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "repository": "git@github.com:melnykov99/blog-api.git",
   "author": "Melnykov Dmitry Hobby <melnykov.ds99@gmail.com>",
@@ -36,7 +37,10 @@
     "@types/cookie-parser": "^1.4.7",
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.24",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "@typescript-eslint/parser": "^5.59.2",
     "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"

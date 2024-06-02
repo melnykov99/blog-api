@@ -31,5 +31,5 @@ type CountAndBlogsDB = {
     foundBlogs: Blog[]
 }
 type BlogsDbFilter = Record<string, never> | { name: {$regex: string; $options: string}}
-type BlogFieldsForErrorMessages = 'name' | 'description' | 'websiteUrl';
+type BlogFieldsForErrorMessages = "name" | "description" | "websiteUrl";
 export {OutputPagesBlogs, Blog, BlogInput, BlogFieldsForErrorMessages, CountAndBlogsDB, BlogsDbFilter, BlogOutput};

@@ -1,5 +1,5 @@
-import {Blog, BlogOutput} from "./blogsTypes";
-import {Post, PostOutput} from "./postsTypes";
+import {BlogOutput} from "./blogsTypes";
+import {PostOutput} from "./postsTypes";
 import {JwtPayload} from "jsonwebtoken";
 import {CommentOutput} from "./commentsTypes";
 import {UserOutput} from "./usersTypes";
@@ -50,7 +50,7 @@ type DbProperties = {
     limit: number,
 }
 
-type ServiceForSortingPagination = 'blogs' | 'posts' | 'comments' | 'users';
+type ServiceForSortingPagination = "blogs" | "posts" | "comments" | "users";
 
 // Интерфейс, расширяющий стандартный тип JwtPayload, добавляем в него свойства userId и deviceId
 interface CustomJwtPayload extends JwtPayload {

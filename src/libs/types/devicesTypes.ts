@@ -18,4 +18,4 @@ type DeviceInputInfo = {
     ip: string | undefined,
 }
 
-export {DeviceDB, DeviceOutput, DeviceInputInfo}
+export {DeviceDB, DeviceOutput, DeviceInputInfo};

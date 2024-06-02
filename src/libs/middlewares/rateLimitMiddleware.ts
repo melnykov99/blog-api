@@ -1,6 +1,6 @@
-import {rateLimit, RateLimitRequestHandler} from 'express-rate-limit'
+import {rateLimit, RateLimitRequestHandler} from "express-rate-limit";
 import {HTTP_STATUSES} from "../common/constants/httpStatuses";
-import {NextFunction, Response, Request} from "express";
+import {Response, Request} from "express";
 
 // Лимитер запросов. Ограничение 5 запросов за 10 секунд от одного ip-адреса
 // Если ограничение превышено, то попадем в handler и выбросим 429 статус. Если всё ок, то неявно express вызывает next()
@@ -8,7 +8,7 @@ function createRateLimiter(): RateLimitRequestHandler {
     return rateLimit({
         windowMs: 10 * 1000,
         max: 5,
-        handler: (req: Request, res: Response, next: NextFunction) => {
+        handler: (req: Request, res: Response) => {
             res.sendStatus(HTTP_STATUSES.TOO_MANY_REQUESTS);
         }
     });

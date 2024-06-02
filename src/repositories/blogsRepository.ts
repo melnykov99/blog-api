@@ -8,23 +8,23 @@ import filterService from "../libs/common/services/filterService";
 const blogsRepository = {
     async getBlogs(sortingPaginationProcessed: SortingPaginationProcessed): Promise<CountAndBlogsDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            const filter: BlogsDbFilter = filterService.filterForBlogs(sortingPaginationProcessed.searchParams.searchNameTerm)
-            const totalCount: number = await blogsCollection.countDocuments(filter)
+            const filter: BlogsDbFilter = filterService.filterForBlogs(sortingPaginationProcessed.searchParams.searchNameTerm);
+            const totalCount: number = await blogsCollection.countDocuments(filter);
             const foundBlogs: Blog[] = await blogsCollection
                 .find(filter)
                 .sort({[sortingPaginationProcessed.sorting.sortBy]: sortingPaginationProcessed.sorting.sortDirection})
                 .skip(sortingPaginationProcessed.dbProperties.skip)
                 .limit(sortingPaginationProcessed.dbProperties.limit)
-                .toArray()
-            return {totalCount, foundBlogs}
+                .toArray();
+            return {totalCount, foundBlogs};
         } catch (error) {
-            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY;
         }
     },
     async createBlog(newBlog: Blog): Promise<REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
-            await blogsCollection.insertOne({...newBlog})
-            return REPOSITORY_RESPONSES.SUCCESSFULLY
+            await blogsCollection.insertOne({...newBlog});
+            return REPOSITORY_RESPONSES.SUCCESSFULLY;
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY;
         }
@@ -33,11 +33,11 @@ const blogsRepository = {
         try {
             const foundBlog: Blog | null = await blogsCollection.findOne({id: id});
             if (!foundBlog) {
-                return REPOSITORY_RESPONSES.NOT_FOUND
+                return REPOSITORY_RESPONSES.NOT_FOUND;
             }
-            return foundBlog
+            return foundBlog;
         } catch (error) {
-            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY;
         }
     },
     async updateBlog(updatedBlog: Blog): Promise<REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
@@ -48,25 +48,25 @@ const blogsRepository = {
                     description: updatedBlog.description,
                     websiteUrl: updatedBlog.websiteUrl
                 }
-            })
+            });
             if (updatedResult.matchedCount === 0) {
-                return REPOSITORY_RESPONSES.NOT_FOUND
+                return REPOSITORY_RESPONSES.NOT_FOUND;
             }
-            return REPOSITORY_RESPONSES.SUCCESSFULLY
+            return REPOSITORY_RESPONSES.SUCCESSFULLY;
         } catch (error) {
-            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY;
         }
     },
     async deleteBlog(id: string): Promise<REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         try {
             const deletionResult: Blog | null = await blogsCollection.findOneAndDelete({id: id});
             if (!deletionResult) {
-                return REPOSITORY_RESPONSES.NOT_FOUND
+                return REPOSITORY_RESPONSES.NOT_FOUND;
             }
-            return REPOSITORY_RESPONSES.SUCCESSFULLY
+            return REPOSITORY_RESPONSES.SUCCESSFULLY;
         } catch (error) {
-            return REPOSITORY_RESPONSES.UNSUCCESSFULLY
+            return REPOSITORY_RESPONSES.UNSUCCESSFULLY;
         }
     }
-}
-export default blogsRepository
+};
+export default blogsRepository;
