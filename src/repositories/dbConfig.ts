@@ -19,7 +19,7 @@ const commentsCollection: Collection<CommentDb> = db.collection<CommentDb>("comm
 const devicesCollection: Collection<DeviceDB> = db.collection<DeviceDB>("devices");
 // И тут крона, которая будет удалять протухшие токены
 const tokensBlacklistCollection: Collection<TokenBlackList> = db.collection<TokenBlackList>("tokensBlackList");
-async function runDb() {
+async function runDb(): Promise<void> {
     try {
         await client.connect();
         console.log("Connected successfully to mongo server");

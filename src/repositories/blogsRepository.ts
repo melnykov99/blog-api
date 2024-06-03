@@ -46,8 +46,8 @@ const blogsRepository = {
                 $set: {
                     name: updatedBlog.name,
                     description: updatedBlog.description,
-                    websiteUrl: updatedBlog.websiteUrl
-                }
+                    websiteUrl: updatedBlog.websiteUrl,
+                },
             });
             if (updatedResult.matchedCount === 0) {
                 return REPOSITORY_RESPONSES.NOT_FOUND;
@@ -67,6 +67,6 @@ const blogsRepository = {
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY;
         }
-    }
+    },
 };
 export default blogsRepository;

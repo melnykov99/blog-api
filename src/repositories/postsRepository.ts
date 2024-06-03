@@ -40,8 +40,8 @@ const postsRepository = {
                     shortDescription: updatedPost.shortDescription,
                     content: updatedPost.content,
                     blogId: updatedPost.blogId,
-                    blogName: updatedPost.blogName
-                }
+                    blogName: updatedPost.blogName,
+                },
             });
             if (updatedResult.matchedCount === 0) {
                 return REPOSITORY_RESPONSES.NOT_FOUND;

@@ -27,6 +27,6 @@ const emailService = {
             }
         });
         return confirmationCode;
-    }
+    },
 };
 export default emailService;

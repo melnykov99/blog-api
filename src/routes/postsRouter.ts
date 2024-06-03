@@ -11,7 +11,7 @@ import {
     RequestWithParams,
     RequestWithParamsAndBody,
     RequestWithParamsAndQuery,
-    RequestWithQuery
+    RequestWithQuery,
 } from "../libs/types/requestsResponsesTypes";
 import {SortingPaginationQuery} from "../libs/types/commonTypes";
 import {CommentInput, CommentOutput, OutputPagesComments} from "../libs/types/commentsTypes";
@@ -21,7 +21,7 @@ import authBearerMiddleware from "../libs/middlewares/authBearerMiddleware";
 
 const postsRouter = express.Router();
 
-postsRouter.get("/", async (req: RequestWithQuery<SortingPaginationQuery>, res: Response) => {
+postsRouter.get("/", async(req: RequestWithQuery<SortingPaginationQuery>, res: Response) => {
     const foundPosts: OutputPagesPosts | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsService.getPosts(req.query);
     if (foundPosts === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
@@ -29,7 +29,7 @@ postsRouter.get("/", async (req: RequestWithQuery<SortingPaginationQuery>, res: 
     }
     res.status(HTTP_STATUSES.OK).send(foundPosts);
 });
-postsRouter.post("/", authBasicMiddleware, postsValidationChain, validationErrorCheck, async (req: RequestWithBody<PostInput>, res: Response) => {
+postsRouter.post("/", authBasicMiddleware, postsValidationChain, validationErrorCheck, async(req: RequestWithBody<PostInput>, res: Response) => {
     const createdPost: Post | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsService.createPost(req.body);
     if (createdPost === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
@@ -38,7 +38,7 @@ postsRouter.post("/", authBasicMiddleware, postsValidationChain, validationError
     res.status(HTTP_STATUSES.CREATED).send(createdPost);
 });
 
-postsRouter.get("/:id", async (req: RequestWithParams<{ id: string }>, res: Response) => {
+postsRouter.get("/:id", async(req: RequestWithParams<{ id: string }>, res: Response) => {
     const postId: string = req.params.id;
     const foundPost: PostOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsService.getPostById(postId);
     if (foundPost === REPOSITORY_RESPONSES.NOT_FOUND) {
@@ -52,7 +52,7 @@ postsRouter.get("/:id", async (req: RequestWithParams<{ id: string }>, res: Resp
     res.status(HTTP_STATUSES.OK).send(foundPost);
 });
 
-postsRouter.put("/:id", authBasicMiddleware, postsValidationChain, validationErrorCheck, async (req: RequestWithParamsAndBody<{
+postsRouter.put("/:id", authBasicMiddleware, postsValidationChain, validationErrorCheck, async(req: RequestWithParamsAndBody<{
     id: string
 }, PostInput>, res: Response) => {
     const postId: string = req.params.id;
@@ -68,7 +68,7 @@ postsRouter.put("/:id", authBasicMiddleware, postsValidationChain, validationErr
     res.sendStatus(HTTP_STATUSES.NO_CONTENT);
 });
 
-postsRouter.delete("/:id", authBasicMiddleware, async (req: RequestWithParams<{ id: string }>, res: Response) => {
+postsRouter.delete("/:id", authBasicMiddleware, async(req: RequestWithParams<{ id: string }>, res: Response) => {
     const postId: string = req.params.id;
     const deletionResult: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await postsService.deletePost(postId);
     if (deletionResult === REPOSITORY_RESPONSES.NOT_FOUND) {
@@ -82,7 +82,7 @@ postsRouter.delete("/:id", authBasicMiddleware, async (req: RequestWithParams<{ 
     res.sendStatus(HTTP_STATUSES.NO_CONTENT);
 });
 // Запрос комментариев конкретного поста
-postsRouter.get("/:postId/comments", async (req: RequestWithParamsAndQuery<{postId: string }, SortingPaginationQuery>, res: Response<OutputPagesComments>) => {
+postsRouter.get("/:postId/comments", async(req: RequestWithParamsAndQuery<{postId: string }, SortingPaginationQuery>, res: Response<OutputPagesComments>) => {
     const foundComments: OutputPagesComments | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND = await commentsService.getCommentsByPostId(req.params.postId, req.query);
     if (foundComments === REPOSITORY_RESPONSES.NOT_FOUND) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND);
@@ -95,7 +95,7 @@ postsRouter.get("/:postId/comments", async (req: RequestWithParamsAndQuery<{post
     res.status(HTTP_STATUSES.OK).send(foundComments);
 });
 // Создание комментарий к конкретному посту
-postsRouter.post("/:postId/comments", authBearerMiddleware, commentsValidationChain, validationErrorCheck, async (req: RequestWithParamsAndBody<{postId: string}, CommentInput>, res: Response<CommentOutput>) => {
+postsRouter.post("/:postId/comments", authBearerMiddleware, commentsValidationChain, validationErrorCheck, async(req: RequestWithParamsAndBody<{postId: string}, CommentInput>, res: Response<CommentOutput>) => {
     const createdComment: CommentOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await commentsService.createComment(req.params.postId, req.body, req.ctx.userId!);
     if (createdComment === REPOSITORY_RESPONSES.NOT_FOUND) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND);

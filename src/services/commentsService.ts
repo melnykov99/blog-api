@@ -54,7 +54,7 @@ const commentsService = {
             page: sortingPaginationProcessed.pagination.pageNumber,
             pageSize: sortingPaginationProcessed.pagination.pageSize,
             totalCount: commentsAndCount.totalCount,
-            items: commentsOutput
+            items: commentsOutput,
         };
     },
     async createComment(postId: string, commentBody: CommentInput, userId: string): Promise<CommentOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
@@ -72,7 +72,7 @@ const commentsService = {
             postId,
             commentatorInfo: {
                 userId,
-                userLogin: foundUser.login
+                userLogin: foundUser.login,
             },
             createdAt: new Date().toISOString(),
         };
@@ -84,7 +84,7 @@ const commentsService = {
             id: newComment.id,
             content: newComment.content,
             commentatorInfo: newComment.commentatorInfo,
-            createdAt: newComment.createdAt
+            createdAt: newComment.createdAt,
         };
     },
     _mapCommentToOutput(comment: CommentDb): CommentOutput {
@@ -94,6 +94,6 @@ const commentsService = {
             commentatorInfo: comment.commentatorInfo,
             createdAt: comment.createdAt,
         };
-    }
+    },
 };
 export default commentsService;

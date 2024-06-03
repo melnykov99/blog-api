@@ -1,7 +1,7 @@
 import {Request, Response, NextFunction} from "express";
 import {HTTP_STATUSES} from "../common/constants/httpStatuses";
 
-function authBasicMiddleware(req: Request, res: Response, next: NextFunction) {
+function authBasicMiddleware(req: Request, res: Response, next: NextFunction): void {
     const hardcoreToken = "YWRtaW46cXdlcnR5";
     const reqAuthorization: string | undefined = req.headers.authorization;
     // В headers токен лежит в формате: Bearer YWRtaW46cXdlcnR5

@@ -21,6 +21,6 @@ const tokensBlacklistRepository = {
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY;
         }
-    }
+    },
 };
 export default tokensBlacklistRepository;

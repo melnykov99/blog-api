@@ -21,7 +21,7 @@ const blogsService = {
             page: sortingPaginationProcessed.pagination.pageNumber,
             pageSize: sortingPaginationProcessed.pagination.pageSize,
             totalCount: blogsAndCount.totalCount,
-            items: blogsOutput
+            items: blogsOutput,
         };
     },
     async createBlog(bodyBlog: BlogInput): Promise<BlogOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
@@ -31,7 +31,7 @@ const blogsService = {
             description: bodyBlog.description,
             websiteUrl: bodyBlog.websiteUrl,
             createdAt: new Date().toISOString(),
-            isMembership: false
+            isMembership: false,
         };
         const createdResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsRepository.createBlog(newBlog);
         if (createdResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
@@ -57,7 +57,7 @@ const blogsService = {
             description: bodyBlog.description,
             websiteUrl: bodyBlog.websiteUrl,
             createdAt: foundBlog.createdAt,
-            isMembership: foundBlog.isMembership
+            isMembership: foundBlog.isMembership,
         };
         return blogsRepository.updateBlog(updatedBlog);
     },
@@ -80,7 +80,7 @@ const blogsService = {
             page: sortingPaginationProcessed.pagination.pageNumber,
             pageSize: sortingPaginationProcessed.pagination.pageSize,
             totalCount: postsAndCount.totalCount,
-            items: postsOutput
+            items: postsOutput,
         };
     },
     async createPostByBlogId(blogId: string, postBody: PostInputWithoutBlog): Promise<PostOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND> {
@@ -112,6 +112,6 @@ const blogsService = {
             createdAt: blog.createdAt,
             isMembership: blog.isMembership,
         };
-    }
+    },
 };
 export default blogsService;

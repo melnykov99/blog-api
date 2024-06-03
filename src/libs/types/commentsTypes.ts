@@ -1,3 +1,7 @@
+type CommentatorInfo = {
+    userId: string,
+    userLogin: string,
+}
 type CommentDb = {
     id: string,
     content: string,
@@ -5,14 +9,14 @@ type CommentDb = {
     commentatorInfo: CommentatorInfo,
     createdAt: string,
 }
-type CommentInput = {
-    content: string,
-}
 type CommentOutput = {
     id: string,
     content: string,
     commentatorInfo: CommentatorInfo,
     createdAt: string,
+}
+type CommentInput = {
+    content: string,
 }
 type OutputPagesComments = {
     pagesCount: number,
@@ -20,10 +24,6 @@ type OutputPagesComments = {
     pageSize: number,
     totalCount: number,
     items: CommentOutput[]
-}
-type CommentatorInfo = {
-    userId: string,
-    userLogin: string,
 }
 type CountAndCommentsDB = {
     totalCount: number,
@@ -40,5 +40,5 @@ export {
     CommentInput,
     CommentFieldsForErrorMessages,
     CommentsDbFilterByPostId,
-    CountAndCommentsDB
+    CountAndCommentsDB,
 };

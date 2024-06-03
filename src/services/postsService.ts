@@ -18,7 +18,7 @@ const postsService = {
             page: sortingPaginationProcessed.pagination.pageNumber,
             pageSize: sortingPaginationProcessed.pagination.pageSize,
             totalCount: postsAndCount.totalCount,
-            items: postsOutput
+            items: postsOutput,
         };
     },
     async createPost(postBody: PostInput): Promise<Post | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
@@ -57,7 +57,7 @@ const postsService = {
             content: postBody.content,
             blogId: postBody.blogId,
             blogName: postBody.blogName,
-            createdAt: foundPost.createdAt
+            createdAt: foundPost.createdAt,
         };
         return await postsRepository.updatePost(updatedPost);
     },
@@ -75,6 +75,6 @@ const postsService = {
             blogName: post.blogName,
             createdAt: post.createdAt,
         };
-    }
+    },
 };
 export default postsService;

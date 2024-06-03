@@ -86,7 +86,7 @@ const authService = {
     async refreshTokens(refreshToken: string, userId: string, deviceId: string): Promise<AccessAndRefreshToken | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
         const accessAndRefreshToken: AccessAndRefreshToken = {
             accessToken: await jwtService.createAccessToken(userId),
-            refreshToken: await jwtService.createRefreshToken(userId, deviceId)
+            refreshToken: await jwtService.createRefreshToken(userId, deviceId),
         };
         const decodedAccessToken = await jwtService.getDecodedToken(accessAndRefreshToken.accessToken);
         // Декодируем присланный accessToken. Проверяем успешно ли декодировали токен. Проверяем на null, на string, на наличие exp и iat в JwtPayload

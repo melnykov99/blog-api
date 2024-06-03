@@ -2,7 +2,7 @@ import {CommonError, ErrorsMessages} from "../../types/commonTypes";
 import {
     AuthLoginFieldsForErrorMessages,
     AuthRegistrationConfirmationFieldsForErrorMessages, AuthRegistrationEmailResendingFieldsForErrorMessages,
-    AuthRegistrationFieldsForErrorMessages
+    AuthRegistrationFieldsForErrorMessages,
 } from "../../types/authTypes";
 
 const loginFieldsMessages = {
@@ -18,7 +18,7 @@ const registrationConfirmationFieldsMessages = {
     code: "invalid code. The format of the sent code is incorrect, or the code has expired, or the user has already been confirmed.",
 };
 const registrationEmailResendingFieldsMessages = {
-    email: "email must be string email format. A user with that email must exist and not yet be confirmed"
+    email: "email must be string email format. A user with that email must exist and not yet be confirmed",
 };
 function draftAuthLoginErrorMessage(fields: AuthLoginFieldsForErrorMessages[]): ErrorsMessages {
     const errorsMessages: CommonError[] = [];

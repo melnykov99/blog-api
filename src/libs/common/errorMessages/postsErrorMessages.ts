@@ -5,7 +5,7 @@ const fieldsMessages = {
     title: "title must be string with maximum length 30 characters",
     shortDescription: "shortDescription must be string with maximum length 100 characters",
     content: "content must be string with maximum length 1000 characters",
-    blogId: "blogId must be string with existing blog id"
+    blogId: "blogId must be string with existing blog id",
 };
 
 function draftPostErrorMessage(fields: PostFieldsForErrorMessages[]): ErrorsMessages {

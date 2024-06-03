@@ -21,7 +21,7 @@ const usersService = {
             page: sortingPaginationProcessed.pagination.pageNumber,
             pageSize: sortingPaginationProcessed.pagination.pageSize,
             totalCount: usersAndCount.totalCount,
-            items: usersOutput
+            items: usersOutput,
         };
     },
     // Создание юзера вызванное регистрацией. Юзер не подтвержден

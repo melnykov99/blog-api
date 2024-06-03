@@ -10,17 +10,17 @@ import draftUserErrorMessage from "../common/errorMessages/usersErrorMessages";
 import {
     AuthLoginFieldsForErrorMessages,
     AuthRegistrationConfirmationFieldsForErrorMessages, AuthRegistrationEmailResendingFieldsForErrorMessages,
-    AuthRegistrationFieldsForErrorMessages
+    AuthRegistrationFieldsForErrorMessages,
 } from "../types/authTypes";
 import {
     draftAuthLoginErrorMessage,
     draftAuthRegistrationConfirmationErrorMessage, draftAuthRegistrationEmailResendingErrorMessage,
-    draftAuthRegistrationErrorMessage
+    draftAuthRegistrationErrorMessage,
 } from "../common/errorMessages/authErrorMessages";
 import {CommentFieldsForErrorMessages} from "../types/commentsTypes";
 import draftCommentErrorMessage from "../common/errorMessages/commentsErrorMessages";
 
-function validationErrorCheck(req: Request, res: Response, next: NextFunction) {
+function validationErrorCheck(req: Request, res: Response, next: NextFunction): void {
     // Результат валидации запроса
     const result: Result<ValidationError> = validationResult(req);
     // Сразу глобально объявляем errorsMessages и convertedErrorFields, в них будем вносить значение в каком-то из if-ов, если есть ошибки.

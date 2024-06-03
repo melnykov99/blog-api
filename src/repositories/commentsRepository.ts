@@ -60,6 +60,6 @@ const commentsRepository = {
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY;
         }
-    }
+    },
 };
 export default commentsRepository;

@@ -13,11 +13,11 @@ import {
     RequestWithBody,
     RequestWithParams,
     RequestWithParamsAndBody, RequestWithParamsAndQuery,
-    RequestWithQuery
+    RequestWithQuery,
 } from "../libs/types/requestsResponsesTypes";
 
 const blogsRouter = express.Router();
-blogsRouter.get("/", async (req: RequestWithQuery<SortingPaginationQuery>, res: Response<OutputPagesBlogs>) => {
+blogsRouter.get("/", async(req: RequestWithQuery<SortingPaginationQuery>, res: Response<OutputPagesBlogs>) => {
     const foundBlogs: OutputPagesBlogs | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getBlogs(req.query);
     if (foundBlogs === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
@@ -25,7 +25,7 @@ blogsRouter.get("/", async (req: RequestWithQuery<SortingPaginationQuery>, res: 
     }
     res.status(HTTP_STATUSES.OK).send(foundBlogs);
 });
-blogsRouter.post("/", authBasicMiddleware, blogsValidationChain, validationErrorCheck, async (req: RequestWithBody<BlogInput>, res: Response<BlogOutput>) => {
+blogsRouter.post("/", authBasicMiddleware, blogsValidationChain, validationErrorCheck, async(req: RequestWithBody<BlogInput>, res: Response<BlogOutput>) => {
     const createdBlog: BlogOutput | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.createBlog(req.body);
     if (createdBlog === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
@@ -33,7 +33,7 @@ blogsRouter.post("/", authBasicMiddleware, blogsValidationChain, validationError
     }
     res.status(HTTP_STATUSES.CREATED).send(createdBlog);
 });
-blogsRouter.get("/:id", async (req: RequestWithParams<{id: string}>, res: Response<BlogOutput>) => {
+blogsRouter.get("/:id", async(req: RequestWithParams<{id: string}>, res: Response<BlogOutput>) => {
     const blogId: string = req.params.id;
     const foundBlog: BlogOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getBlogById(blogId);
     if (foundBlog === REPOSITORY_RESPONSES.NOT_FOUND) {
@@ -46,7 +46,7 @@ blogsRouter.get("/:id", async (req: RequestWithParams<{id: string}>, res: Respon
     }
     res.status(HTTP_STATUSES.OK).send(foundBlog);
 });
-blogsRouter.put("/:id", authBasicMiddleware, blogsValidationChain, validationErrorCheck, async (req: RequestWithParamsAndBody<{id: string}, BlogInput>, res: Response) => {
+blogsRouter.put("/:id", authBasicMiddleware, blogsValidationChain, validationErrorCheck, async(req: RequestWithParamsAndBody<{id: string}, BlogInput>, res: Response) => {
     const blogId: string = req.params.id;
     const updatingResult: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.updateBlog(blogId, req.body);
     if (updatingResult === REPOSITORY_RESPONSES.NOT_FOUND) {
@@ -59,7 +59,7 @@ blogsRouter.put("/:id", authBasicMiddleware, blogsValidationChain, validationErr
     }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT);
 });
-blogsRouter.delete("/:id", authBasicMiddleware, async (req: RequestWithParams<{id: string}>, res: Response) => {
+blogsRouter.delete("/:id", authBasicMiddleware, async(req: RequestWithParams<{id: string}>, res: Response) => {
     const blogId: string = req.params.id;
     const deletionResult: REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.deleteBlog(blogId);
     if (deletionResult === REPOSITORY_RESPONSES.NOT_FOUND) {
@@ -73,7 +73,7 @@ blogsRouter.delete("/:id", authBasicMiddleware, async (req: RequestWithParams<{i
     res.sendStatus(HTTP_STATUSES.NO_CONTENT);
 });
 // Получение постов, относящихся к конкретному блогу
-blogsRouter.get("/:id/posts", async (req: RequestWithParamsAndQuery<{id: string}, SortingPaginationQuery>, res: Response<OutputPagesPosts>) => {
+blogsRouter.get("/:id/posts", async(req: RequestWithParamsAndQuery<{id: string}, SortingPaginationQuery>, res: Response<OutputPagesPosts>) => {
     const blogId: string = req.params.id;
     const posts: OutputPagesPosts | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.getPostsByBlogId(blogId, req.query);
     if (posts === REPOSITORY_RESPONSES.NOT_FOUND) {
@@ -87,7 +87,7 @@ blogsRouter.get("/:id/posts", async (req: RequestWithParamsAndQuery<{id: string}
     res.status(HTTP_STATUSES.OK).send(posts);
 });
 // Создание поста для конкретного блога
-blogsRouter.post("/:id/posts", authBasicMiddleware, postsForBlogValidationChain, validationErrorCheck, async (req: RequestWithParamsAndBody<{id: string}, PostInputWithoutBlog>, res: Response<PostOutput>) => {
+blogsRouter.post("/:id/posts", authBasicMiddleware, postsForBlogValidationChain, validationErrorCheck, async(req: RequestWithParamsAndBody<{id: string}, PostInputWithoutBlog>, res: Response<PostOutput>) => {
     const blogId: string = req.params.id;
     const createdPost: PostOutput | REPOSITORY_RESPONSES.NOT_FOUND | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await blogsService.createPostByBlogId(blogId, req.body);
     if (createdPost === REPOSITORY_RESPONSES.NOT_FOUND) {

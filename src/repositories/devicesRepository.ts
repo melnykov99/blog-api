@@ -55,7 +55,7 @@ const devicesRepository = {
         try {
             const foundDevice: DeviceDB | null = await devicesCollection.findOne({
                 userId: userId,
-                iatRefreshToken: iatRefreshToken
+                iatRefreshToken: iatRefreshToken,
             });
             if (foundDevice === null) {
                 return REPOSITORY_RESPONSES.NOT_FOUND;
@@ -72,14 +72,14 @@ const devicesRepository = {
                 $set: {
                     lastActiveDate: lastActiveDate,
                     iatRefreshToken: iatRefreshToken,
-                    expRefreshToken: expRefreshToken
-                }
+                    expRefreshToken: expRefreshToken,
+                },
             });
             return REPOSITORY_RESPONSES.SUCCESSFULLY;
         } catch (error) {
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY;
         }
-    }
+    },
 };
 
 export default devicesRepository;

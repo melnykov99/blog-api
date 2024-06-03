@@ -8,7 +8,7 @@ import {RequestWithParams} from "../libs/types/requestsResponsesTypes";
 
 const devicesRouter: Router = express.Router();
 
-devicesRouter.get("/", checkRefreshTokenMiddleware, async (req: Request, res: Response<DeviceOutput[]>) => {
+devicesRouter.get("/", checkRefreshTokenMiddleware, async(req: Request, res: Response<DeviceOutput[]>) => {
     const foundDevices: DeviceOutput[] | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesService.getDevices(req.ctx.userId!);
     if (foundDevices === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
@@ -17,7 +17,7 @@ devicesRouter.get("/", checkRefreshTokenMiddleware, async (req: Request, res: Re
     res.status(HTTP_STATUSES.OK).send(foundDevices);
 });
 
-devicesRouter.delete("/", checkRefreshTokenMiddleware, async (req: Request, res: Response) => {
+devicesRouter.delete("/", checkRefreshTokenMiddleware, async(req: Request, res: Response) => {
     const deletionResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesService.deleteOtherDevices(req.ctx.deviceId!, req.ctx.userId!);
     if (deletionResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
@@ -26,7 +26,7 @@ devicesRouter.delete("/", checkRefreshTokenMiddleware, async (req: Request, res:
     res.sendStatus(HTTP_STATUSES.NO_CONTENT);
 });
 
-devicesRouter.delete("/:deviceId", checkRefreshTokenMiddleware, async (req: RequestWithParams<{ deviceId: string }>, res: Response) => {
+devicesRouter.delete("/:deviceId", checkRefreshTokenMiddleware, async(req: RequestWithParams<{ deviceId: string }>, res: Response) => {
     const deletionResult: REPOSITORY_RESPONSES.SUCCESSFULLY | REPOSITORY_RESPONSES.NOT_FOUND | SERVICE_RESPONSES.FORBIDDEN | REPOSITORY_RESPONSES.UNSUCCESSFULLY = await devicesService.deleteDeviceById(req.params.deviceId, req.ctx.userId!);
     if (deletionResult === REPOSITORY_RESPONSES.UNSUCCESSFULLY) {
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);

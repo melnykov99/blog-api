@@ -1,8 +1,8 @@
 import {SortingPaginationProcessed} from "../libs/types/commonTypes";
-import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 import {User, UsersDbFilter, CountAndUsersDB} from "../libs/types/usersTypes";
 import {usersCollection} from "./dbConfig";
 import filterService from "../libs/common/services/filterService";
+import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 
 const usersRepository = {
     async getUsers(sortingPaginationProcessed: SortingPaginationProcessed): Promise<CountAndUsersDB | REPOSITORY_RESPONSES.UNSUCCESSFULLY> {
@@ -79,7 +79,7 @@ const usersRepository = {
                     isConfirmed: true,
                     confirmationCode: null,
                     codeExpirationDate: null,
-                }
+                },
             });
             return REPOSITORY_RESPONSES.SUCCESSFULLY;
         } catch (error) {

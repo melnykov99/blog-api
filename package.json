@@ -7,7 +7,8 @@
     "watch": "tsc -w",
     "start": "concurrently \"yarn watch\" \"yarn dev\"",
     "test": "jest --runInBand --forceExit",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint-fix": "eslint . --ext .ts,.tsx --fix"
   },
   "repository": "git@github.com:melnykov99/blog-api.git",
   "author": "Melnykov Dmitry Hobby <melnykov.ds99@gmail.com>",

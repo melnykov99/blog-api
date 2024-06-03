@@ -2,7 +2,7 @@ import {
     blogsCollection,
     commentsCollection, devicesCollection,
     postsCollection,
-    usersCollection
+    usersCollection,
 } from "./dbConfig";
 import {REPOSITORY_RESPONSES} from "../libs/common/constants/repositoryResponse";
 
@@ -15,10 +15,9 @@ export const testingRepository = {
             await commentsCollection.deleteMany({});
             await devicesCollection.deleteMany({});
             return REPOSITORY_RESPONSES.SUCCESSFULLY;
-        }
-        catch (error){
+        } catch (error){
             return REPOSITORY_RESPONSES.UNSUCCESSFULLY;
         }
 
-    }
+    },
 };

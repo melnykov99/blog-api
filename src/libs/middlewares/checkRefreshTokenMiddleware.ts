@@ -10,7 +10,7 @@ import {JwtPayload} from "jsonwebtoken";
 
 // Мидлвара проверки рефреш токена
 // Если refreshToken-а нет, он истек, находится в черном списке или не находим по его данным device, то прервем запрос и вернем UNAUTHORIZED
-async function checkRefreshTokenMiddleware(req: Request, res: Response, next: NextFunction) {
+async function checkRefreshTokenMiddleware(req: Request, res: Response, next: NextFunction): Promise<void> {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);

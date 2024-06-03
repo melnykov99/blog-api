@@ -3,7 +3,7 @@ import {HTTP_STATUSES} from "../common/constants/httpStatuses";
 import jwtService from "../common/services/jwtService";
 import {SERVICE_RESPONSES} from "../common/constants/repositoryResponse";
 
-async function authBearerMiddleware(req: Request, res: Response, next: NextFunction) {
+async function authBearerMiddleware(req: Request, res: Response, next: NextFunction): Promise<void> {
     if (!req.headers.authorization) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);
         return;

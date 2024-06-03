@@ -26,6 +26,6 @@ const jwtService = {
     // Может вернутся null, если токен недействителен/пуст, string, если токен сформирован неправильно без payload и JwtPayload в нормальном случае при успешном декодировании
     async getDecodedToken(token: string): Promise<string | JwtPayload | null> {
         return jwt.decode(token);
-    }
+    },
 };
 export default jwtService;

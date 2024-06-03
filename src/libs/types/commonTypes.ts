@@ -24,12 +24,6 @@ type SortingPaginationQuery = {
     pageSize: string | undefined,
 }
 // Объект с обработанными данными сортировки для дальнейшей передачи в repository и работы с mongodb
-type SortingPaginationProcessed = {
-    dbProperties: DbProperties,
-    pagination: Pagination,
-    sorting: Sorting,
-    searchParams: {searchNameTerm?: SearchNameTerm, searchLoginTerm?: SearchLoginTerm, searchEmailTerm?: SearchEmailTerm}
-}
 type Pagination = {
     pageSize: number,
     pageNumber: number,
@@ -49,7 +43,12 @@ type DbProperties = {
     skip: number,
     limit: number,
 }
-
+type SortingPaginationProcessed = {
+    dbProperties: DbProperties,
+    pagination: Pagination,
+    sorting: Sorting,
+    searchParams: {searchNameTerm?: SearchNameTerm, searchLoginTerm?: SearchLoginTerm, searchEmailTerm?: SearchEmailTerm}
+}
 type ServiceForSortingPagination = "blogs" | "posts" | "comments" | "users";
 
 // Интерфейс, расширяющий стандартный тип JwtPayload, добавляем в него свойства userId и deviceId

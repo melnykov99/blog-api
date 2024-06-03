@@ -15,8 +15,32 @@
 		"es2021": true
 	},
 	"rules": {
+		// Отступы и пробелы
+		"indent": ["error", 4],
+		"no-trailing-spaces": "error",
+		"space-before-function-paren": ["error", "never"],
+		"space-infix-ops": "error",
+		"keyword-spacing": ["error", { "before": true, "after": true }],
+		// Форматирование и стиль
 		"semi": ["error", "always"],
 		"quotes": ["error", "double"],
+		"brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+		"camelcase": ["error", { "properties": "always" }],
+		"comma-dangle": ["error", "always-multiline"],
+		"comma-spacing": ["error", { "before": false, "after": true }],
+		"comma-style": ["error", "last"],
+		"func-call-spacing": ["error", "never"],
+		// Переменные и объявления
+		"no-var": "error",
+		"prefer-const": "error",
+		"no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
+		"no-use-before-define": ["error", { "functions": false, "classes": true, "variables": true }],
+		"@typescript-eslint/explicit-function-return-type": ["error", { "allowExpressions": true }],
+		"@typescript-eslint/no-explicit-any": "error",
+		// Прочее
+		"no-debugger": "warn",
+		"eqeqeq": ["error", "always"],
+		"curly": ["error", "all"],
 		"@typescript-eslint/no-non-null-assertion": "off"
 	}
 }

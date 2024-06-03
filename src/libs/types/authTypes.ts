@@ -34,5 +34,5 @@ export {
     AuthRegistrationConfirmationFieldsForErrorMessages,
     AuthRegistrationEmailResendingFieldsForErrorMessages,
     AccessAndRefreshToken,
-    AccessTokenOutput
+    AccessTokenOutput,
 };

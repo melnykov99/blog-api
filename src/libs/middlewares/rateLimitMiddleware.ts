@@ -10,7 +10,7 @@ function createRateLimiter(): RateLimitRequestHandler {
         max: 5,
         handler: (req: Request, res: Response) => {
             res.sendStatus(HTTP_STATUSES.TOO_MANY_REQUESTS);
-        }
+        },
     });
 }
 
