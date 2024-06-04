@@ -29,16 +29,15 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction): 
     if (!result.isEmpty()) {
         // Мапим ключи из result, это ключи по которым ошибки в валидации возникли
         const errorFields: string[] = Object.keys(result.mapped());
-
-        // POST /blogs
-        if (req.baseUrl === "/blogs" && req.path === "/") {
+        // POST /blogs ИЛИ PUT /blogs/:id
+        if ((req.baseUrl === "/blogs" && req.path === "/") || (req.baseUrl === "/blogs" && req.route.path === "/:id")) {
             // Мапим errorFields, проверем что эти ключи соответвуют проверяемым в валидации ключам Blog
             convertedErrorFields = errorFields.map(field => field as BlogFieldsForErrorMessages);
             // Формируем errorMessage на основе ключей по которым возникла ошибка в валидации
             errorsMessages = draftBlogErrorMessage(convertedErrorFields);
         }
         // POST /blogs/:id/posts ИЛИ POST /posts
-        if (req.baseUrl === "/blogs" && req.path !== "/" || req.baseUrl === "/posts") {
+        if ((req.baseUrl === "/blogs" && req.route.path === "/:id/posts") || req.baseUrl === "/posts") {
             convertedErrorFields = errorFields.map(field => field as PostFieldsForErrorMessages);
             errorsMessages = draftPostErrorMessage(convertedErrorFields);
         }
