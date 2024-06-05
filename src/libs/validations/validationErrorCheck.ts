@@ -62,7 +62,6 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction): 
             errorsMessages = draftAuthRegistrationEmailResendingErrorMessage(convertedErrorFields);
         }
         // POST /posts/:postId/comments ИЛИ PUT /comments
-        console.log(req.route)
         if ((req.baseUrl === "/posts" && req.route.path === "/:postId/comments") || req.baseUrl === "/comments") {
             convertedErrorFields = errorFields.map(field => field as CommentFieldsForErrorMessages);
             errorsMessages = draftCommentErrorMessage(convertedErrorFields);
