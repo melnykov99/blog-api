@@ -36,8 +36,8 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction): 
             // Формируем errorMessage на основе ключей по которым возникла ошибка в валидации
             errorsMessages = draftBlogErrorMessage(convertedErrorFields);
         }
-        // POST /blogs/:id/posts ИЛИ POST /posts
-        if ((req.baseUrl === "/blogs" && req.route.path === "/:id/posts") || req.baseUrl === "/posts") {
+        // POST /blogs/:id/posts ИЛИ POST /posts ИЛИ PUT /posts/:id
+        if ((req.baseUrl === "/blogs" && req.route.path === "/:id/posts") || (req.baseUrl === "/posts" && req.route.path === "/:id")) {
             convertedErrorFields = errorFields.map(field => field as PostFieldsForErrorMessages);
             errorsMessages = draftPostErrorMessage(convertedErrorFields);
         }
@@ -62,7 +62,8 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction): 
             errorsMessages = draftAuthRegistrationEmailResendingErrorMessage(convertedErrorFields);
         }
         // POST /posts/:postId/comments ИЛИ PUT /comments
-        if (req.baseUrl === "/posts" && req.path !== "/" || req.baseUrl === "/comments") {
+        console.log(req.route)
+        if ((req.baseUrl === "/posts" && req.route.path === "/:postId/comments") || req.baseUrl === "/comments") {
             convertedErrorFields = errorFields.map(field => field as CommentFieldsForErrorMessages);
             errorsMessages = draftCommentErrorMessage(convertedErrorFields);
         }
