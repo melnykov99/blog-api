@@ -13,8 +13,8 @@ import {UserOutput} from "../../types/usersTypes";
 const sortingPaginationService = {
     processingSortPag(query: SortingPaginationQuery, service: ServiceForSortingPagination): SortingPaginationProcessed {
         const pagination: Pagination = {
-            pageSize: query.pageSize === undefined ? 10 : Number(query.pageSize),
-            pageNumber: query.pageNumber === undefined ? 1 : Number(query.pageNumber),
+            pageSize: (!query.pageSize) ? 10 : Number(query.pageSize),
+            pageNumber: (!query.pageNumber) ? 1 : Number(query.pageNumber),
         };
         // Объявлением переменную sortBy в которую дальше определим значение в зависимости от того, где функция сортировки была вызвана и что пришло в query
         let sortBy;
@@ -43,9 +43,9 @@ const sortingPaginationService = {
             // Присваиваем sortBy, определенный выше
             sortBy: sortBy,
         };
-        const searchNameTerm: SearchNameTerm = query.searchNameTerm === undefined ? undefined : query.searchNameTerm;
-        const searchLoginTerm: SearchLoginTerm = query.searchLoginTerm === undefined ? undefined : query.searchLoginTerm;
-        const searchEmailTerm: SearchEmailTerm = query.searchEmailTerm === undefined ? undefined : query.searchEmailTerm;
+        const searchNameTerm: SearchNameTerm = (!query.searchNameTerm) ? undefined : query.searchNameTerm;
+        const searchLoginTerm: SearchLoginTerm = (!query.searchLoginTerm) ? undefined : query.searchLoginTerm;
+        const searchEmailTerm: SearchEmailTerm = (!query.searchEmailTerm) ? undefined : query.searchEmailTerm;
         // skip по формуле считаем
         const skip: number = (pagination.pageNumber - 1) * pagination.pageSize;
         // limit это pageSize

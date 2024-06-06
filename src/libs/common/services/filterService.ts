@@ -3,8 +3,8 @@ import {UsersDbFilter} from "../../types/usersTypes";
 import {BlogsDbFilter} from "../../types/blogsTypes";
 
 const filterService = {
+    //Функция определяет filter для метода getUsers
     filterForUsers(searchLoginTerm: SearchLoginTerm, searchEmailTerm: SearchEmailTerm): UsersDbFilter {
-        //Функция определяет filter для метода getUsers
         //Если есть searchLoginTerm и searchEmailTerm, то в фильтре будет и login и email
         return (searchLoginTerm && searchEmailTerm) ? {login: {$regex: searchLoginTerm, $options: "i"}, email: {$regex: searchEmailTerm, $options: "i"}}
             //Если есть searchLoginTerm и НЕТ searchEmailTerm, то в фильтре только login
@@ -14,6 +14,7 @@ const filterService = {
                     //Если НЕТ searchLoginTerm и НЕТ searchEmailTerm, то фильтр пустой и поиск производится по всем объектам
                     : {};
     },
+    //Функция определяет filter для метода getBlogs
     filterForBlogs(searchNameTerm: SearchNameTerm): BlogsDbFilter {
         return (!searchNameTerm) ? {} : { name: { $regex: searchNameTerm, $options: "i" } };
     },
