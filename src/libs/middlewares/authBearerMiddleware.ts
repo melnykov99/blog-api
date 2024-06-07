@@ -8,7 +8,7 @@ async function authBearerMiddleware(req: Request, res: Response, next: NextFunct
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);
         return;
     }
-    // В headers токен лежит в формате: Bearer YWRtaW46cXdlcnR5. Поэтому сплитим и берем элемент с токеном
+    // В headers токен лежит в формате: 'Bearer token'. Поэтому сплитим и берем элемент с токеном
     const token: string = req.headers.authorization.split(" ")[1];
     // undefined вернется, если в payload токена почему-то нет userId. UNAUTHORIZED вернется если токен просрочился.
     const userId: string | SERVICE_RESPONSES.UNAUTHORIZED | undefined = await jwtService.getUserIdByJWT(token);

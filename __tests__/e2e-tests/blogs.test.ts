@@ -29,13 +29,16 @@ describe("/blogs routes", () => {
                 .expect(200)
             expect(getResponse.body).toEqual(blogsEmptyResponse)
         });
-        it("should create blog, next return 200 and return creating blog in items", async() => {
+        it("should create blog, next return 200 and items array should not be empty", async() => {
             await _createBlog()
             const getResponse = await request(app)
                 .get(path.blogs)
                 .expect(200)
             expect(getResponse.body).not.toEqual(blogsEmptyResponse)
         });
+    })
+    describe("POST /blogs", () => {
+
     })
 
 });
