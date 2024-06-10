@@ -1,10 +1,10 @@
-import filterService from "../../src/libs/common/services/filterService";
-import {BlogsDbFilter} from "../../src/libs/types/blogsTypes";
-import {UsersDbFilter} from "../../src/libs/types/usersTypes";
+import filterService from "../../../src/libs/common/services/filterService";
+import {BlogsDbFilter} from "../../../src/libs/types/blogsTypes";
+import {UsersDbFilter} from "../../../src/libs/types/usersTypes";
 
 describe("filterForBlogs", () => {
     it("should return an empty filter when searchNameTerm is not provided", () => {
-        const searchNameTerm: undefined = undefined;
+        const searchNameTerm = undefined;
         const expectedFilter = {};
         const result: BlogsDbFilter = filterService.filterForBlogs(searchNameTerm);
         expect(result).toEqual(expectedFilter);

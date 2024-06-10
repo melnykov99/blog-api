@@ -1,12 +1,12 @@
-import sortingPaginationService from "../../src/libs/common/services/sortingPaginationService";
-import {SortingPaginationProcessed, SortingPaginationQuery} from "../../src/libs/types/commonTypes";
+import sortingPaginationService from "../../../src/libs/common/services/sortingPaginationService";
+import {SortingPaginationProcessed, SortingPaginationQuery} from "../../../src/libs/types/commonTypes";
 import {
     blogInvalidKeys, blogInvalidQuery, blogMixedKeys,
     blogValidKeys, blogValidQuery, commentInvalidKeys, commentMixedKeys,
     commentValidKeys, emptyQuery, postInvalidKeys, postMixedKeys,
     postValidKeys, userInvalidKeys, userMixedKeys,
     userValidKeys,
-} from "../datasets/unit/sortingPaginationService";
+} from "../../datasets/unit/services/sortingPaginationService";
 
 describe("_isValidSortByValueBlog", () => {
     it("should return true for a valid key", () => {

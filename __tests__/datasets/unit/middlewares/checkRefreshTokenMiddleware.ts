@@ -1,9 +1,9 @@
-const validRefreshToken: string = "Bearer valid_jwt_token";
-const invalidRefreshToken: string = "Bearer invalidToken";
-const validUserId: string = "12345678-aaaa-bbbb-cccc-12345678acbd";
-const validDeviceId: string = "87654321-aaaa-bbbb-cccc-87654321acbd";
-const expiredRefreshToken: string = "Bearer expired_refresh_token";
-const refreshTokenInBlacklist: string = "87654321-aaaa-aaaa-aaaa-87654321acbd";
+const validRefreshToken = "Bearer valid_jwt_token";
+const invalidRefreshToken = "Bearer invalidToken";
+const validUserId = "12345678-aaaa-bbbb-cccc-12345678acbd";
+const validDeviceId = "87654321-aaaa-bbbb-cccc-87654321acbd";
+const expiredRefreshToken = "Bearer expired_refresh_token";
+const refreshTokenInBlacklist = "87654321-aaaa-aaaa-aaaa-87654321acbd";
 const decodedExpiredRefreshToken = {
     exp: (Date.now() / 1000) - 3600, // Токен просрочен на час
     iat: (Date.now() / 1000) - 7200, // Токен создан 2 часа назад
@@ -34,4 +34,4 @@ const validDeviceData = {
     deviceId: validDeviceId,
 };
 
-export {validRefreshToken, invalidRefreshToken, expiredRefreshToken, validUserId, validDeviceId, decodedValidToken, refreshTokenInBlacklist, validDeviceData, decodedExpiredRefreshToken, decodedRefreshTokenWithoutUserId, decodedRefreshTokenWithoutDeviceId}
+export {validRefreshToken, invalidRefreshToken, expiredRefreshToken, validUserId, validDeviceId, decodedValidToken, refreshTokenInBlacklist, validDeviceData, decodedExpiredRefreshToken, decodedRefreshTokenWithoutUserId, decodedRefreshTokenWithoutDeviceId};

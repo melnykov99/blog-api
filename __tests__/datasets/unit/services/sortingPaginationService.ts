@@ -1,4 +1,4 @@
-import {SortingPaginationQuery} from "../../../src/libs/types/commonTypes";
+import {SortingPaginationQuery} from "../../../../src/libs/types/commonTypes";
 
 //common
 const emptyQuery = {};
