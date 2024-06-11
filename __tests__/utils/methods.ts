@@ -2,7 +2,8 @@ import request from "supertest";
 import app from "../../src/setting";
 import {path} from "../datasets/e2e/paths";
 import {authBasic} from "../datasets/e2e/common";
-import {validBlogBody} from "../datasets/e2e/blogs";
+import {blogValidData} from "../datasets/unit/validations/blogsValidation";
+import {commentValidData} from "../datasets/unit/validations/commentsValidation";
 
 const deleteAllData = async() => {
     await request(app)
@@ -13,7 +14,30 @@ const createBlog = async() => {
     return await request(app)
         .post(path.blogs)
         .set(authBasic)
-        .send(validBlogBody)
+        .send(blogValidData)
         .expect(201);
 };
-export {deleteAllData, createBlog}
+const createPost = async() => {
+    const createdBlog = await createBlog();
+    const blogId = createdBlog.body.blogId;
+    return await request(app)
+        .post(path.posts)
+        .set(authBasic)
+        .send({
+            title: "title",
+            shortDescription: "shortDescription",
+            content: "content",
+            blogId: blogId,
+        })
+        .expect(201);
+};
+const createComment = async() => {
+    const createdPost = await createPost();
+    const postId = createdPost.body.id;
+    return await request(app)
+        .post(`${path.posts}/${postId}/comments`)
+        .set(authBasic)
+        .send(commentValidData)
+        .expect(201);
+};
+export {deleteAllData, createBlog};
