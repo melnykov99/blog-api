@@ -37,7 +37,7 @@ function validationErrorCheck(req: Request, res: Response, next: NextFunction): 
             errorsMessages = draftBlogErrorMessage(convertedErrorFields);
         }
         // POST /blogs/:id/posts ИЛИ POST /posts ИЛИ PUT /posts/:id
-        if ((req.baseUrl === "/blogs" && req.route.path === "/:id/posts") || (req.baseUrl === "/posts" && req.route.path === "/:id")) {
+        if ((req.baseUrl === "/blogs" && req.route.path === "/:id/posts") || req.baseUrl === "/posts" || req.route.path !== "/:id") {
             convertedErrorFields = errorFields.map(field => field as PostFieldsForErrorMessages);
             errorsMessages = draftPostErrorMessage(convertedErrorFields);
         }

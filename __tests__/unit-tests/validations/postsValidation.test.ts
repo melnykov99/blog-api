@@ -23,17 +23,17 @@ describe("posts validation", () => {
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(allErrorsMessages);
     });
-    it("should return 400 and errorsMessages if all keys in request empty ", async() => {
+    it("should return 400 and errorsMessages if all keys in request empty", async() => {
         const response = await _createPost(postEmptyData);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(allErrorsMessages);
     });
-    it("should return 400 and errorsMessages if all keys in request is space ", async() => {
+    it("should return 400 and errorsMessages if all keys in request is space", async() => {
         const response = await _createPost(postOnlySpaceData);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(allErrorsMessages);
     });
-    it("should return 400 and errorsMessages if all keys in request is long ", async() => {
+    it("should return 400 and errorsMessages if all keys in request is long", async() => {
         const response = await _createPost(postLongData);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(allErrorsMessages);
