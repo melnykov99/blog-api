@@ -9,6 +9,14 @@ import {
     blogLongData,
     blogOnlySpaceData, blogValidData, webSiteErrorMessage,
 } from "../../datasets/unit/validations/blogsValidation";
+import {deleteAllData} from "../../utils/methods";
+
+beforeEach(async() => {
+    await deleteAllData();
+});
+afterAll(async() => {
+    await deleteAllData();
+});
 
 describe("blogs validation", () => {
     it("should return 400 and errorsMessages if all keys in request invalid format", async() => {

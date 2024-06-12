@@ -10,15 +10,15 @@ const deleteAllData = async() => {
         .delete(path.deleteData)
         .expect(204);
 };
-const createBlog = async() => {
+const createValidBlog = async() => {
     return await request(app)
         .post(path.blogs)
         .set(authBasic)
         .send(blogValidData)
         .expect(201);
 };
-const createPost = async() => {
-    const createdBlog = await createBlog();
+const createValidPost = async() => {
+    const createdBlog = await createValidBlog();
     const blogId = createdBlog.body.blogId;
     return await request(app)
         .post(path.posts)
@@ -31,8 +31,8 @@ const createPost = async() => {
         })
         .expect(201);
 };
-const createComment = async() => {
-    const createdPost = await createPost();
+const createValidComment = async() => {
+    const createdPost = await createValidPost();
     const postId = createdPost.body.id;
     return await request(app)
         .post(`${path.posts}/${postId}/comments`)
@@ -40,4 +40,4 @@ const createComment = async() => {
         .send(commentValidData)
         .expect(201);
 };
-export {deleteAllData, createBlog};
+export {deleteAllData, createValidBlog, createValidPost, createValidComment};
